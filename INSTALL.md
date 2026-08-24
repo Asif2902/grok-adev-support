@@ -1,37 +1,56 @@
-# Installing Failure Build
+# Installing ADEVGrok
 
-Failure Build (`failure`) is a terminal-based AI coding agent, forked from
-xAI's open-sourced Grok Build. It's bring-your-own-provider: x.ai's Grok
-models, OpenAI, Anthropic, Ollama, or any custom OpenAI-compatible endpoint
+ADEVGrok (`adevgrok`) is a terminal-based AI coding agent, based on xAI's
+open-sourced Grok Build (via the Failure Build fork). It's bring-your-own-provider:
+x.ai's Grok models, OpenAI, Anthropic, Ollama, or any custom OpenAI-compatible endpoint
 (including a local server on your own network).
 
+> **ADEVGrok is an unofficial distribution based on the open-source Grok
+> Build project. It is not affiliated with or endorsed by xAI.**
+
 All platform binaries are published on the
-[GitHub Releases page](https://github.com/failure-fail/failure-build/releases/latest).
+[GitHub Releases page](https://github.com/Asif2902/grok-adev-support/releases/latest).
+
+---
+
+## Recommended: install with npm (all platforms)
+
+```sh
+npm install -g adevgrok
+```
+
+Then launch:
+
+```sh
+adevgrok
+```
+
+The package downloads the correct prebuilt binary for your platform at
+install time, verifies its sha256 checksum, and installs it to
+`~/.adevgrok/bin`. Uninstall with:
+
+```sh
+npm uninstall -g adevgrok        # optionally: rm -rf ~/.adevgrok
+```
 
 ---
 
 ## Linux (x86_64 / arm64)
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/failure-fail/failure-build/main/crates/codegen/xai-grok-pager/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Asif2902/grok-adev-support/main/crates/codegen/xai-grok-pager/scripts/install.sh | bash
 ```
 
 Or manually, picking the right asset for your CPU:
 
 ```sh
 # x86_64
-curl -fL --progress-bar -o failure "https://github.com/failure-fail/failure-build/releases/latest/download/failure-<version>-linux-x86_64"
+curl -fL --progress-bar -o adevgrok "https://github.com/Asif2902/grok-adev-support/releases/latest/download/adevgrok-<version>-linux-x86_64"
 # arm64
-curl -fL --progress-bar -o failure "https://github.com/failure-fail/failure-build/releases/latest/download/failure-<version>-linux-aarch64"
+curl -fL --progress-bar -o adevgrok "https://github.com/Asif2902/grok-adev-support/releases/latest/download/adevgrok-<version>-linux-aarch64"
 
-chmod +x failure
-./failure
-```
-
-Or via npm (any platform with Node.js):
-
-```sh
-npm i -g @failure-build/failure
+chmod +x adevgrok
+./adevgrok
 ```
 
 ---
@@ -41,21 +60,15 @@ npm i -g @failure-build/failure
 Same installer script as Linux:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/failure-fail/failure-build/main/crates/codegen/xai-grok-pager/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Asif2902/grok-adev-support/main/crates/codegen/xai-grok-pager/scripts/install.sh | bash
 ```
 
 Or manually:
 
 ```sh
-curl -fL --progress-bar -o failure "https://github.com/failure-fail/failure-build/releases/latest/download/failure-<version>-macos-aarch64"
-chmod +x failure
-./failure
-```
-
-Or via npm:
-
-```sh
-npm i -g @failure-build/failure
+curl -fL --progress-bar -o adevgrok "https://github.com/Asif2902/grok-adev-support/releases/latest/download/adevgrok-<version>-macos-aarch64"
+chmod +x adevgrok
+./adevgrok
 ```
 
 **Intel Macs (x86_64):** not built by the release pipeline (GitHub no longer
@@ -70,20 +83,14 @@ README).
 PowerShell:
 
 ```powershell
-irm https://raw.githubusercontent.com/failure-fail/failure-build/main/crates/codegen/xai-grok-pager/scripts/install.ps1 | iex
+irm https://raw.githubusercontent.com/Asif2902/grok-adev-support/main/crates/codegen/xai-grok-pager/scripts/install.ps1 | iex
 ```
 
 Or manually:
 
 ```powershell
-Invoke-WebRequest -Uri "https://github.com/failure-fail/failure-build/releases/latest/download/failure-<version>-windows-x86_64.exe" -OutFile failure.exe
-.\failure.exe
-```
-
-Or via npm:
-
-```powershell
-npm i -g @failure-build/failure
+Invoke-WebRequest -Uri "https://github.com/Asif2902/grok-adev-support/releases/latest/download/adevgrok-<version>-windows-x86_64.exe" -OutFile adevgrok.exe
+.\adevgrok.exe
 ```
 
 ---
@@ -91,48 +98,58 @@ npm i -g @failure-build/failure
 ## Android (via Termux)
 
 Android has no general-purpose terminal, so there's no standalone `.apk` —
-Failure Build runs inside [Termux](https://termux.dev/) instead, which
+ADEVGrok runs inside [Termux](https://termux.dev/) instead, which
 provides a real terminal plus a Linux userland.
 
-### 1. Install Termux
+**Minimum supported Android version: 7.0 (Nougat)** — the binary is a
+native `aarch64-linux-android` build targeting NDK API level 24, matching
+Termux's own minimum.
 
-Get it from **[F-Droid](https://f-droid.org/en/packages/com.termux/)** — not
-the Play Store version, which is outdated and unmaintained.
+### Option A: npm (recommended)
 
-### 2. One-time setup
+1. Install Termux from **[F-Droid](https://f-droid.org/en/packages/com.termux/)**
+   — not the Play Store version, which is outdated and unmaintained.
+2. In Termux:
+
+   ```sh
+   pkg update && pkg install nodejs ripgrep git
+   npm install -g adevgrok
+   adevgrok
+   ```
+
+The npm installer detects Termux and downloads the native
+`adevgrok-<version>-android-aarch64` asset automatically. Updating later is
+just `npm update -g adevgrok`.
+
+### Option B: manual download
 
 ```sh
 pkg update && pkg install ripgrep git
-mkdir -p ~/failure-app
-```
-
-### 3. Download and run
-
-```sh
-cd ~/failure-app
-curl -fL --progress-bar --retry 10 --retry-delay 3 -o failure "https://github.com/failure-fail/failure-build/releases/latest/download/failure-<version>-android-aarch64"
-chmod +x failure
-./failure
+mkdir -p ~/adevgrok-app
+cd ~/adevgrok-app
+curl -fL --progress-bar --retry 10 --retry-delay 3 \
+  -o adevgrok "https://github.com/Asif2902/grok-adev-support/releases/latest/download/adevgrok-<version>-android-aarch64"
+chmod +x adevgrok
+./adevgrok
 ```
 
 (Replace `<version>` with the version from the
-[latest release](https://github.com/failure-fail/failure-build/releases/latest),
-e.g. `failure-0.1.220-alpha.4-android-aarch64`.)
+[latest release](https://github.com/Asif2902/grok-adev-support/releases/latest),
+e.g. `adevgrok-0.1.220-alpha.4-android-aarch64`.)
 
 After this first run, launch it again anytime with:
 
 ```sh
-~/failure-app/failure
+~/adevgrok-app/adevgrok
 ```
 
 ### Notes / known limitations on Android
 
+- The npm-installed binary lives in `~/.adevgrok/bin`; the manual-download
+  one lives wherever you put it. Either works; use one or the other.
 - This is a native `aarch64-linux-android` build, distinct from the
   `linux-aarch64` build above (different C library — Bionic vs. glibc — not
   interchangeable).
-- **No auto-updater support yet** for this target — `failure update` and the
-  `curl | bash` installer don't know about it. To upgrade, just re-run the
-  download command above with the new version number.
 - **Clipboard and microphone dictation report "unavailable"** — they compile
   and run fine, they just don't do anything yet. Real Termux support for
   these (via `termux-clipboard-get/set` and `termux-microphone-record`, from
@@ -140,13 +157,13 @@ After this first run, launch it again anytime with:
 - If a download drops mid-transfer over a flaky connection, delete the
   partial file and retry:
   ```sh
-  rm failure
+  rm adevgrok
   # then re-run the curl command above
   ```
 
 ### Using a custom / self-hosted provider on Android
 
-If you want to point Failure Build at a custom OpenAI-compatible endpoint
+If you want to point ADEVGrok at a custom OpenAI-compatible endpoint
 (your own API, a local llama.cpp-style server on your LAN, etc.) instead of
 x.ai/OpenAI/Anthropic/Ollama:
 
@@ -160,8 +177,8 @@ base_url = "https://your-endpoint.example.com/v1"
 provider = "custom"
 EOF
 
-~/failure-app/failure login --provider custom --api-key YOUR_API_KEY
-~/failure-app/failure --model your-model-name
+adevgrok login --provider custom --api-key YOUR_API_KEY
+adevgrok --model your-model-name
 ```
 
 For a **local server on your own Wi-Fi network** (e.g. something serving an
@@ -179,8 +196,8 @@ base_url = "http://192.168.1.50:8080/v1"
 provider = "local"
 EOF
 
-~/failure-app/failure login --provider local --api-key none
-~/failure-app/failure --model local
+adevgrok login --provider local --api-key none
+adevgrok --model local
 ```
 
 Your phone must be on the same network as whatever's hosting that server.
@@ -189,7 +206,7 @@ Your phone must be on the same network as whatever's hosting that server.
 
 ## First launch (all platforms)
 
-On first launch with no provider configured, Failure Build walks you through
+On first launch with no provider configured, ADEVGrok walks you through
 picking one interactively (x.ai, OpenAI, Anthropic, Ollama, or custom). For
 x.ai specifically, you can skip the picker with an API key from
 [console.x.ai](https://console.x.ai):
@@ -202,7 +219,7 @@ To use a **named BYOP provider** directly (bypassing the picker) on any
 platform, store a key once:
 
 ```sh
-failure login --provider openai --api-key sk-...
+adevgrok login --provider openai --api-key sk-...
 ```
 
 then launch normally — it remembers the choice.

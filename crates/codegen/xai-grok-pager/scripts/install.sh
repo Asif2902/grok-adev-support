@@ -1,14 +1,14 @@
 #!/bin/bash
 #
-# Failure CLI installer — https://raw.githubusercontent.com/failure-fail/failure-build/main/crates/codegen/xai-grok-pager/scripts/install.sh
+# Failure CLI installer — https://raw.githubusercontent.com/Asif2902/grok-adev-support/main/crates/codegen/xai-grok-pager/scripts/install.sh
 #
 # Auth: FAILURE_DEPLOYMENT_KEY (takes precedence) or ~/.failure/auth.json from `failure login`.
 # Env: FAILURE_CHANNEL (stable|alpha|enterprise, default: stable), FAILURE_BIN_DIR, FAILURE_PROXY_URL
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/failure-fail/failure-build/main/crates/codegen/xai-grok-pager/scripts/install.sh | bash            # latest stable
-#   curl -fsSL https://raw.githubusercontent.com/failure-fail/failure-build/main/crates/codegen/xai-grok-pager/scripts/install.sh | bash -s 0.1.42  # specific version
-#   FAILURE_DEPLOYMENT_KEY=<key> bash <(curl -fsSL https://raw.githubusercontent.com/failure-fail/failure-build/main/crates/codegen/xai-grok-pager/scripts/install.sh)
+#   curl -fsSL https://raw.githubusercontent.com/Asif2902/grok-adev-support/main/crates/codegen/xai-grok-pager/scripts/install.sh | bash            # latest stable
+#   curl -fsSL https://raw.githubusercontent.com/Asif2902/grok-adev-support/main/crates/codegen/xai-grok-pager/scripts/install.sh | bash -s 0.1.42  # specific version
+#   FAILURE_DEPLOYMENT_KEY=<key> bash <(curl -fsSL https://raw.githubusercontent.com/Asif2902/grok-adev-support/main/crates/codegen/xai-grok-pager/scripts/install.sh)
 #
 # Windows: run under Git for Windows / MSYS2 Bash (same curl | bash flow); WSL
 # uses the Linux binary.
@@ -155,7 +155,7 @@ esac
 # is a stable GitHub-hosted redirect to whatever release is currently marked
 # "latest", so it works as both the channel-pointer host and the binary host
 # without any release-specific URL here.
-BASE_URL="https://github.com/failure-fail/failure-build/releases/latest/download"
+BASE_URL="https://github.com/Asif2902/grok-adev-support/releases/latest/download"
 DOWNLOAD_DIR="$HOME/.failure/downloads"
 BIN_DIR="${FAILURE_BIN_DIR:-$HOME/.failure/bin}"
 mkdir -p "$DOWNLOAD_DIR" "$BIN_DIR"
@@ -187,7 +187,7 @@ else
 fi
 
 binary_path="$DOWNLOAD_DIR/failure-$platform"
-artifact_base="${BASE_URL}/failure-${version}-${platform}"
+artifact_base="${BASE_URL}/adevgrok-${version}-${platform}"
 
 if [ "$os" = "windows" ]; then
     binary_path="${binary_path}.exe"

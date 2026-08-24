@@ -3,24 +3,32 @@
 <img src="docs/media/social-preview.png" alt="Failure Build — the terminal coding agent that isn't afraid to say it. Bring failure into your terminal." width="100%">
 
 <h1>
-  Failure Build (<code>failure</code>)
+  ADEVGrok (<code>adevgrok</code>)
 </h1>
 
-[![Release](https://github.com/failure-fail/failure-build/actions/workflows/release.yml/badge.svg)](https://github.com/failure-fail/failure-build/actions/workflows/release.yml)
+[![Release](https://github.com/Asif2902/grok-adev-support/actions/workflows/release.yml/badge.svg)](https://github.com/Asif2902/grok-adev-support/actions/workflows/release.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-red.svg)](LICENSE)
 [![Built with Rust](https://img.shields.io/badge/built%20with-Rust-red.svg)](https://www.rust-lang.org)
 
-**Failure Build** is a terminal-based AI coding agent, forked from xAI's
-open-sourced Grok Build. It runs as a full-screen TUI that understands your
+**ADEVGrok** is an unofficial distribution of a terminal-based AI coding
+agent, based on xAI's open-sourced Grok Build (via the Failure Build fork).
+It runs as a full-screen TUI that understands your
 codebase, edits files, executes shell commands, searches the web, drives a
 real browser, runs structured git operations (status, diff, log, commit),
 and manages long-running tasks — interactively, headlessly for
-scripting/CI, or embedded in editors via the Agent Client Protocol (ACP). Unlike upstream Grok Build, Failure Build is bring-your-own-provider:
+scripting/CI, or embedded in editors via the Agent Client Protocol (ACP). It is bring-your-own-provider:
 x.ai's Grok models, OpenAI, Anthropic, Ollama, or any custom
 OpenAI-compatible endpoint — configurable via CLI flags, the `/provider`
 slash command, or `config.toml`, with the full model catalog from every
 configured provider merged in automatically. It can also serve itself to
 remote MCP clients (like Claude) via the built-in `/mcp start` bridge.
+
+> **ADEVGrok is an unofficial Android ARM64 distribution based on the
+> open-source Grok Build project. It is not affiliated with or endorsed by
+> xAI.** The packaged program is functionally unchanged from the upstream
+> open-source code; only packaging, naming, and distribution differ. See
+> [`LICENSE`](LICENSE) and [`THIRD-PARTY-NOTICES`](THIRD-PARTY-NOTICES)
+> for attribution.
 
 [Installing the released binary](#installing-the-released-binary) ·
 [Building from source](#building-from-source) ·
@@ -33,35 +41,55 @@ remote MCP clients (like Claude) via the built-in `/mcp start` bridge.
 
 ![Failure Build welcome screen](docs/media/welcome-demo.gif)
 
-This repository contains the Rust source for the `failure` CLI/TUI and its
+This repository contains the Rust source for the CLI/TUI agent and its
 agent runtime, forked from the `SOURCE_REV` monorepo commit of xAI's Grok
-Build recorded at the repository root.
+Build recorded at the repository root. The user-facing command is
+`adevgrok`; internal crate and binary names retain their upstream
+identifiers.
 
 </div>
 
 ---
 
-## Installing the released binary
+## Installing
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/failure-fail/failure-build/main/crates/codegen/xai-grok-pager/scripts/install.sh | bash
+npm install -g adevgrok
 ```
 
-Or via npm:
+Then launch:
 
 ```sh
-npm i -g @failure-build/failure
+adevgrok
+```
+
+The npm package ships no binaries — on install it downloads the right
+prebuilt binary from this repo's [GitHub Releases](https://github.com/Asif2902/grok-adev-support/releases)
+(including the native **Android ARM64** build for Termux), verifies its
+sha256 checksum, and installs it to `~/.adevgrok/bin`. See the
+[package README](crates/codegen/xai-grok-pager/npm/adevgrok/README.md)
+for details, Android/Termux walkthrough, minimum supported Android version
+(**7.0**, NDK API level 24), and uninstall instructions:
+
+```sh
+npm uninstall -g adevgrok
+```
+
+Alternatively, install a release binary directly:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/Asif2902/grok-adev-support/main/crates/codegen/xai-grok-pager/scripts/install.sh | bash
 ```
 
 On Windows (PowerShell):
 
 ```powershell
-irm https://raw.githubusercontent.com/failure-fail/failure-build/main/crates/codegen/xai-grok-pager/scripts/install.ps1 | iex
+irm https://raw.githubusercontent.com/Asif2902/grok-adev-support/main/crates/codegen/xai-grok-pager/scripts/install.ps1 | iex
 ```
 
-Both installers pull binaries from this repo's
-[GitHub Releases](https://github.com/failure-fail/failure-build/releases),
-built by `.github/workflows/release.yml` for linux-x86_64/arm64,
+Both installers pull binaries from this repo's releases,
+built by `.github/workflows/release.yml` as
+`adevgrok-<version>-<platform>` assets for linux-x86_64/arm64,
 macos-aarch64 (Apple Silicon), windows-x86_64, and android-aarch64. macOS
 Intel (x86_64) isn't built — GitHub no longer reliably provisions hosted
 Intel Mac runners — so Intel Mac users should fall back to
@@ -69,9 +97,9 @@ Intel Mac runners — so Intel Mac users should fall back to
 
 **Android** has no general-purpose terminal, so there's no standalone
 `.apk` — instead, the android-aarch64 build runs inside
-[Termux](https://termux.dev/), which provides one. See the npm package
-[README](crates/codegen/xai-grok-pager/npm/failure/README.md#android-via-termux)
-for the install steps.
+[Termux](https://termux.dev/), which provides one. On Termux just run
+`npm install -g adevgrok`; for the manual download steps see
+[`INSTALL.md`](INSTALL.md).
 
 For copy-pasteable install commands for every platform (including the full
 Android/Termux walkthrough and custom-provider setup), see
@@ -105,7 +133,7 @@ cargo check -p xai-grok-pager-bin            # fast validation
 ```
 
 The binary artifact is named `xai-grok-pager`; official installs ship it as
-`failure`. On first launch, pick a provider (x.ai, OpenAI, Anthropic,
+`adevgrok`. On first launch, pick a provider (x.ai, OpenAI, Anthropic,
 Ollama, or a custom endpoint) — see the
 [authentication guide](crates/codegen/xai-grok-pager/docs/user-guide/02-authentication.md).
 
@@ -116,7 +144,7 @@ RSS feed hand-curated per commit (not autogenerated). Subscribe via the raw
 URL:
 
 ```text
-https://raw.githubusercontent.com/failure-fail/failure-build/main/docs/feed.xml
+https://raw.githubusercontent.com/Asif2902/grok-adev-support/main/docs/feed.xml
 ```
 
 ## Documentation

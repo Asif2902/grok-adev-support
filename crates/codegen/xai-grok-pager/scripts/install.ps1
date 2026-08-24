@@ -1,14 +1,14 @@
 #
-# Failure CLI installer for PowerShell — https://raw.githubusercontent.com/failure-fail/failure-build/main/crates/codegen/xai-grok-pager/scripts/install.ps1
+# Failure CLI installer for PowerShell — https://raw.githubusercontent.com/Asif2902/grok-adev-support/main/crates/codegen/xai-grok-pager/scripts/install.ps1
 #
 # Auth: FAILURE_DEPLOYMENT_KEY env var (takes precedence) or ~/.failure/auth.json from `failure login`.
 # Env: FAILURE_CHANNEL (stable|alpha|enterprise, default: stable), FAILURE_BIN_DIR, FAILURE_PROXY_URL
 #
 # Usage:
-#   irm https://raw.githubusercontent.com/failure-fail/failure-build/main/crates/codegen/xai-grok-pager/scripts/install.ps1 | iex
-#   & ([scriptblock]::Create((irm https://raw.githubusercontent.com/failure-fail/failure-build/main/crates/codegen/xai-grok-pager/scripts/install.ps1))) -Version 0.1.42
-#   $env:FAILURE_VERSION="0.1.42"; irm https://raw.githubusercontent.com/failure-fail/failure-build/main/crates/codegen/xai-grok-pager/scripts/install.ps1 | iex
-#   $env:FAILURE_DEPLOYMENT_KEY="<key>"; irm https://raw.githubusercontent.com/failure-fail/failure-build/main/crates/codegen/xai-grok-pager/scripts/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/Asif2902/grok-adev-support/main/crates/codegen/xai-grok-pager/scripts/install.ps1 | iex
+#   & ([scriptblock]::Create((irm https://raw.githubusercontent.com/Asif2902/grok-adev-support/main/crates/codegen/xai-grok-pager/scripts/install.ps1))) -Version 0.1.42
+#   $env:FAILURE_VERSION="0.1.42"; irm https://raw.githubusercontent.com/Asif2902/grok-adev-support/main/crates/codegen/xai-grok-pager/scripts/install.ps1 | iex
+#   $env:FAILURE_DEPLOYMENT_KEY="<key>"; irm https://raw.githubusercontent.com/Asif2902/grok-adev-support/main/crates/codegen/xai-grok-pager/scripts/install.ps1 | iex
 #
 
 param(
@@ -31,7 +31,7 @@ if (-not $Version -and $env:FAILURE_VERSION) {
 
 # This script is Windows-only. PS 5.1 has no Platform property and only runs on Windows.
 if ($PSVersionTable.Platform -and $PSVersionTable.Platform -ne 'Win32NT') {
-    Write-Error "This installer is for Windows. On macOS/Linux, use: curl -fsSL https://raw.githubusercontent.com/failure-fail/failure-build/main/crates/codegen/xai-grok-pager/scripts/install.sh | bash"
+    Write-Error "This installer is for Windows. On macOS/Linux, use: curl -fsSL https://raw.githubusercontent.com/Asif2902/grok-adev-support/main/crates/codegen/xai-grok-pager/scripts/install.sh | bash"
     exit 1
 }
 
@@ -151,7 +151,7 @@ $platform = "windows-$arch"
 # is a stable GitHub-hosted redirect to whatever release is currently marked
 # "latest", so it works as both the channel-pointer host and the binary host
 # without any release-specific URL here.
-$BaseUrl = 'https://github.com/failure-fail/failure-build/releases/latest/download'
+$BaseUrl = 'https://github.com/Asif2902/grok-adev-support/releases/latest/download'
 $DownloadDir = Join-Path $GrokDir 'downloads'
 $BinDir = if ($env:FAILURE_BIN_DIR) { $env:FAILURE_BIN_DIR } else { Join-Path $GrokDir 'bin' }
 
@@ -182,7 +182,7 @@ if ($AuthSource) {
 # --- Download binary ---
 
 $binaryPath = Join-Path $DownloadDir "grok-$platform.exe"
-$artifactBase = "$BaseUrl/grok-$resolvedVersion-$platform"
+$artifactBase = "$BaseUrl/adevgrok-$resolvedVersion-$platform"
 
 $downloaded = $false
 foreach ($url in @("$artifactBase.exe", $artifactBase)) {

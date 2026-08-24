@@ -1,9 +1,15 @@
 name: Release
 
-# Builds the `failure` binary for every platform install.sh/install.ps1 know
-# how to fetch, then publishes them as a GitHub Release. install.sh/.ps1
-# resolve binaries via `releases/latest/download/<asset>`, so this workflow
-# is what makes that URL resolve to something real.
+# Builds the `xai-grok-pager` binary for every platform the installers and
+# the `adevgrok` npm package know how to fetch, then publishes them as a
+# GitHub Release. Assets are staged as `adevgrok-<version>-<platform>` (plus
+# a `<asset>.sha256` checksum each) — that exact naming is what
+#
+#   * crates/codegen/xai-grok-pager/scripts/install.sh|.ps1 resolve via
+#     `releases/latest/download/<asset>`, and
+#   * the `adevgrok` npm postinstall resolves via the GitHub API / pinned URL,
+#
+# so this workflow is what makes those URLs resolve to something real.
 #
 # Trigger by pushing a tag like `v0.1.220-alpha.4` (the `v` is stripped to
 # get the version used in asset names / the channel-pointer files), or run
@@ -125,25 +131,25 @@ jobs:
         shell: bash
         run: |
           mkdir -p dist
-          cp target/release/xai-grok-pager "dist/failure-${{ matrix.platform }}"
+          cp target/release/xai-grok-pager "dist/adevgrok-${{ matrix.platform }}"
 
       - name: Stage artifact (Android)
         if: matrix.android
         shell: bash
         run: |
           mkdir -p dist
-          cp target/aarch64-linux-android/release/xai-grok-pager "dist/failure-${{ matrix.platform }}"
+          cp target/aarch64-linux-android/release/xai-grok-pager "dist/adevgrok-${{ matrix.platform }}"
 
       - name: Stage artifact (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path dist | Out-Null
-          Copy-Item target/release/xai-grok-pager.exe "dist/failure-${{ matrix.platform }}.exe"
+          Copy-Item target/release/xai-grok-pager.exe "dist/adevgrok-${{ matrix.platform }}.exe"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: failure-${{ matrix.platform }}
+          name: adevgrok-${{ matrix.platform }}
           path: dist/*
           if-no-files-found: error
 
@@ -173,7 +179,7 @@ jobs:
           path: staging
           merge-multiple: true
 
-      - name: Rename assets to failure-<version>-<platform> and write channel pointers
+      - name: Rename assets to adevgrok-<version>-<platform>, write channel pointers + sha256 checksums
         shell: bash
         run: |
           set -e
@@ -181,11 +187,15 @@ jobs:
           mkdir -p dist
           for f in staging/*; do
             name="$(basename "$f")"
-            # name is "failure-<platform>" or "failure-<platform>.exe"
-            mv "$f" "dist/${name/failure-/failure-${version}-}"
+            # name is "adevgrok-<platform>" or "adevgrok-<platform>.exe"
+            mv "$f" "dist/${name/adevgrok-/adevgrok-${version}-}"
           done
           echo -n "$version" > dist/stable
           echo -n "$version" > dist/alpha
+          cd dist
+          for f in adevgrok-*; do
+            sha256sum "$f" > "$f.sha256"
+          done
 
       - name: Create release
         uses: softprops/action-gh-release@v2

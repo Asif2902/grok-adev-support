@@ -1,0 +1,51 @@
+#!/usr/bin/env node
+'use strict';
+
+// ADEVGrok trampoline: launches the binary installed under ~/.adevgrok/bin.
+// If the binary is missing (e.g. postinstall was skipped or failed), it
+// self-heals by running the same download+verify installer, then execs the
+// binary with all arguments passed through.
+
+const { spawn } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+
+const PKG_NAME = 'adevgrok';
+const IS_WINDOWS = process.platform === 'win32';
+const EXE = IS_WINDOWS ? '.exe' : '';
+const HOME = process.env.ADEVGROK_HOME || path.join(os.homedir(), '.adevgrok');
+const CANONICAL_PATH = path.join(HOME, 'bin', `${PKG_NAME}${EXE}`);
+
+async function resolveBinary() {
+    if (fs.existsSync(CANONICAL_PATH)) return CANONICAL_PATH;
+    console.log(`${PKG_NAME}: binary not found; downloading...`);
+    const { install } = require('./postinstall.js');
+    const installed = await install({ quiet: true });
+    if (!installed) {
+        console.error(`${PKG_NAME}: could not install the binary. See https://github.com/Asif2902/grok-adev-support#readme`);
+        process.exit(1);
+    }
+    return installed;
+}
+
+(async () => {
+    const execPath = await resolveBinary();
+    const child = spawn(execPath, process.argv.slice(2), {
+        stdio: 'inherit',
+        env: {
+            ...process.env,
+            // Tells the binary's built-in auto-updater to stand down; updates
+            // come from `npm update -g adevgrok` instead.
+            FAILURE_MANAGED_BY_NPM: '1',
+        },
+    });
+    child.on('exit', (code, signal) => {
+        if (signal) process.kill(process.pid, signal);
+        else process.exit(code ?? 0);
+    });
+    child.on('error', (error) => {
+        console.error(`${PKG_NAME}: failed to launch ${execPath}: ${error.message}`);
+        process.exit(1);
+    });
+})();

@@ -1,0 +1,41 @@
+{
+    "name": "adevgrok",
+    "version": "0.1.220-alpha.4",
+    "description": "ADEVGrok - unofficial Android ARM64 distribution of Grok Build: terminal AI coding agent (bring your own provider)",
+    "license": "Apache-2.0",
+    "author": "Asif2902",
+    "homepage": "https://github.com/Asif2902/grok-adev-support#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Asif2902/grok-adev-support.git"
+    },
+    "bugs": "https://github.com/Asif2902/grok-adev-support/issues",
+    "bin": {
+        "adevgrok": "bin/adevgrok"
+    },
+    "files": [
+        "bin/",
+        "NOTICES.md",
+        "THIRD_PARTY_NOTICES.md",
+        "README.md"
+    ],
+    "scripts": {
+        "postinstall": "node bin/postinstall.js || echo adevgrok: download skipped - will retry on first launch"
+    },
+    "engines": {
+        "node": ">=18"
+    },
+    "keywords": [
+        "grok",
+        "ai",
+        "agent",
+        "terminal",
+        "tui",
+        "android",
+        "termux",
+        "coding-assistant"
+    ],
+    "publishConfig": {
+        "access": "public"
+    }
+}
