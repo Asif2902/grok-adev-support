@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/media/social-preview.png" alt="ADEVGrok — terminal AI coding agent (unofficial Grok Build distribution)." width="100%">
+<img src="docs/media/docs/media/social-preview.png" alt="ADEVGrok — terminal AI coding agent (unofficial Grok Build distribution)." width="100%">
 
 <h1>
   ADEVGrok (<code>adevgrok</code>)
