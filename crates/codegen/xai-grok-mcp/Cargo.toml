@@ -64,6 +64,22 @@ xai-tool-types = { workspace = true }
 [target.'cfg(unix)'.dependencies]
 libc = { workspace = true }
 
+# Android TLS hardening (see src/tls.rs): reqwest 0.13's rustls backend
+# defaults to rustls-platform-verifier, which requires a JVM + Android
+# Context over JNI. This CLI runs as a plain shell process on Android, so
+# there we build every reqwest 0.13 client from an explicit rustls
+# ClientConfig rooted at webpki-roots instead. `rustls` here must stay in
+# the same 0.23 family as reqwest 0.13's own rustls — `tls_backend_preconfigured`
+# downcasts to reqwest's exact `rustls::ClientConfig` type.
+[target.'cfg(target_os = "android")'.dependencies]
+rustls = { version = "0.23", default-features = false, features = [
+    "std",
+    "tls12",
+    "aws_lc_rs",
+    "logging",
+] }
+webpki-roots = "1"
+
 [dev-dependencies]
 # Used in servers.rs test `test_same_raw_name_different_servers_no_local_registry_collision`
 # to verify MCP tools register into a `LocalRegistry` without collision.

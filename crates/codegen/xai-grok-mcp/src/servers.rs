@@ -1769,7 +1769,10 @@ async fn discover_and_prepare_auth(
     let adapter =
         crate::credentials::McpCredentialStoreAdapter::new(server_name.to_string(), parsed_url);
 
-    let mut manager = match rmcp::transport::auth::AuthorizationManager::new(server_url).await {
+    // Hardened TLS (android webpki roots instead of rustls-platform-verifier;
+    // see crate::tls) so the manager builds and authenticates from a bare
+    // shell process with no JVM/Android Context.
+    let mut manager = match crate::tls::authorization_manager(server_url).await {
         Ok(m) => m,
         Err(e) => {
             tracing::warn!(server = server_name, %e, "Failed to create OAuth manager");
@@ -3385,21 +3388,18 @@ impl McpClient {
                     }
                 }
                 ensure_figma_user_agent(&mut headers, name, &config.url);
-                let http_client = reqwest::Client::builder()
-                    .default_headers(headers)
-                    .build()
+                let http_client = crate::tls::build_client(|b| b.default_headers(headers))
                     .map_err(|e| {
                         McpError::ClientError(format!("Failed to build HTTP client: {e}"))
                     })?;
                 // `AuthClient::new` wants an owned manager, but ours is shared
                 // (`Arc`) with the OAuth flow; the struct is non_exhaustive, so
                 // build with a throwaway manager and swap in the shared one.
-                let placeholder_manager =
-                    rmcp::transport::auth::AuthorizationManager::new(config.url.as_str())
-                        .await
-                        .map_err(|e| {
-                            McpError::ClientError(format!("Failed to build OAuth client: {e}"))
-                        })?;
+                let placeholder_manager = crate::tls::authorization_manager(config.url.as_str())
+                    .await
+                    .map_err(|e| {
+                        McpError::ClientError(format!("Failed to build OAuth client: {e}"))
+                    })?;
                 let mut auth_client =
                     rmcp::transport::auth::AuthClient::new(http_client, placeholder_manager);
                 auth_client.auth_manager = auth_manager.clone();
@@ -3595,9 +3595,7 @@ impl McpClient {
             }
         }
         ensure_figma_user_agent(&mut headers, server_name, &config.url);
-        let client = reqwest::Client::builder()
-            .default_headers(headers)
-            .build()
+        let client = crate::tls::build_client(|b| b.default_headers(headers))
             .map_err(|e| McpError::ClientError(format!("Failed to build HTTP client: {e}")))?;
         let mcp_http_client =
             crate::mcp_http_client::McpHttpClient::new(client, server_name, warn_budget);

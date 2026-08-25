@@ -25,6 +25,9 @@
 //!    - [`mcp_http_client`] -- backoff wrapper around the HTTP client handed to
 //!      rmcp's streamable-HTTP transport (works around rmcp's zero-backoff SSE
 //!      reconnect loop).
+//!    - [`tls`] -- android-safe TLS construction for every reqwest 0.13 client
+//!      this crate builds (webpki roots instead of rustls-platform-verifier,
+//!      which needs a JNI/Android Context a shell process doesn't have).
 
 pub use rmcp;
 
@@ -35,4 +38,5 @@ pub mod mcp_http_client;
 pub mod oauth;
 pub mod oauth_config;
 pub mod servers;
+mod tls;
 pub mod wire;
