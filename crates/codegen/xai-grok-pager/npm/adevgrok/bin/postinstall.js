@@ -186,6 +186,9 @@ function installBinary(buf, version) {
 
     const versionedPath = path.join(dir, `${PKG_NAME}-${version}${EXE}`);
     if (!fs.existsSync(versionedPath)) {
+        if (!buf || !buf.length) {
+            throw new Error(`missing binary bytes for ${version}`);
+        }
         writeFileAtomic(versionedPath, buf);
     }
     if (!IS_WINDOWS) {
@@ -241,31 +244,34 @@ function writeInstallerMarker() {
 // --- entry point -------------------------------------------------------------
 
 async function install({ quiet = false } = {}) {
-    const IS_WINDOWS = process.platform === 'win32';
-    const EXE = IS_WINDOWS ? '.exe' : '';
-    const canonicalPath = path.join(binDir(), `${PKG_NAME}${EXE}`);
-
-    if (fs.existsSync(canonicalPath)) {
-        if (!quiet) console.log(`${PKG_NAME}: already installed at ${canonicalPath}`);
-        return canonicalPath;
-    }
-
     const target = detectTarget();
     if (!target) {
         unsupportedMessage();
         return null;
     }
 
-    if (!quiet) {
-        console.log(`${PKG_NAME}: downloading ${target} binary from GitHub Releases...`);
-        console.log('(first launch may take a minute depending on connection)');
+    const { url, version } = await resolveAssetUrl(target);
+    const IS_WINDOWS = process.platform === 'win32';
+    const EXE = IS_WINDOWS ? '.exe' : '';
+    const versionedPath = path.join(binDir(), `${PKG_NAME}-${version}${EXE}`);
+
+    // Skip the download only when this exact version is already on disk.
+    // A stale `~/.adevgrok/bin/adevgrok` symlink/copy from an older release
+    // must not block `npm update` from fetching the new GitHub asset.
+    let buf = null;
+    if (!fs.existsSync(versionedPath)) {
+        if (!quiet) {
+            console.log(`${PKG_NAME}: downloading ${target} binary (${version}) from GitHub Releases...`);
+            console.log('(first launch may take a minute depending on connection)');
+        }
+        buf = await downloadAndVerify(url);
+    } else if (!quiet) {
+        console.log(`${PKG_NAME}: ${version} already present at ${versionedPath}`);
     }
 
-    const { url, version } = await resolveAssetUrl(target);
-    const buf = await downloadAndVerify(url);
     const installed = installBinary(buf, version);
     writeInstallerMarker();
-    if (!quiet) console.log(`${PKG_NAME} ${version} installed: ${installed}`);
+    if (!quiet && buf) console.log(`${PKG_NAME} ${version} installed: ${installed}`);
     return installed;
 }
 

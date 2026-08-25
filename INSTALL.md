@@ -135,7 +135,7 @@ chmod +x adevgrok
 
 (Replace `<version>` with the version from the
 [latest release](https://github.com/Asif2902/grok-adev-support/releases/latest),
-e.g. `adevgrok-0.1.220-alpha.4-android-aarch64`.)
+e.g. `adevgrok-0.1.220-alpha.5-android-aarch64`.)
 
 After this first run, launch it again anytime with:
 
