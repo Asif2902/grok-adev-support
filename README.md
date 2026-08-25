@@ -40,7 +40,7 @@ remote MCP clients (like Claude) via the built-in `/mcp start` bridge.
 [Contributing](#contributing) ·
 [License](#license)
 
-![ADEVGrok welcome screen](docs/media/welcome-demo.gif)
+![ADEVGrok welcome screen](docs/media/docs/media/welcome-screen.gif)
 
 This repository contains the Rust source for the CLI/TUI agent and its
 agent runtime, forked from the `SOURCE_REV` monorepo commit of xAI's Grok
