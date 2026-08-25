@@ -561,7 +561,7 @@ async fn run_headless_inner(
             std::thread::spawn(move || {
                 let mut input = String::new();
                 let _ = std::io::stdin().read_line(&mut input);
-                let _ = webbrowser::open(&url_for_open);
+                let _ = crate::util::open_browser::try_open_browser(&url_for_open);
             });
         }
     });

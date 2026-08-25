@@ -38,7 +38,6 @@ tokio = { workspace = true }
 tokio-util = { workspace = true }
 tracing = { workspace = true }
 url = { workspace = true }
-webbrowser = { workspace = true }
 xai-grok-config = { workspace = true }
 
 # For mcp_http_client.rs (rmcp trait signatures). Must match rmcp 2.1's own
@@ -63,6 +62,10 @@ xai-tool-types = { workspace = true }
 
 [target.'cfg(unix)'.dependencies]
 libc = { workspace = true }
+
+# Same Android JNI trap as `xai-grok-shell`: never link webbrowser there.
+[target.'cfg(not(target_os = "android"))'.dependencies]
+webbrowser = { workspace = true }
 
 # Android TLS hardening (see src/tls.rs): reqwest 0.13's rustls backend
 # defaults to rustls-platform-verifier, which requires a JVM + Android

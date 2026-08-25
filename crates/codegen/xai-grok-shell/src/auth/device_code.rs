@@ -395,16 +395,21 @@ async fn prompt_and_poll(
     complete_device_code_login(issuer, client_id, device_code, auth_manager, surface).await
 }
 
-/// Open `url` in the browser off-thread: `webbrowser::open` is synchronous and
+/// Open `url` in the browser off-thread: the launcher is synchronous and
 /// would stall the single-threaded TUI loop. Returns `true` on success so the
 /// caller can decide how to notify the user (eprintln on CLI, nothing on TUI
 /// where the URL is already rendered in the widget).
+///
+/// Does not call `webbrowser::open` on Android — that panics without a JVM
+/// Context (see [`crate::util::open_browser`]).
 async fn open_browser_detached(url: &str) -> bool {
     let url = url.to_owned();
-    match tokio::task::spawn_blocking(move || webbrowser::open(&url)).await {
-        Ok(Ok(())) => true,
-        Ok(Err(e)) => {
-            tracing::info!(error = %e, "device auth: could not open browser automatically");
+    match tokio::task::spawn_blocking(move || crate::util::open_browser::try_open_browser(&url))
+        .await
+    {
+        Ok(true) => true,
+        Ok(false) => {
+            tracing::info!("device auth: could not open browser automatically");
             false
         }
         Err(e) => {

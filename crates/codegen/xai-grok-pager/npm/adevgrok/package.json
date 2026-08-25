@@ -1,6 +1,6 @@
 {
     "name": "adevgrok",
-    "version": "0.1.220-alpha.5",
+    "version": "0.1.220-alpha.6",
     "description": "ADEVGrok - unofficial Android ARM64 distribution of Grok Build: terminal AI coding agent (bring your own provider)",
     "license": "Apache-2.0",
     "author": "Asif2902",

@@ -1,6 +1,7 @@
 pub mod config;
 pub mod grok_auth_credentials;
 pub mod hooks;
+pub(crate) mod open_browser;
 
 // The foundation utilities live in `xai-grok-shell-base` (upstream of this
 // crate so they build in parallel). Re-exported at the original paths so

@@ -78,7 +78,6 @@ uuid = { workspace = true, features = ["v4", "v5", "v7"] }
 xai-acp-lib = { workspace = true }
 axum = { workspace = true, features = ["ws", "multipart"] }
 backon = { workspace = true }
-webbrowser = { workspace = true }
 tokio-tungstenite = { workspace = true, features = ["rustls-tls-native-roots"] }
 tokio-rustls = { version = "0.26", default-features = false, features = [
     "ring",
@@ -174,6 +173,12 @@ xai-tool-types = { workspace = true }
 [target.'cfg(unix)'.dependencies]
 libc = { workspace = true }
 nix = { workspace = true }
+
+# webbrowser's Android backend panics via ndk-context when there is no
+# JVM Activity (Termux / Mobile IDE). Login/OAuth open URLs through
+# `util::open_browser` instead, which never calls that crate on Android.
+[target.'cfg(not(target_os = "android"))'.dependencies]
+webbrowser = { workspace = true }
 
 [target.'cfg(windows)'.dependencies]
 siphasher = { workspace = true }

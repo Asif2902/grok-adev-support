@@ -350,10 +350,13 @@ async fn run_browser_auth_flow(
 
     // 4. Open browser for user consent.
     tracing::info!(server = server_name, "Opening browser for OAuth consent");
-    if let Err(e) = webbrowser::open(&auth_url) {
+    if !try_open_browser(&auth_url) {
         // eprintln! corrupts the TUI alternate screen (in-process, fd 2).
         // TODO: surface auth URL via ACP notification instead.
-        tracing::warn!(%e, url = %auth_url, "Failed to open browser for MCP OAuth; user must visit URL manually");
+        tracing::warn!(
+            url = %auth_url,
+            "Failed to open browser for MCP OAuth; user must visit URL manually"
+        );
     }
 
     // 5. Wait for the OAuth callback OR for tokens to appear on disk.
@@ -519,4 +522,31 @@ fn start_oauth_callback_server(
     });
 
     (server, rx)
+}
+
+/// Open a URL without calling `webbrowser::open` on Android.
+///
+/// That crate's Android backend panics via `ndk-context` when there is no
+/// JVM Activity (Termux / Mobile IDE). See `xai_grok_shell::util::open_browser`.
+fn try_open_browser(url: &str) -> bool {
+    #[cfg(target_os = "android")]
+    {
+        use std::process::Command;
+        for argv in [
+            vec!["termux-open-url", url],
+            vec!["xdg-open", url],
+            vec!["am", "start", "-a", "android.intent.action.VIEW", "-d", url],
+        ] {
+            let mut cmd = Command::new(argv[0]);
+            cmd.args(&argv[1..]);
+            if matches!(cmd.status(), Ok(status) if status.success()) {
+                return true;
+            }
+        }
+        false
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        webbrowser::open(url).is_ok()
+    }
 }

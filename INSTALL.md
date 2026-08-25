@@ -135,7 +135,7 @@ chmod +x adevgrok
 
 (Replace `<version>` with the version from the
 [latest release](https://github.com/Asif2902/grok-adev-support/releases/latest),
-e.g. `adevgrok-0.1.220-alpha.5-android-aarch64`.)
+e.g. `adevgrok-0.1.220-alpha.6-android-aarch64`.)
 
 After this first run, launch it again anytime with:
 
@@ -154,6 +154,11 @@ After this first run, launch it again anytime with:
   and run fine, they just don't do anything yet. Real Termux support for
   these (via `termux-clipboard-get/set` and `termux-microphone-record`, from
   the separate Termux:API app) isn't wired up.
+- **Login does not auto-open a browser via JNI** — `webbrowser::open` panics
+  in a Termux/Mobile IDE process (no Android Activity). Device-code login
+  prints the URL instead, and will try `termux-open-url` / `am start` if
+  those exist. Open the printed `https://accounts.x.ai/oauth2/device?...`
+  URL on any device, then return to the CLI.
 - If a download drops mid-transfer over a flaky connection, delete the
   partial file and retry:
   ```sh
