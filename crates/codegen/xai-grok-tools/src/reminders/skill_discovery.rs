@@ -131,7 +131,7 @@ impl Reminder for SkillDiscoveryReminder {
         // SKILL.md file, register it immediately. The normal upward-walk
         // discovery cannot find these because it looks for `.failure/skills/`
         // sub-directories in *ancestor* dirs, and user-scope skills
-        // (~/.failure/) are outside the git root so the walk breaks early.
+        // (~/.adevgrok/) are outside the git root so the walk breaks early.
         if target_path.file_name().is_some_and(|n| n == "SKILL.md")
             && Self::is_in_supported_skills_dir(target_path)
         {

@@ -9,14 +9,14 @@ Sandbox mode is off by default.
 ## Quick Start
 
 ```bash
-# Run with workspace sandbox (read everywhere, write to CWD + temp dirs + ~/.failure/)
-failure --sandbox workspace
+# Run with workspace sandbox (read everywhere, write to CWD + temp dirs + ~/.adevgrok/)
+adevgrok --sandbox workspace
 
-# Read-only mode (read everywhere, write only to ~/.failure/ + temp dirs)
-failure --sandbox read-only
+# Read-only mode (read everywhere, write only to ~/.adevgrok/ + temp dirs)
+adevgrok --sandbox read-only
 
-# Most restrictive profile (read CWD + system paths, write CWD + temp dirs + ~/.failure/, no child network)
-failure --sandbox strict
+# Most restrictive profile (read CWD + system paths, write CWD + temp dirs + ~/.adevgrok/, no child network)
+adevgrok --sandbox strict
 ```
 
 ---
@@ -26,10 +26,10 @@ failure --sandbox strict
 | Profile               | FS Read            | FS Write                                       | Child Network | Use Case                          |
 | --------------------- | ------------------ | ---------------------------------------------- | ------------- | --------------------------------- |
 | `off` (default)       | Unrestricted       | Unrestricted                                   | Unrestricted  | No sandbox                        |
-| `workspace`           | Everywhere         | CWD + `~/.failure/` + `/tmp` + `/var/tmp`         | Allowed       | Normal development                |
+| `workspace`           | Everywhere         | CWD + `~/.adevgrok/` + `/tmp` + `/var/tmp`         | Allowed       | Normal development                |
 | `devbox`              | Everywhere         | All top-level dirs except `/data`              | Allowed       | Disposable dev VMs                |
-| `read-only`           | Everywhere         | `~/.failure/` + `/tmp` + `/var/tmp`               | Blocked¹      | Exploration, code review          |
-| `strict`              | CWD + system paths | CWD + `~/.failure/` + `/tmp` + `/var/tmp`         | Blocked¹      | Untrusted code                    |
+| `read-only`           | Everywhere         | `~/.adevgrok/` + `/tmp` + `/var/tmp`               | Blocked¹      | Exploration, code review          |
+| `strict`              | CWD + system paths | CWD + `~/.adevgrok/` + `/tmp` + `/var/tmp`         | Blocked¹      | Untrusted code                    |
 
 ¹ Child-network blocking is enforced on **Linux only** (via seccomp). On macOS it is a no-op — these profiles do not restrict child-process network there.
 
@@ -37,19 +37,19 @@ To block specific files (e.g. `.env` or credential paths) on top of a profile, d
 
 ### Profile Details
 
-**workspace** -- The recommended profile for everyday development. The agent can read any file on the system (for understanding dependencies, system libraries, etc.) but can only write to the current working directory, `~/.failure/`, and temp directories (`/tmp`, `/var/tmp`, plus the macOS temp dirs). Network access is allowed for tools like `web_search` and MCP servers.
+**workspace** -- The recommended profile for everyday development. The agent can read any file on the system (for understanding dependencies, system libraries, etc.) but can only write to the current working directory, `~/.adevgrok/`, and temp directories (`/tmp`, `/var/tmp`, plus the macOS temp dirs). Network access is allowed for tools like `web_search` and MCP servers.
 
 **devbox** -- A reserved built-in profile for disposable development VMs. The agent can read everywhere and write to every top-level directory except `/data` and the virtual filesystems (`/proc`, `/sys`, `/dev`), including the home directory. Network access is allowed. `--sandbox devbox` runs the built-in profile, which shadows any `[profiles.devbox]` you define in `sandbox.toml`.
 
-**read-only** -- Use when you want the agent to analyze code without modifying your project files. The agent can read everything but can only write to `~/.failure/` (needed for session persistence) and temp directories. Child-process network access is blocked on Linux (no-op on macOS).
+**read-only** -- Use when you want the agent to analyze code without modifying your project files. The agent can read everything but can only write to `~/.adevgrok/` (needed for session persistence) and temp directories. Child-process network access is blocked on Linux (no-op on macOS).
 
-**strict** -- The most restrictive profile, for reviewing untrusted code. The agent can only read files within the current working directory and essential system paths. Writes are limited to CWD, `~/.failure/`, and temp directories. Child-process network access is blocked on Linux (no-op on macOS).
+**strict** -- The most restrictive profile, for reviewing untrusted code. The agent can only read files within the current working directory and essential system paths. Writes are limited to CWD, `~/.adevgrok/`, and temp directories. Child-process network access is blocked on Linux (no-op on macOS).
 
 ---
 
 ## Custom Profiles
 
-Create custom sandbox profiles in `~/.failure/sandbox.toml` (global) or `.failure/sandbox.toml` (per-project):
+Create custom sandbox profiles in `~/.adevgrok/sandbox.toml` (global) or `.adevgrok/sandbox.toml` (per-project):
 
 ```toml
 [profiles.project]
@@ -70,12 +70,12 @@ deny = ["/data/shared-secrets", "**/.env", "**/*.pem"]
 Use the custom profile:
 
 ```bash
-failure --sandbox project
+adevgrok --sandbox project
 ```
 
 A custom profile can't reuse a built-in name. `--sandbox devbox` always runs the built-in `devbox` profile, shadowing any `[profiles.devbox]` you define.
 
-When the global and per-project files define the same custom profile name, the user-level definition takes precedence and the project definition is ignored. If those two definitions differ, Failure warns about the conflict at startup — on the welcome screen in the TUI, and on stderr for headless runs. Identical duplicate definitions do not produce a warning.
+When the global and per-project files define the same custom profile name, the user-level definition takes precedence and the project definition is ignored. If those two definitions differ, ADEVGrok warns about the conflict at startup — on the welcome screen in the TUI, and on stderr for headless runs. Identical duplicate definitions do not produce a warning.
 
 ### Custom Profile Fields
 
@@ -92,7 +92,7 @@ When the global and per-project files define the same custom profile name, the u
 > bind-over on Linux, so a denied path can neither be read (via `bash`, `grep`, or
 > subagents) nor relocated out of the deny set and read elsewhere (the
 > `mv secret x && cat x` bypass is closed). On **Linux**, read-deny requires
-> `bubblewrap`: if it is missing (or any single deny path can't be bound), Failure
+> `bubblewrap`: if it is missing (or any single deny path can't be bound), ADEVGrok
 > refuses to start rather than run with denied paths exposed (`devbox`, which only
 > write-denies `/data`, still falls back to Landlock). Writes to paths **not** in
 > `deny` are controlled by what you grant in `read_write`.
@@ -112,7 +112,7 @@ When the global and per-project files define the same custom profile name, the u
 > Brace alternation (`{a,b}`), backslash-escapes, and the unusual class forms
 > `[]…]` (literal `]` first) and POSIX `[[:…:]]` are **not** supported, so the two
 > platforms can never interpret a glob differently. A glob using an unsupported
-> metacharacter, or one that is malformed, makes Failure **refuse to start** (fail
+> metacharacter, or one that is malformed, makes ADEVGrok **refuse to start** (fail
 > closed) on **both** platforms — write `*.pem` and `*.key` as separate entries
 > rather than `*.{pem,key}`.
 >
@@ -121,19 +121,19 @@ When the global and per-project files define the same custom profile name, the u
 > matching. Enforcement otherwise differs by platform:
 >
 > - **macOS is airtight:** each glob becomes a Seatbelt regex applied at runtime,
->   so matching files are denied **even if created after Failure starts**.
+>   so matching files are denied **even if created after ADEVGrok starts**.
 > - **Linux is best-effort:** a mount namespace can't glob at runtime, so each
 >   glob is expanded to the files that **exist at launch** and those are bound
 >   over. Files created **later** that match a glob are **not** covered — name
 >   exact paths for anything that must be airtight on Linux. A glob that matches
->   too many files, or whose tree is too deep/broad to walk, makes Failure **refuse
+>   too many files, or whose tree is too deep/broad to walk, makes ADEVGrok **refuse
 >   to start** rather than under-enforce.
 
 ---
 
 ## How It Works
 
-The sandbox is applied to the **entire failure process** at startup using kernel primitives -- not per-command wrapping. This means all tool operations are covered:
+The sandbox is applied to the **entire adevgrok process** at startup using kernel primitives -- not per-command wrapping. This means all tool operations are covered:
 
 - `read_file`, `search_replace`, `list_dir` -- restricted by Landlock/Seatbelt in-process
 - `bash` commands, `grep` (rg) -- child processes inherit FS restrictions automatically
@@ -146,8 +146,8 @@ The sandbox is **irreversible** once applied. The agent cannot relax restriction
 ## Resuming Sessions
 
 The profile a session was started with is saved with the session and is **fixed
-for the life of the session**. When you resume it (`failure --resume <id>`,
-`failure --continue`, or `failure -r`), Failure restores that same profile automatically —
+for the life of the session**. When you resume it (`adevgrok --resume <id>`,
+`adevgrok --continue`, or `adevgrok -r`), ADEVGrok restores that same profile automatically —
 so a session started with `--sandbox workspace` won't silently come back under a
 stricter default and break commands that previously worked.
 
@@ -176,7 +176,7 @@ Profile resolution order for a **new** session:
 | Linux    | Landlock  | Kernel 5.13 or later   |
 | macOS    | Seatbelt  | macOS (all versions)   |
 
-If the sandbox cannot be applied (e.g., unsupported kernel, missing entitlements), Failure logs a warning and continues without enforcement. The exception is an explicitly-requested **custom profile**: on **both macOS and Linux**, if it cannot be applied (unknown profile, malformed `sandbox.toml`, or — on Linux — `bubblewrap` unavailable for a non-empty `deny`), Failure refuses to start rather than run with its denied paths exposed.
+If the sandbox cannot be applied (e.g., unsupported kernel, missing entitlements), ADEVGrok logs a warning and continues without enforcement. The exception is an explicitly-requested **custom profile**: on **both macOS and Linux**, if it cannot be applied (unknown profile, malformed `sandbox.toml`, or — on Linux — `bubblewrap` unavailable for a non-empty `deny`), ADEVGrok refuses to start rather than run with its denied paths exposed.
 
 ---
 
@@ -193,7 +193,7 @@ In practice, on Linux this means:
 
 ## Event Logging
 
-Sandbox events are logged to `~/.failure/sandbox-events.jsonl` for debugging. Events include:
+Sandbox events are logged to `~/.adevgrok/sandbox-events.jsonl` for debugging. Events include:
 
 - Profile applied (which profile, timestamp)
 - Violations (attempted access to denied paths)

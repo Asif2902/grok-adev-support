@@ -334,7 +334,7 @@ fn classify_field(value: &Value) -> FieldShape {
 
 /// Convert a single `Value` to a `ContentBlock`.
 ///
-/// Uses the cheap [`try_parse_block`] check first; on failure wraps
+/// Uses the cheap [`try_parse_block`] check first; on adevgrok wraps
 /// the value as `ContentBlock::Text`.  Strings are used verbatim (no
 /// extra JSON quoting); all other types go through `Value::to_string`.
 fn value_to_block(value: &Value) -> ContentBlock {

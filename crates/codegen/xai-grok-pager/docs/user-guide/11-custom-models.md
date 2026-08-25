@@ -1,17 +1,17 @@
 # Custom Models
 
-Failure connects to custom model endpoints for alternative providers, self-hosted models, and overriding built-in settings. This guide explains how to select models, configure endpoints, and integrate third-party providers.
+ADEVGrok connects to custom model endpoints for alternative providers, self-hosted models, and overriding built-in settings. This guide explains how to select models, configure endpoints, and integrate third-party providers.
 
 ---
 
 ## Default Models
 
-By default, Failure uses models hosted by x.ai, and new sessions start with `grok-build`. Default models require no configuration. Authenticate with `failure login` or an API key, then start a session.
+By default, ADEVGrok uses models hosted by x.ai, and new sessions start with `grok-build`. Default models require no configuration. Authenticate with `adevgrok login` or an API key, then start a session.
 
 List all available models:
 
 ```bash
-failure models
+adevgrok models
 ```
 
 ---
@@ -21,7 +21,7 @@ failure models
 ### CLI Flag
 
 ```bash
-failure -p "Hello" -m grok-build
+adevgrok -p "Hello" -m grok-build
 ```
 
 ### Slash Command
@@ -44,7 +44,7 @@ Press `Ctrl+M` from the scrollback pane to open the model picker. It lists all a
 
 ### Config Default
 
-Set a persistent default in `~/.failure/config.toml`:
+Set a persistent default in `~/.adevgrok/config.toml`:
 
 ```toml
 [models]
@@ -55,7 +55,7 @@ default = "grok-build"
 
 ## Supported API Backends
 
-Failure supports three API backends. Set `api_backend` in your `[model.*]` config to choose which protocol the model uses:
+ADEVGrok supports three API backends. Set `api_backend` in your `[model.*]` config to choose which protocol the model uses:
 
 | Value | API | Default |
 |-------|-----|---------|
@@ -63,15 +63,15 @@ Failure supports three API backends. Set `api_backend` in your `[model.*]` confi
 | `"responses"` | OpenAI Responses (`/v1/responses`) | |
 | `"messages"` | Anthropic Messages (`/v1/messages`) | |
 
-When you omit `api_backend`, Failure uses `chat_completions`.
+When you omit `api_backend`, ADEVGrok uses `chat_completions`.
 
-To send provider-specific authentication or version headers -- for example, Anthropic's `x-api-key` -- use the `extra_headers` field described below. Failure sends those headers verbatim with every request to the endpoint.
+To send provider-specific authentication or version headers -- for example, Anthropic's `x-api-key` -- use the `extra_headers` field described below. ADEVGrok sends those headers verbatim with every request to the endpoint.
 
 ---
 
 ## Configuring Custom Models
 
-Add custom model endpoints in `~/.failure/config.toml` under `[model.<name>]` sections:
+Add custom model endpoints in `~/.adevgrok/config.toml` under `[model.<name>]` sections:
 
 ```toml
 [model.my-model]
@@ -91,16 +91,16 @@ extra_headers = { "x-api-key" = "sk-..." } # Extra request headers, sent verbati
 
 ### Credential Resolution
 
-Failure resolves the API key in this order:
+ADEVGrok resolves the API key in this order:
 
 1. The `api_key` field in the model config
 2. The environment variable(s) named by `env_key` — a single string or an array of names. The first set, non-empty value wins (for example `env_key = ["ANTHROPIC_AUTH_TOKEN", "LC_ANTHROPIC_AUTH_TOKEN"]` for SSH `LC_*` forwarding)
-3. Your signed-in session token (from `failure login`), for a model with no `api_key`/`env_key` of its own
-4. The `XAI_API_KEY` environment variable (global fallback; Failure also accepts `FAILURE_CODE_XAI_API_KEY` for backward compatibility)
+3. Your signed-in session token (from `adevgrok login`), for a model with no `api_key`/`env_key` of its own
+4. The `XAI_API_KEY` environment variable (global fallback; ADEVGrok also accepts `FAILURE_CODE_XAI_API_KEY` for backward compatibility)
 
 ### Context Window
 
-The `context_window` value tells Failure when to trigger auto-compaction. When you override a known model, Failure inherits that model's context window. When you define a new model and omit `context_window`, Failure defaults to 200,000 tokens, so set it explicitly to match your provider.
+The `context_window` value tells ADEVGrok when to trigger auto-compaction. When you override a known model, ADEVGrok inherits that model's context window. When you define a new model and omit `context_window`, ADEVGrok defaults to 200,000 tokens, so set it explicitly to match your provider.
 
 ### Global Default Headers
 
@@ -151,10 +151,10 @@ A model referencing a `provider` inherits its `base_url`, `api_key`, `env_key`, 
 ### CLI Flags
 
 ```bash
-failure --provider openai --api-key sk-... --base-url https://api.openai.com/v1
+adevgrok --provider openai --api-key sk-... --base-url https://api.openai.com/v1
 ```
 
-`--base-url` is optional for the built-in presets. `--model` selects which `[model.*]` key the flags apply to; without it, Failure creates an ephemeral `byop` entry for the invocation. This is ephemeral (not persisted) — for a stored provider, use `/provider add` or edit `config.toml` directly.
+`--base-url` is optional for the built-in presets. `--model` selects which `[model.*]` key the flags apply to; without it, ADEVGrok creates an ephemeral `byop` entry for the invocation. This is ephemeral (not persisted) — for a stored provider, use `/provider add` or edit `config.toml` directly.
 
 ### `/provider add` Slash Command
 
@@ -164,7 +164,7 @@ Configure a provider from inside a running session, without hand-editing `config
 /provider add <name> <api-key> [base-url]
 ```
 
-`base-url` is required unless `<name>` is one of the built-in presets. This persists `[provider.<name>]`/`[model.<name>]` to `config.toml` and stores the API key via the same secure, provider-scoped storage `failure login --provider` uses (not written to `config.toml` in plain text). For example:
+`base-url` is required unless `<name>` is one of the built-in presets. This persists `[provider.<name>]`/`[model.<name>]` to `config.toml` and stores the API key via the same secure, provider-scoped storage `adevgrok login --provider` uses (not written to `config.toml` in plain text). For example:
 
 ```
 /provider add acme sk-acme-key https://api.acme.com/v1
@@ -172,7 +172,7 @@ Configure a provider from inside a running session, without hand-editing `config
 
 ### Automatic Model Catalog Refresh
 
-On every launch, Failure fetches the live model list from x.ai **and** from every configured `[provider.*]`'s own `{base_url}/models` endpoint (if it implements one), merging all of them into one catalog — you don't need to hand-list every model your provider offers. If a provider's live fetch fails (network issue, or it simply doesn't expose a `/models` endpoint), any model you defined explicitly in `[model.*]` still appears; only the *additional* models that endpoint would have contributed are missing until the fetch succeeds.
+On every launch, ADEVGrok fetches the live model list from x.ai **and** from every configured `[provider.*]`'s own `{base_url}/models` endpoint (if it implements one), merging all of them into one catalog — you don't need to hand-list every model your provider offers. If a provider's live fetch fails (network issue, or it simply doesn't expose a `/models` endpoint), any model you defined explicitly in `[model.*]` still appears; only the *additional* models that endpoint would have contributed are missing until the fetch succeeds.
 
 ---
 
@@ -182,16 +182,16 @@ You can override specific fields of built-in models without redefining everythin
 
 ```toml
 # Override only the API key for a default model
-[model.failure-build]
+[model.adevgrok-build]
 api_key = "my-api-key"
 
 # Override temperature and add a custom API key
-[model.failure-build]
+[model.adevgrok-build]
 temperature = 0.5
 api_key = "sk-custom"
 ```
 
-When you override a built-in model, Failure starts with the default configuration (including the correct `base_url`), then applies only the fields you specify. Unspecified fields inherit from the default.
+When you override a built-in model, ADEVGrok starts with the default configuration (including the correct `base_url`), then applies only the fields you specify. Unspecified fields inherit from the default.
 
 ### Priority Order
 
@@ -217,7 +217,7 @@ context_window = 200000
 extra_headers = { "x-api-key" = "sk-ant-...", "anthropic-version" = "2023-06-01" }
 ```
 
-The `messages` backend uses the Anthropic Messages protocol. Anthropic authenticates with an `x-api-key` header rather than `Authorization: Bearer`, so pass your key through `extra_headers`, which Failure sends verbatim.
+The `messages` backend uses the Anthropic Messages protocol. Anthropic authenticates with an `x-api-key` header rather than `Authorization: Bearer`, so pass your key through `extra_headers`, which ADEVGrok sends verbatim.
 
 ### OpenAI (Chat Completions)
 
@@ -283,14 +283,14 @@ temperature = 0.8
 
 ## Custom Models Endpoint
 
-Point Failure at a custom OpenAI-compatible `/v1/models` endpoint instead of the default. Use this when your models sit behind a corporate gateway or a self-hosted inference service.
+Point ADEVGrok at a custom OpenAI-compatible `/v1/models` endpoint instead of the default. Use this when your models sit behind a corporate gateway or a self-hosted inference service.
 
 ### Environment Variables
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `FAILURE_MODELS_BASE_URL` | Yes | Base URL for inference. Failure fetches the model list from `{base_url}/models`. |
-| `XAI_API_KEY` | Yes | API key sent as `Authorization: Bearer`. Failure also accepts `FAILURE_CODE_XAI_API_KEY`. |
+| `FAILURE_MODELS_BASE_URL` | Yes | Base URL for inference. ADEVGrok fetches the model list from `{base_url}/models`. |
+| `XAI_API_KEY` | Yes | API key sent as `Authorization: Bearer`. ADEVGrok also accepts `FAILURE_CODE_XAI_API_KEY`. |
 | `FAILURE_MODELS_LIST_URL` | No | Override the model-list URL when it differs from `{base_url}/models`. |
 
 ### Setup
@@ -298,7 +298,7 @@ Point Failure at a custom OpenAI-compatible `/v1/models` endpoint instead of the
 ```bash
 export FAILURE_MODELS_BASE_URL="https://api.acme.com/v1"
 export XAI_API_KEY="xai-..."
-failure
+adevgrok
 ```
 
 ### Config File Alternative
@@ -308,15 +308,15 @@ failure
 models_base_url = "https://api.acme.com/v1"
 
 # Override only the API key for a specific model
-[model.failure-build]
+[model.adevgrok-build]
 api_key = "my-api-key"
 ```
 
-When you use `[endpoints]` with partial model overrides, Failure inherits the `base_url` from the endpoints config, so you do not need to specify it in each `[model.*]` section.
+When you use `[endpoints]` with partial model overrides, ADEVGrok inherits the `base_url` from the endpoints config, so you do not need to specify it in each `[model.*]` section.
 
 ### Auth Behavior
 
-When you set `models_base_url`, Failure uses API key auth (`Authorization: Bearer`) instead of session auth. You do not need `failure login` -- the API key is enough.
+When you set `models_base_url`, ADEVGrok uses API key auth (`Authorization: Bearer`) instead of session auth. You do not need `adevgrok login` -- the API key is enough.
 
 ---
 
@@ -335,7 +335,7 @@ Or via environment variable:
 export FAILURE_WEB_SEARCH_MODEL="grok-4.20-multi-agent"
 ```
 
-If you point web search at a custom model, you also need a `[model.*]` entry so Failure can reach it. Server-side ("backend") web search runs only when the model sets `supports_backend_search = true` (and the build enables backend search); it does not depend on `api_backend`:
+If you point web search at a custom model, you also need a `[model.*]` entry so ADEVGrok can reach it. Server-side ("backend") web search runs only when the model sets `supports_backend_search = true` (and the build enables backend search); it does not depend on `api_backend`:
 
 ```toml
 [models]
@@ -352,13 +352,13 @@ supports_backend_search = true
 
 ```bash
 # List available models (including custom)
-failure models
+adevgrok models
 
 # Use in the TUI via slash command
 /model my-model
 
 # Use in headless mode
-failure -p "Hello" -m my-model
+adevgrok -p "Hello" -m my-model
 
 # Set as default in config.toml:
 [models]
@@ -381,12 +381,12 @@ auth_provider_label = "Acme Corp"
 auth_token_ttl = 3600
 
 [models]
-default = "company-failure"
+default = "company-adevgrok"
 
-[model.company-failure]
+[model.company-adevgrok]
 model = "grok-build"
 base_url = "https://grok-proxy.acme.com/"
-name = "Failure Build Latest (Proxy)"
+name = "ADEVGrok Latest (Proxy)"
 context_window = 128000
 
 [features]
@@ -401,7 +401,7 @@ telemetry = false
 
 ```bash
 # List available models
-failure models
+adevgrok models
 
 # Check config.toml for typos in [model.*] sections
 ```
@@ -418,8 +418,8 @@ curl -s https://api.example.com/v1/models \
 ### Debug Logging
 
 ```bash
-RUST_LOG=debug FAILURE_LOG_FILE=/tmp/failure.log failure
-tail -f /tmp/failure.log
+RUST_LOG=debug FAILURE_LOG_FILE=/tmp/adevgrok.log adevgrok
+tail -f /tmp/adevgrok.log
 ```
 
 Look for log entries containing `model` or `sampling` to trace model selection and API calls.

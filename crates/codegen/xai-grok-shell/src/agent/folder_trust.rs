@@ -49,9 +49,9 @@ use xai_grok_workspace::folder_trust::{
 use crate::session::managed_mcp::mcp_server_name;
 use crate::util::config::{MCP_SCOPE_PROJECT, RemoteSettings};
 
-// NOTE: this folder-trust store (`~/.failure/trusted_folders.toml`) is SEPARATE
+// NOTE: this folder-trust store (`~/.adevgrok/trusted_folders.toml`) is SEPARATE
 // from the pre-existing per-plugin trust store
-// (`xai_grok_agent::plugins::TrustStore` at `~/.failure/trusted-plugins`, plus the
+// (`xai_grok_agent::plugins::TrustStore` at `~/.adevgrok/trusted-plugins`, plus the
 // hooks' own project-trust gating). Trusting a folder here does NOT imply plugin
 // trust and vice versa; the two are independent and non-contradicting.
 // Unifying them is a tracked follow-up (out of scope for this PR).
@@ -404,7 +404,7 @@ fn compute_from_inputs(
 /// project `.cursor/mcp.json`, and `~/.claude.json projects.<cwd>.mcpServers`.
 ///
 /// Edge case: a name declared in BOTH a project config and the global
-/// `~/.failure/config.toml` is dropped when untrusted. This is intended — untrusted
+/// `~/.adevgrok/config.toml` is dropped when untrusted. This is intended — untrusted
 /// project content must not influence the command spawned for a shared name.
 pub fn project_scoped_mcp_names(cwd: &Path) -> HashSet<String> {
     let mut names = HashSet::new();
@@ -1189,7 +1189,7 @@ mod tests {
 
         // A `<cwd>/.failure/lsp.json` server must be tagged `Project` so the gate
         // can distinguish it from user/plugin servers. Asserts on the specific
-        // key, so any real `~/.failure/lsp.json` on the test host is irrelevant.
+        // key, so any real `~/.adevgrok/lsp.json` on the test host is irrelevant.
         let tmp = repo_tmp();
         let grok = tmp.path().join(".failure");
         std::fs::create_dir_all(&grok).unwrap();

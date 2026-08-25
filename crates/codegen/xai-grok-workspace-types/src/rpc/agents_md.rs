@@ -6,7 +6,7 @@ use super::WorkspaceRpc;
 
 /// `workspace.discover_agents_md` — project-instruction files (AGENTS.md /
 /// Claude.md / `.failure/rules/*.md`) discovered from the workspace root up to
-/// the git root, plus `~/.failure` and compat dirs.
+/// the git root, plus `~/.adevgrok` and compat dirs.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct DiscoverAgentsMdReq {}
 

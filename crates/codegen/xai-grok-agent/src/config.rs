@@ -735,7 +735,7 @@ impl BuiltinAgentName {
         &[Self::GeneralPurpose, Self::Explore, Self::Plan]
     }
 }
-/// Portable agent identity — parsed from .failure/agents/*.md.
+/// Portable agent identity — parsed from .adevgrok/agents/*.md.
 /// Usable as both a top-level agent and a subagent definition.
 ///
 /// This is the stable, version-controllable contract. It does NOT
@@ -900,11 +900,11 @@ fn default_prompt_mode() -> PromptMode {
 /// Where the agent definition was discovered.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub enum AgentScope {
-    /// .failure/agents/ (project-level, highest priority)
+    /// .adevgrok/agents/ (project-level, highest priority)
     Project,
-    /// ~/.failure/agents/ (user-level)
+    /// ~/.adevgrok/agents/ (user-level)
     User,
-    /// ~/.failure/bundled/agents/ (lowest-priority bundled cache)
+    /// ~/.adevgrok/bundled/agents/ (lowest-priority bundled cache)
     Bundled,
     /// Built-in agent (e.g., default_grok_build(), browser_use()).
     #[default]
@@ -1100,7 +1100,7 @@ const _: () = assert!(AgentColor::VALID_VALUES.len() == <AgentColor as strum::En
 #[serde(rename_all = "lowercase")]
 #[strum(serialize_all = "lowercase")]
 pub enum MemoryScope {
-    /// `~/.failure/agent-memory/<name>/`
+    /// `~/.adevgrok/agent-memory/<name>/`
     User,
     /// `<project>/.failure/agent-memory/<name>/`
     Project,

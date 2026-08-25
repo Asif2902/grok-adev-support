@@ -6,24 +6,25 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 pub use xai_grok_config::grok_home;
 
-/// Path to `$FAILURE_HOME/pager.toml`.
+/// Path to `$ADEVGROK_HOME/pager.toml`.
 pub fn pager_toml_path() -> PathBuf {
     grok_home().join("pager.toml")
 }
 
-/// User-facing label for the user grok directory (``~/.failure`` or ``$FAILURE_HOME``).
+/// User-facing label for the user grok directory (``~/.adevgrok`` or
+/// ``$ADEVGROK_HOME``).
 ///
 /// Derived from resolved [`grok_home()`] vs `xai_grok_config::default_grok_home()`,
-/// not from whether `FAILURE_HOME` is set in the environment.
+/// not from whether `ADEVGROK_HOME` is set in the environment.
 pub fn display_grok_home_prefix() -> String {
     if grok_home() == xai_grok_config::default_grok_home() {
-        "~/.failure".to_string()
+        "~/.adevgrok".to_string()
     } else {
-        "$FAILURE_HOME".to_string()
+        "$ADEVGROK_HOME".to_string()
     }
 }
 
-/// User-facing path under [`grok_home()`], e.g. ``~/.failure/config.toml``.
+/// User-facing path under [`grok_home()`], e.g. ``~/.adevgrok/config.toml``.
 pub fn display_user_grok_path(relative: impl AsRef<Path>) -> String {
     let rel = relative.as_ref();
     let prefix = display_grok_home_prefix();
@@ -397,17 +398,20 @@ mod tests {
 
     #[test]
     fn display_grok_home_prefix_default_install() {
-        if std::env::var("FAILURE_HOME").is_ok() {
+        if std::env::var("ADEVGROK_HOME").is_ok() || std::env::var("FAILURE_HOME").is_ok() {
             return;
         }
-        assert_eq!(display_grok_home_prefix(), "~/.failure");
+        assert_eq!(display_grok_home_prefix(), "~/.adevgrok");
     }
 
     #[test]
     fn display_user_grok_path_joins_relative() {
         let path = display_user_grok_path("config.toml");
         assert!(path.ends_with("/config.toml") || path.ends_with("\\config.toml"));
-        assert!(path.contains(".failure") || path.contains("$FAILURE_HOME"));
+        assert!(
+            path.contains(".adevgrok") || path.contains("$ADEVGROK_HOME"),
+            "got {path}"
+        );
     }
 
     #[test]

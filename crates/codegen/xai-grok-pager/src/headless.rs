@@ -1278,7 +1278,7 @@ pub async fn run_single_turn(
 
     // Handle result
     if track_active {
-        // Non-blocking flock so a slow/network ~/.failure can't hang exit.
+        // Non-blocking flock so a slow/network ~/.adevgrok can't hang exit.
         let _ = xai_grok_shell::active_sessions::try_unregister(&session_id);
     }
     cancel.cancel();

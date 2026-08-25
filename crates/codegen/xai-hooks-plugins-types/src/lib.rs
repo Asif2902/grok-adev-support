@@ -202,7 +202,7 @@ pub struct HookInfo {
     pub timeout_ms: u64,
     /// Source directory of the hook definition file.
     pub source_dir: String,
-    /// Whether this hook is disabled via ~/.failure/disabled-hooks.
+    /// Whether this hook is disabled via ~/.adevgrok/disabled-hooks.
     #[serde(default)]
     pub disabled: bool,
 }

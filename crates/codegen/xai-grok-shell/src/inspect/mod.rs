@@ -258,7 +258,7 @@ pub struct LspServerEntry {
 pub struct ConfigSources {
     /// Config layers (system + user managed, user + system requirements, user
     /// config.toml, the macOS MDM managed-preferences layer, and project
-    /// .failure/config.toml files). Driven from the same resolvers used at runtime
+    /// .adevgrok/config.toml files). Driven from the same resolvers used at runtime
     /// (`ConfigLayers`, `requirements_layers`) so system + MDM layers and
     /// precedence are included, and emptiness reflects real contribution after
     /// stripping (version_overrides, fail_closed, etc).
@@ -1919,7 +1919,7 @@ mod tests {
             )
             .unwrap();
         };
-        // Test-unique names: discovery also reads this machine's real ~/.failure dirs.
+        // Test-unique names: discovery also reads this machine's real ~/.adevgrok dirs.
         let extra = tempfile::tempdir().unwrap();
         write(&extra.path().join("inspect-cfg-extra"), "inspect-cfg-extra");
         write(

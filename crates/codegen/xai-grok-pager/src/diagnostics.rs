@@ -348,7 +348,7 @@ fn sandbox_profile_conflict_warning_from(conflicts: Vec<String>) -> Option<Termi
     Some(TerminalWarning {
         category: WarningCategory::SandboxProfileConflict,
         message: format!(
-            "Your project sandbox profile conflicts with user config.\nProfile: {profiles}\nProject config: .failure/sandbox.toml\nUser config: ~/.failure/sandbox.toml"
+            "Your project sandbox profile conflicts with user config.\nProfile: {profiles}\nProject config: .adevgrok/sandbox.toml\nUser config: ~/.adevgrok/sandbox.toml"
         ),
         fix: Some("Using the user profile instead.".to_string()),
         config_path: None,

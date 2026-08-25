@@ -40,7 +40,7 @@ Compress conversation history to save context window space. Optionally specify w
 /compact keep the auth implementation details
 ```
 
-When the context window fills up, Failure auto-compacts at 85% usage (configurable via `[session] auto_compact_threshold_percent` in config.toml).
+When the context window fills up, ADEVGrok auto-compacts at 85% usage (configurable via `[session] auto_compact_threshold_percent` in config.toml).
 
 ### `/context`
 
@@ -132,7 +132,7 @@ Switch to a different model. Accepts model IDs or display names (case-insensitiv
 
 ```
 /model grok-build
-/model Failure Build
+/model ADEVGrok
 /model Reasoning X high
 ```
 
@@ -140,7 +140,7 @@ Aliases: `/m`
 
 ### `/provider add <name> <api-key> [base-url]` / `/provider setup`
 
-Configure a custom (BYOP) provider -- OpenAI, Anthropic, OpenRouter, Groq, Together, DeepSeek, Gemini, Ollama, or any OpenAI-compatible endpoint -- without hand-editing `config.toml`. `base-url` is required unless `<name>` is a built-in preset (`xai`, `openai`, `anthropic`, `openrouter`, `groq`, `together`, `deepseek`, `gemini`, `ollama`). Persists `[provider.<name>]`/`[model.<name>]` to `config.toml` and stores the API key via the same secure storage `failure login --provider` uses. See [11-custom-models.md](11-custom-models.md) for details.
+Configure a custom (BYOP) provider -- OpenAI, Anthropic, OpenRouter, Groq, Together, DeepSeek, Gemini, Ollama, or any OpenAI-compatible endpoint -- without hand-editing `config.toml`. `base-url` is required unless `<name>` is a built-in preset (`xai`, `openai`, `anthropic`, `openrouter`, `groq`, `together`, `deepseek`, `gemini`, `ollama`). Persists `[provider.<name>]`/`[model.<name>]` to `config.toml` and stores the API key via the same secure storage `adevgrok login --provider` uses. See [11-custom-models.md](11-custom-models.md) for details.
 
 ```
 /provider add openai sk-...
@@ -149,7 +149,7 @@ Configure a custom (BYOP) provider -- OpenAI, Anthropic, OpenRouter, Groq, Toget
 /provider setup
 ```
 
-`/provider setup` opens an interactive picker (same as **p** on the first-launch welcome screen): choose a preset, paste a key, and Failure saves it and authenticates.
+`/provider setup` opens an interactive picker (same as **p** on the first-launch welcome screen): choose a preset, paste a key, and ADEVGrok saves it and authenticates.
 ### `/effort <level>`
 
 Set reasoning effort on the **current** model without re-selecting it. Levels: `low`, `medium`, `high`, `xhigh`. Only works when the active model supports reasoning effort.
@@ -226,7 +226,7 @@ fullscreen) switches to the experimental scrollback-native mode; `/fullscreen`
 TUI. Both relaunch the pager on the same conversation for this session only —
 they do not write `config.toml`. Descriptions and the relaunch banner tell you
 how to switch back (`/fullscreen` ⇄ `/minimal`). The `--minimal` /
-`--fullscreen` CLI flags are likewise session-scoped. To make plain `failure` open
+`--fullscreen` CLI flags are likewise session-scoped. To make plain `adevgrok` open
 in a given mode by default, use `/settings` → **Default screen mode**, or set
 `[ui] screen_mode` in `config.toml`.
 
@@ -365,7 +365,7 @@ Generate a video from an image or text description. Plans shots, generates sourc
 
 ### `/loop [interval] <prompt>`
 
-Run a prompt on a recurring interval. Specify the interval as `30m`, `1 hour`, or `every 2 days`. If you omit it, Failure prompts you.
+Run a prompt on a recurring interval. Specify the interval as `30m`, `1 hour`, or `every 2 days`. If you omit it, ADEVGrok prompts you.
 
 ```
 /loop 30m check deploy status
@@ -382,7 +382,7 @@ Recurring tasks auto-expire after 7 days. Cancel with `scheduler_delete` (the jo
 
 ### `/goal`
 
-Set, manage, or check an autonomous goal. Failure works toward the objective across turns and reports progress.
+Set, manage, or check an autonomous goal. ADEVGrok works toward the objective across turns and reports progress.
 
 ```
 /goal Migrate the auth module to the new API
@@ -393,7 +393,7 @@ Arguments: `<objective>`, `status`, `pause`, `resume`, or `clear`. **Availabilit
 
 ### `/afk`
 
-Turn on AFK mode: Failure enables always-approve and starts an autonomous goal so the agent keeps deciding what to do while you are away. Optional focus text steers the work; without it, the agent picks high-value improvements in the repo on its own.
+Turn on AFK mode: ADEVGrok enables always-approve and starts an autonomous goal so the agent keeps deciding what to do while you are away. Optional focus text steers the work; without it, the agent picks high-value improvements in the repo on its own.
 
 ```
 /afk
@@ -444,7 +444,7 @@ Open the MCP servers management modal.
 
 ### `/mcp start|status|stop`
 
-Run the native remote MCP bridge directly inside the binary -- no Node/npm required. Starting it spawns a dedicated always-approve agent instance and a local Streamable HTTP MCP server (default port 2420) exposing `failure_new_chat`, `failure_continue_chat`, `failure_send_message`, `failure_list_sessions`, `failure_status`, and a scoped `failure_rpc` for `x.ai/*` extension methods. The local URL (with its access token) is printed straight into scrollback and written to `~/.failure/mcp.json`; when `cloudflared` is installed, a Cloudflare Quick Tunnel also provides a public URL. Paste either URL into Claude or another remote MCP client.
+Run the native remote MCP bridge directly inside the binary -- no Node/npm required. Starting it spawns a dedicated always-approve agent instance and a local Streamable HTTP MCP server (default port 2420) exposing `failure_new_chat`, `failure_continue_chat`, `failure_send_message`, `failure_list_sessions`, `failure_status`, and a scoped `failure_rpc` for `x.ai/*` extension methods. The local URL (with its access token) is printed straight into scrollback and written to `~/.adevgrok/mcp.json`; when `cloudflared` is installed, a Cloudflare Quick Tunnel also provides a public URL. Paste either URL into Claude or another remote MCP client.
 
 ```
 /mcp start
@@ -454,11 +454,11 @@ Run the native remote MCP bridge directly inside the binary -- no Node/npm requi
 /mcp stop
 ```
 
-Treat the URL as a password: remote callers can direct Failure to edit files and run commands. The bridge's sessions run in always-approve mode.
+Treat the URL as a password: remote callers can direct ADEVGrok to edit files and run commands. The bridge's sessions run in always-approve mode.
 
 ### `/mcp-worker configure <cloudflare-api-token> [worker-name] [account-id]`
 
-Save Cloudflare Worker credentials for a stable remote-MCP URL, without leaving the session. Only available when running the npm package (`@failure-build/failure`), since deploying the Worker and running the local MCP bridge and Cloudflare Quick Tunnel are handled by its Node.js launcher, not the Rust binary directly -- this command just validates the token and writes `~/.failure/cloudflare-worker.json`, the same file the npm wrapper reads on its next launch. Equivalent to running `failure mcp-worker configure` outside the session.
+Save Cloudflare Worker credentials for a stable remote-MCP URL, without leaving the session. Only available when running the npm package (`@failure-build/failure`), since deploying the Worker and running the local MCP bridge and Cloudflare Quick Tunnel are handled by its Node.js launcher, not the Rust binary directly -- this command just validates the token and writes `~/.adevgrok/cloudflare-worker.json`, the same file the npm wrapper reads on its next launch. Equivalent to running `adevgrok mcp-worker configure` outside the session.
 
 ```
 /mcp-worker configure <token>
@@ -594,7 +594,7 @@ Toggle message timestamps on or off.
 
 ## Skills as Slash Commands
 
-Any enabled skill with `user-invocable: true` in its SKILL.md frontmatter appears as a slash command. (A skill turned off via `/skills` is not advertised.) For example, if you have a skill at `~/.failure/skills/commit/SKILL.md`, you can invoke it with:
+Any enabled skill with `user-invocable: true` in its SKILL.md frontmatter appears as a slash command. (A skill turned off via `/skills` is not advertised.) For example, if you have a skill at `~/.adevgrok/skills/commit/SKILL.md`, you can invoke it with:
 
 ```
 /commit fix typo in README

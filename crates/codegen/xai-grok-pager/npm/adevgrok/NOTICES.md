@@ -20,13 +20,15 @@ The software in the ADEVGrok binary derives from the following lineage:
 3. **ADEVGrok** — this distribution (`Asif2902/grok-adev-support`), which
    packages the existing Android ARM64 build for installation via npm.
 
-ADEVGrok's modifications to that upstream code are confined to packaging and
-distribution: renaming the user-facing CLI command from `failure` to
-`adevgrok`, renaming release artifacts, adding an npm installer that
-downloads release binaries, and updating documentation/branding strings.
-The Rust program itself is functionally unchanged from the fork it was built
-from. This file constitutes the prominent notice of those changes required
-by Apache License 2.0 §4(b).
+ADEVGrok's modifications to that upstream code are confined to packaging,
+distribution, and presentation: renaming the user-facing CLI command from
+`failure` to `adevgrok`, renaming release artifacts, adding an npm installer
+that downloads release binaries, updating user-facing documentation and
+branding strings (including the welcome-screen logo and product name), and
+changing the default per-user storage directory from `~/.failure` to
+`~/.adevgrok`. Agent functionality (login, task execution, tools, MCP) is
+otherwise unchanged from the fork it was built from. This file constitutes
+the prominent notice of those changes required by Apache License 2.0 §4(b).
 
 ## First-party license
 

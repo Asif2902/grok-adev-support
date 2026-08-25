@@ -12,8 +12,8 @@
 //! parses the flags itself.
 //!
 //! Resolve (host side, memoized): env override if a regular file → bundled binary
-//! (release builds, self-extracted to `~/.failure/vendor/<name>-<ver>-<target>`) →
-//! `~/.failure/vendor/{name}` if a regular file → `which` on the agent `$PATH`.
+//! (release builds, self-extracted to `~/.adevgrok/vendor/<name>-<ver>-<target>`) →
+//! `~/.adevgrok/vendor/{name}` if a regular file → `which` on the agent `$PATH`.
 //! Env/vendor only require `is_file()` as a lenient hint (no `--version` probe).
 //! This memoized path is only a *hint*: the injected shadow re-resolves at
 //! **call time** — it uses the hint when it's still *executable* (`[ -x ]`), else
@@ -46,7 +46,7 @@ const UGREP_DEFAULT_ARGS: &[&str] = &[
 ];
 
 // Binaries embedded by build.rs when `FAILURE_TOOLS_BUNDLE_{BFS,UGREP}_PATH` is set
-// (release pipeline). Self-extracted to `~/.failure/vendor` on first use, mirroring
+// (release pipeline). Self-extracted to `~/.adevgrok/vendor` on first use, mirroring
 // the ripgrep bundling in `grok_build::grep::ripgrep`.
 #[cfg(bundle_bfs)]
 const BFS_BYTES: &[u8] = include_bytes!(concat!(
@@ -127,7 +127,7 @@ fn resolved_tools() -> &'static ResolvedTools {
     })
 }
 
-/// Write embedded `bytes` to `~/.failure/vendor/<versioned_name>` (chmod 755) on
+/// Write embedded `bytes` to `~/.adevgrok/vendor/<versioned_name>` (chmod 755) on
 /// first use and return the path; reused on later runs. Versioned so bumping the
 /// bundled version writes a fresh file instead of reusing a stale one.
 #[cfg(any(bundle_bfs, bundle_ugrep))]
@@ -216,7 +216,7 @@ fn resolve_tool(bin_name: &str, env_override: &str, bundled: Option<PathBuf>) ->
 }
 
 /// Resolution order: explicit env path → bundled (self-extracted) →
-/// `~/.failure/vendor/<bin>` → `which`. Env and vendor only require `is_file()` here
+/// `~/.adevgrok/vendor/<bin>` → `which`. Env and vendor only require `is_file()` here
 /// (a lenient hint, no `+x` probe) so an odd-permission copy still resolves; the
 /// injected shadow gates on `[ -x ]` at call time and falls back to the OS binary
 /// if the hint isn't executable, so a non-exec path can't hard-fail `find`/`grep`.
@@ -538,7 +538,7 @@ mod tests {
 
     /// Only compiled when the binaries are actually bundled (release pipeline, or
     /// `FAILURE_TOOLS_BUNDLE_{BFS,UGREP}_PATH` at build time). Verifies the embedded
-    /// bytes self-extract under `~/.failure/vendor` and the extracted `bfs` runs.
+    /// bytes self-extract under `~/.adevgrok/vendor` and the extracted `bfs` runs.
     #[cfg(all(bundle_bfs, bundle_ugrep))]
     #[test]
     fn bundled_binaries_extract_and_run() {

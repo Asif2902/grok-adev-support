@@ -2,7 +2,7 @@
 //! truncation / corruption / cancel at every point, and after every iteration
 //! assert the single invariant that makes the brick impossible:
 //!
-//! > `~/.failure/bin/grok` resolves to a binary that passes the smoke-test, OR it
+//! > `~/.adevgrok/bin/grok` resolves to a binary that passes the smoke-test, OR it
 //! > is still the previous-good binary. It is never a broken/partial binary,
 //! > and a `.tmp` never masquerades as the active binary.
 //!

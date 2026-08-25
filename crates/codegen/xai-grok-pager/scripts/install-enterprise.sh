@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# Failure CLI installer (enterprise channel) — https://x.ai/cli/enterprise-install.sh
+# ADEVGrok CLI installer (enterprise channel) — https://x.ai/cli/enterprise-install.sh
 #
 # Standalone installer for the enterprise channel. This is intentionally a full
 # copy of the install logic (not a wrapper around install.sh) so that changes to
 # the stable installer cannot accidentally break enterprise deployments.
 #
-# Auth: FAILURE_DEPLOYMENT_KEY (takes precedence) or ~/.failure/auth.json from `failure login`.
+# Auth: FAILURE_DEPLOYMENT_KEY (takes precedence) or ~/.adevgrok/auth.json from `adevgrok login`.
 # Env: FAILURE_BIN_DIR, FAILURE_PROXY_URL
 #
 # Usage:
@@ -111,10 +111,10 @@ json_get() {
         | sed -e 's/\\"/"/g' -e 's/\\n/\'$'\n''/g' -e 's/\\t/\'$'\t''/g' -e 's/\\\\/\\/g'
 }
 
-# Read a token from ~/.failure/auth.json for the given scope key.
+# Read a token from ~/.adevgrok/auth.json for the given scope key.
 # Format: {"scope_url": {"key": "token"}, ...}
 read_failure_token() {
-    local auth_file="$HOME/.failure/auth.json"
+    local auth_file="$HOME/.adevgrok/auth.json"
     local scope="$1"
     [ -f "$auth_file" ] || return 1
     # Flatten to one line then extract: find the scope, then the "key" value after it
@@ -134,10 +134,10 @@ else
     LEGACY_TOKEN=$(read_failure_token "$LEGACY_SCOPE" 2>/dev/null) || true
     if [ -n "$OIDC_TOKEN" ]; then
         AUTH_SOURCE="auth.json (oidc)"
-        echo "Auth: using OIDC token from ~/.failure/auth.json." >&2
+        echo "Auth: using OIDC token from ~/.adevgrok/auth.json." >&2
     elif [ -n "$LEGACY_TOKEN" ]; then
         AUTH_SOURCE="auth.json (legacy)"
-        echo "Auth: using legacy token from ~/.failure/auth.json." >&2
+        echo "Auth: using legacy token from ~/.adevgrok/auth.json." >&2
     fi
 fi
 
@@ -162,8 +162,8 @@ esac
 # does, or this install flow will 404 until then.
 BASE_URL_PRIMARY="https://x.ai/cli"
 BASE_URL_FALLBACK="https://storage.googleapis.com/grok-build-public-artifacts/cli"
-DOWNLOAD_DIR="$HOME/.failure/downloads"
-BIN_DIR="${FAILURE_BIN_DIR:-$HOME/.failure/bin}"
+DOWNLOAD_DIR="$HOME/.adevgrok/downloads"
+BIN_DIR="${FAILURE_BIN_DIR:-$HOME/.adevgrok/bin}"
 mkdir -p "$DOWNLOAD_DIR" "$BIN_DIR"
 
 platform="${os}-${arch}"
@@ -199,9 +199,9 @@ if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9._]+)?$ ]]; then
 fi
 
 if [ -n "$AUTH_SOURCE" ]; then
-    echo "Installing Failure $version ($platform, $AUTH_SOURCE)..." >&2
+    echo "Installing ADEVGrok $version ($platform, $AUTH_SOURCE)..." >&2
 else
-    echo "Installing Failure $version ($platform)..." >&2
+    echo "Installing ADEVGrok $version ($platform)..." >&2
 fi
 
 binary_path="$DOWNLOAD_DIR/failure-$platform"
@@ -258,16 +258,16 @@ else
 fi
 
 # Generate shell completions (best-effort)
-mkdir -p "$HOME/.failure/completions/bash" "$HOME/.failure/completions/zsh"
-"$BIN_DIR/failure" completions bash > "$HOME/.failure/completions/bash/failure.bash" 2>/dev/null || true
-"$BIN_DIR/failure" completions zsh  > "$HOME/.failure/completions/zsh/_failure"     2>/dev/null || true
+mkdir -p "$HOME/.adevgrok/completions/bash" "$HOME/.adevgrok/completions/zsh"
+"$BIN_DIR/failure" completions bash > "$HOME/.adevgrok/completions/bash/failure.bash" 2>/dev/null || true
+"$BIN_DIR/failure" completions zsh  > "$HOME/.adevgrok/completions/zsh/_failure"     2>/dev/null || true
 # Fish: write to the auto-loaded completions dir so it works immediately
 if mkdir -p "$HOME/.config/fish/completions" 2>/dev/null; then
     "$BIN_DIR/failure" completions fish > "$HOME/.config/fish/completions/failure.fish" 2>/dev/null || true
 fi
 
 # Persist installer source and channel to config
-CONFIG_FILE="$HOME/.failure/config.toml"
+CONFIG_FILE="$HOME/.adevgrok/config.toml"
 CLI_BLOCK="installer = \"internal\"\nchannel = \"enterprise\""
 if [ ! -f "$CONFIG_FILE" ]; then
     printf '[cli]\n%b\n' "$CLI_BLOCK" > "$CONFIG_FILE"
@@ -305,16 +305,16 @@ if [ -n "$FAILURE_DEPLOYMENT_KEY" ]; then
         MANAGED_CONFIG=$(json_get "$DEPLOY_RESPONSE" "managed_config")
         REQUIREMENTS=$(json_get "$DEPLOY_RESPONSE" "requirements")
         if [ -n "$MANAGED_CONFIG" ] && [ "$MANAGED_CONFIG" != "null" ]; then
-            printf '%s\n' "$MANAGED_CONFIG" > "$HOME/.failure/managed_config.toml"
+            printf '%s\n' "$MANAGED_CONFIG" > "$HOME/.adevgrok/managed_config.toml"
             echo "  Managed config applied." >&2
         else
-            rm -f "$HOME/.failure/managed_config.toml"
+            rm -f "$HOME/.adevgrok/managed_config.toml"
         fi
         if [ -n "$REQUIREMENTS" ] && [ "$REQUIREMENTS" != "null" ]; then
-            printf '%s\n' "$REQUIREMENTS" > "$HOME/.failure/requirements.toml"
+            printf '%s\n' "$REQUIREMENTS" > "$HOME/.adevgrok/requirements.toml"
             echo "  Requirements applied." >&2
         else
-            rm -f "$HOME/.failure/requirements.toml"
+            rm -f "$HOME/.adevgrok/requirements.toml"
         fi
     fi
 fi
@@ -347,7 +347,7 @@ if [ "$os" != "windows" ] && ! path_has_dir "$BIN_DIR"; then
     done
 fi
 
-# Also update shell config so ~/.failure/bin is on PATH for future sessions
+# Also update shell config so ~/.adevgrok/bin is on PATH for future sessions
 user_shell="$(basename "${SHELL:-}")"
 config_file=""
 
@@ -382,18 +382,18 @@ if [ -n "$config_file" ]; then
     # Build the new installer block
     if [ "$user_shell" = "fish" ]; then
         new_block='# >>> failure installer >>>
-fish_add_path $HOME/.failure/bin
+fish_add_path $HOME/.adevgrok/bin
 # <<< failure installer <<<'
     elif [ "$user_shell" = "zsh" ]; then
         new_block='# >>> failure installer >>>
-export PATH="$HOME/.failure/bin:$PATH"
-fpath=(~/.failure/completions/zsh $fpath)
+export PATH="$HOME/.adevgrok/bin:$PATH"
+fpath=(~/.adevgrok/completions/zsh $fpath)
 autoload -Uz compinit && compinit -C
 # <<< failure installer <<<'
     else
         new_block='# >>> failure installer >>>
-export PATH="$HOME/.failure/bin:$PATH"
-[[ -r "$HOME/.failure/completions/bash/failure.bash" ]] && source "$HOME/.failure/completions/bash/failure.bash"
+export PATH="$HOME/.adevgrok/bin:$PATH"
+[[ -r "$HOME/.adevgrok/completions/bash/failure.bash" ]] && source "$HOME/.adevgrok/completions/bash/failure.bash"
 # <<< failure installer <<<'
     fi
 
@@ -427,7 +427,7 @@ elif [ -n "$config_file" ]; then
     echo "Restart your terminal, then run 'failure' or 'agent' to get started!" >&2
 else
     echo "Add $BIN_DIR to your PATH, then run 'failure' or 'agent' to get started:" >&2
-    echo '  export PATH="$HOME/.failure/bin:$PATH"' >&2
+    echo '  export PATH="$HOME/.adevgrok/bin:$PATH"' >&2
 fi
 
 if [ "$os" = "windows" ]; then

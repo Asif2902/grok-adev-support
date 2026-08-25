@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/media/social-preview.png" alt="Failure Build — the terminal coding agent that isn't afraid to say it. Bring failure into your terminal." width="100%">
+<img src="docs/media/social-preview.png" alt="ADEVGrok — terminal AI coding agent (unofficial Grok Build distribution)." width="100%">
 
 <h1>
   ADEVGrok (<code>adevgrok</code>)
@@ -25,8 +25,9 @@ remote MCP clients (like Claude) via the built-in `/mcp start` bridge.
 
 > **ADEVGrok is an unofficial Android ARM64 distribution based on the
 > open-source Grok Build project. It is not affiliated with or endorsed by
-> xAI.** The packaged program is functionally unchanged from the upstream
-> open-source code; only packaging, naming, and distribution differ. See
+> xAI.** The packaged program's agent functionality is unchanged from the
+> upstream open-source code; packaging, branding, the default storage
+> directory, and distribution differ. See
 > [`LICENSE`](LICENSE) and [`THIRD-PARTY-NOTICES`](THIRD-PARTY-NOTICES)
 > for attribution.
 
@@ -39,7 +40,7 @@ remote MCP clients (like Claude) via the built-in `/mcp start` bridge.
 [Contributing](#contributing) ·
 [License](#license)
 
-![Failure Build welcome screen](docs/media/welcome-demo.gif)
+![ADEVGrok welcome screen](docs/media/welcome-demo.gif)
 
 This repository contains the Rust source for the CLI/TUI agent and its
 agent runtime, forked from the `SOURCE_REV` monorepo commit of xAI's Grok

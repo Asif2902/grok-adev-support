@@ -1,6 +1,6 @@
 # Permissions and Safety Controls
 
-Failure can read files, search code, edit files, and run shell commands. The permission system controls what the agent is allowed to do. You can combine several independent layers: permission rules, permission modes, hooks, and the OS-level sandbox.
+ADEVGrok can read files, search code, edit files, and run shell commands. The permission system controls what the agent is allowed to do. You can combine several independent layers: permission rules, permission modes, hooks, and the OS-level sandbox.
 
 This guide explains how a tool call is authorized, how to configure permission rules from the CLI, native configuration, or Claude settings, and how to use `PreToolUse` hooks for allow lists that apply in every mode.
 
@@ -103,15 +103,15 @@ disable_bypass_permissions_mode = true   # default: false. true = locked off.
 
 Do not use `permission_mode` for this; it is a user-switchable default, not a lock. The legacy `[ui] yolo = false` key in `requirements.toml` also disables the mode, for backward compatibility; in `config.toml` the same key remains a togglable preference.
 
-The user-level `~/.failure/requirements.toml` is under the user's control, so a developer can remove the lock by editing that file. For enforcement that users cannot override, deploy the setting in the root-owned system file `/etc/failure/requirements.toml`.
+The user-level `~/.adevgrok/requirements.toml` is under the user's control, so a developer can remove the lock by editing that file. For enforcement that users cannot override, deploy the setting in the root-owned system file `/etc/adevgrok/requirements.toml`.
 
-> **Note:** Failure honors the permission rules in Claude Code's `managed-settings.json`, but not its `disableBypassPermissionsMode` lock. To disable always-approve in Failure, use `requirements.toml` as shown above.
+> **Note:** ADEVGrok honors the permission rules in Claude Code's `managed-settings.json`, but not its `disableBypassPermissionsMode` lock. To disable always-approve in ADEVGrok, use `requirements.toml` as shown above.
 
 ---
 
 ## Configuring Permissions
 
-Failure reads permission rules from three compatible sources. Rules from all sources are merged into one set; a rule's effect depends on its action (`deny` > `ask` > `allow`), not on which file it came from.
+ADEVGrok reads permission rules from three compatible sources. Rules from all sources are merged into one set; a rule's effect depends on its action (`deny` > `ask` > `allow`), not on which file it came from.
 
 ### Where Permission Rules Live (Scopes)
 
@@ -119,19 +119,19 @@ Permission rules can be global (all projects), project-scoped (one repository), 
 
 | Scope | File | Shared with teammates |
 |-------|------|-----------------------|
-| Global (all projects) | `~/.failure/config.toml` | No |
-| Project (committed) | `<project>/.failure/config.toml` | Yes (commit it) |
+| Global (all projects) | `~/.adevgrok/config.toml` | No |
+| Project (committed) | `<project>/.adevgrok/config.toml` | Yes (commit it) |
 | Project (personal) | `<project>/.claude/settings.local.json` | No (gitignore it) |
-| Interactive grants | Stored internally by Failure, per project | No |
+| Interactive grants | Stored internally by ADEVGrok, per project | No |
 
 Notes on scoping:
 
-- Failure discovers a `.failure/config.toml` at every directory level from the repository root down to your working directory, so a subdirectory can add rules on top of the repo root's.
+- ADEVGrok discovers a `.adevgrok/config.toml` at every directory level from the repository root down to your working directory, so a subdirectory can add rules on top of the repo root's.
 - Rules from all scopes are merged into one rule set; `deny` > `ask` > `allow` applies across scopes, so a global `deny` cannot be overridden by a project `allow`.
-- Failure has no native `config.local.toml`. For personal, uncommitted rules in a project, use `.claude/settings.local.json`; Failure reads it directly (see [Claude Code Compatibility](#3-claude-code-compatibility-claudesettingsjson)).
+- ADEVGrok has no native `config.local.toml`. For personal, uncommitted rules in a project, use `.claude/settings.local.json`; ADEVGrok reads it directly (see [Claude Code Compatibility](#3-claude-code-compatibility-claudesettingsjson)).
 - Interactive "Always allow" decisions are stored outside the repository, scoped to the project (see [Interactive Approvals](#interactive-approvals-and-where-they-persist)).
 
-To stop prompts for a specific command in one project, add a narrow allow rule to that project's `.failure/config.toml` (or `.claude/settings.json`):
+To stop prompts for a specific command in one project, add a narrow allow rule to that project's `.adevgrok/config.toml` (or `.claude/settings.json`):
 
 ```toml
 [permission]
@@ -143,7 +143,7 @@ This approves only the listed commands. Always-approve mode, by contrast, approv
 ### 1. CLI Flags
 
 ```bash
-failure -p "Review the API changes" \
+adevgrok -p "Review the API changes" \
   --allow 'Bash(git *)' \
   --allow 'Bash(gh *)' \
   --allow 'Read' \
@@ -164,7 +164,7 @@ Rule syntax examples:
 
 See [Rule Matching Reference](#rule-matching-reference) for the exact matching semantics, including how chained commands and wildcards are evaluated.
 
-### 2. Native Configuration (`~/.failure/config.toml` and `.failure/config.toml`)
+### 2. Native Configuration (`~/.adevgrok/config.toml` and `.adevgrok/config.toml`)
 
 ```toml
 [permission]
@@ -182,9 +182,9 @@ The structured `tool` field accepts the lowercase names `bash`, `read`, `edit`, 
 
 Because `deny` always wins, you cannot combine these `allow` rules with a catch-all `deny` on `bash` to mean "only allow git/gh"; a `deny tool = "bash"` rule would block `git` and `gh` too. For deny-by-default, use `defaultMode: "dontAsk"` in `.claude/settings.json` or a `PreToolUse` hook (below).
 
-Rules from the global `~/.failure/config.toml` and every project `.failure/config.toml` (from the repo root down to your working directory) are merged into one rule set, alongside any `.claude/settings.json` rules.
+Rules from the global `~/.adevgrok/config.toml` and every project `.adevgrok/config.toml` (from the repo root down to your working directory) are merged into one rule set, alongside any `.claude/settings.json` rules.
 
-Managed configuration deployed by your organization also contributes `[permission]` rules: the system `/etc/failure/managed_config.toml`, and a user-level copy that Failure maintains automatically at `~/.failure/managed_config.toml`. Managed rules merge like rules from any other source, with two properties specific to managed `allow` rules: your own `deny` and `ask` rules win over a managed `allow` (severity ordering), and a catch-all managed `allow` is ignored when always-approve is locked off. For rules that users cannot edit away, use the root-owned system `/etc/failure/requirements.toml`.
+Managed configuration deployed by your organization also contributes `[permission]` rules: the system `/etc/adevgrok/managed_config.toml`, and a user-level copy that ADEVGrok maintains automatically at `~/.adevgrok/managed_config.toml`. Managed rules merge like rules from any other source, with two properties specific to managed `allow` rules: your own `deny` and `ask` rules win over a managed `allow` (severity ordering), and a catch-all managed `allow` is ignored when always-approve is locked off. For rules that users cannot edit away, use the root-owned system `/etc/adevgrok/requirements.toml`.
 
 Permission rules from every source are read once, when a session starts. Changes apply to the next session.
 
@@ -207,7 +207,7 @@ allow = [
 
 ### 3. Claude Code Compatibility (`.claude/settings.json`)
 
-Failure reads `~/.claude/settings.json` and `~/.claude/settings.local.json`, plus the project-level `<project>/.claude/settings.json` and `settings.local.json` (walking up to the repo root). The native `.failure` source for permission rules is `config.toml`, described in the section above.
+ADEVGrok reads `~/.claude/settings.json` and `~/.claude/settings.local.json`, plus the project-level `<project>/.claude/settings.json` and `settings.local.json` (walking up to the repo root). The native `.adevgrok` source for permission rules is `config.toml`, described in the section above.
 
 Example:
 
@@ -228,7 +228,7 @@ Example:
 }
 ```
 
-Supported `defaultMode` values are `default`, `acceptEdits`, `bypassPermissions`, `dontAsk`, and `plan`. Failure reads `defaultMode` from its canonical location under `permissions`; a top-level `defaultMode` is also accepted when the nested key is absent.
+Supported `defaultMode` values are `default`, `acceptEdits`, `bypassPermissions`, `dontAsk`, and `plan`. ADEVGrok reads `defaultMode` from its canonical location under `permissions`; a top-level `defaultMode` is also accepted when the nested key is absent.
 
 `permissions.allow`, `permissions.deny`, and `permissions.ask` entries are translated into native rules and then matched with the semantics in the [Rule Matching Reference](#rule-matching-reference). Translation notes:
 
@@ -255,7 +255,7 @@ Matching is case-sensitive. Leading whitespace in the command is trimmed before 
 
 A trailing `:*` suffix on a Bash rule is stripped to a plain prefix: `Bash(git commit:*)` becomes prefix `git commit`. Because prefixes have no word boundary, a `deny` written as `Bash(sed:*)` also blocks commands such as `sed-custom`.
 
-**Chained commands.** Failure parses each command like a shell and splits it on `&&`, `||`, `;`, `|`, and newlines. The rule actions treat segments differently:
+**Chained commands.** ADEVGrok parses each command like a shell and splits it on `&&`, `||`, `;`, `|`, and newlines. The rule actions treat segments differently:
 
 - `deny` and `ask` rules are checked against every segment, and against the whole string. One denied segment rejects the entire command.
 - `allow` rules are checked against the whole command string only. `Bash(git *)` therefore auto-approves `git status && rm -rf /`, because the full string starts with `git `. Pair narrow allow rules with `deny` rules for the patterns you want to block.
@@ -282,7 +282,7 @@ Path patterns are globs matched against the path string the tool was called with
 
 ### MCP Rules
 
-`MCPTool(...)` patterns match the full Failure tool name in `server__tool` form, with glob support: `MCPTool(linear__*)` matches every tool from the `linear` server. Failure tool names carry no `mcp__` prefix, so a rule written as `mcp__server__tool` never matches an MCP call; write `MCPTool(server__tool)` instead.
+`MCPTool(...)` patterns match the full ADEVGrok tool name in `server__tool` form, with glob support: `MCPTool(linear__*)` matches every tool from the `linear` server. ADEVGrok tool names carry no `mcp__` prefix, so a rule written as `mcp__server__tool` never matches an MCP call; write `MCPTool(server__tool)` instead.
 
 ### WebFetch Rules
 
@@ -315,7 +315,7 @@ When a tool call requires approval, the permission prompt offers these choices:
 A narrower set of options remembers just the specific command, MCP tool, or web-fetch domain being prompted, for example "Always allow `cargo test`". These rows are off by default. Enable them with:
 
 ```toml
-# ~/.failure/config.toml
+# ~/.adevgrok/config.toml
 [ui]
 remember_tool_approvals = true
 ```
@@ -330,9 +330,9 @@ The remembered prefix is limited to a short form of the command: read-only comma
 
 ### Persistence Is Per Project
 
-Interactive grants are stored in Failure's own state directory under your home directory, scoped to the directory you launched Failure from. A grant made in one project never applies in another, grants are not written into the repository, and they are not meant to be hand-edited.
+Interactive grants are stored in ADEVGrok's own state directory under your home directory, scoped to the directory you launched ADEVGrok from. A grant made in one project never applies in another, grants are not written into the repository, and they are not meant to be hand-edited.
 
-Interactive grants are personal, per-machine state. For an allowlist you can review in code review and share with teammates, use declarative rules in the project's `.failure/config.toml` instead.
+Interactive grants are personal, per-machine state. For an allowlist you can review in code review and share with teammates, use declarative rules in the project's `.adevgrok/config.toml` instead.
 
 ---
 
@@ -340,11 +340,11 @@ Interactive grants are personal, per-machine state. For an allowlist you can rev
 
 A `PreToolUse` hook can enforce an allow list on the `Bash` tool that applies in every permission mode. Hooks are evaluated before the permission system; a hook deny stops the call, and a hook allow falls through to the normal permission checks (so your `deny` rules still apply).
 
-> **Note:** Hooks fail open. If a hook script crashes, times out, or is missing, the tool call proceeds as if the hook had allowed it, and the failure is reported in the UI. A hook used as a security boundary must handle its own errors, and must account for chained commands, as the example below does. See [10-hooks.md](10-hooks.md).
+> **Note:** Hooks fail open. If a hook script crashes, times out, or is missing, the tool call proceeds as if the hook had allowed it, and the adevgrok is reported in the UI. A hook used as a security boundary must handle its own errors, and must account for chained commands, as the example below does. See [10-hooks.md](10-hooks.md).
 
 ### Example: Allow Only `git` and `gh`
 
-**`~/.failure/hooks/git-gh-only.json`**
+**`~/.adevgrok/hooks/git-gh-only.json`**
 
 ```json
 {
@@ -365,7 +365,7 @@ A `PreToolUse` hook can enforce an allow list on the `Bash` tool that applies in
 }
 ```
 
-**`~/.failure/hooks/git-gh-only.sh`**
+**`~/.adevgrok/hooks/git-gh-only.sh`**
 
 ```bash
 #!/bin/sh
@@ -402,7 +402,7 @@ done
 ```
 
 ```bash
-chmod +x ~/.failure/hooks/git-gh-only.sh
+chmod +x ~/.adevgrok/hooks/git-gh-only.sh
 ```
 
 This hook denies every `Bash` command unless each chained segment starts with `git` or `gh`, and rejects command substitution, backgrounding, and redirection outright because it cannot verify what they execute. It works in every permission mode.
@@ -416,7 +416,7 @@ For hook installation, the JSON format, the trust model for project hooks, and o
 ### Headless git and gh Only (CI and Automation)
 
 ```bash
-failure -p "Implement the feature using only git and GitHub CLI" \
+adevgrok -p "Implement the feature using only git and GitHub CLI" \
   --allow 'Read' \
   --allow 'Grep' \
   --allow 'Bash(git *)' \
@@ -428,7 +428,7 @@ Install the `git-gh-only` hook above to deny every other `Bash` command. For den
 ### Read-Only Code Reviewer
 
 ```toml
-# .failure/config.toml
+# .adevgrok/config.toml
 [permission]
 rules = [
   { action = "allow", tool = "read" },
@@ -469,7 +469,7 @@ Recommended combination for untrusted code:
 
 1. **Prefer narrow patterns.** `Bash(git *)` grants less access than a bare `Bash` allow rule.
 2. **Combine layers.** `dontAsk`, narrow allow rules, a restrictive hook, and the sandbox each restrict independently.
-3. **Review project configuration from unfamiliar sources.** Project permission rules in `.failure/config.toml` and `.claude/settings.json`, including `allow` rules, apply without a separate trust prompt. Review them, and any project hooks, before working in an unfamiliar checkout (see the security notes in [10-hooks.md](10-hooks.md)).
+3. **Review project configuration from unfamiliar sources.** Project permission rules in `.adevgrok/config.toml` and `.claude/settings.json`, including `allow` rules, apply without a separate trust prompt. Review them, and any project hooks, before working in an unfamiliar checkout (see the security notes in [10-hooks.md](10-hooks.md)).
 4. **Test your policy.** With `defaultMode: "dontAsk"` set (or your `PreToolUse` hook installed), run representative commands and confirm what is blocked.
 5. **Treat the read-only command list as a convenience, not a security boundary.**
 

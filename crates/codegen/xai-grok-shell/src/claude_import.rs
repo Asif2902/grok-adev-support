@@ -1,5 +1,5 @@
 // claude_import.rs
-// Scans Claude settings and generates TOML patches for .failure/config.toml.
+// Scans Claude settings and generates TOML patches for .adevgrok/config.toml.
 //
 // This module reuses the existing discovery and parsing functions from
 // claude_compat.rs and util/config.rs. It does NOT modify the runtime
@@ -24,7 +24,7 @@ use xai_grok_workspace::permission::types::{PatternMode, PermissionRule, RuleAct
 /// Scope for an import operation.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ImportScope {
-    /// User-level: writes to `~/.failure/config.toml`.
+    /// User-level: writes to `~/.adevgrok/config.toml`.
     Global,
     /// Project-level: writes to `<repo>/.failure/config.toml`.
     Project,
@@ -66,7 +66,7 @@ pub enum ImportableItem {
 /// A plan describing what would be imported and where.
 #[derive(Debug, Clone, Default)]
 pub struct ImportPlan {
-    /// Items to write to `~/.failure/config.toml`.
+    /// Items to write to `~/.adevgrok/config.toml`.
     pub global_items: Vec<ImportableItem>,
     /// Items to write to `<repo>/.failure/config.toml`.
     pub project_items: Vec<ImportableItem>,
@@ -92,7 +92,7 @@ impl ImportPlan {
         let mut out = String::from("Found Claude settings to import:\n");
 
         if !self.global_items.is_empty() {
-            out.push_str("\nGlobal (~/.failure/config.toml):\n");
+            out.push_str("\nGlobal (~/.adevgrok/config.toml):\n");
             out.push_str(&format_item_summary(&self.global_items));
         }
 
@@ -498,7 +498,7 @@ pub fn find_project_root(cwd: &Path) -> PathBuf {
 
 // Import Marker (Read Side)
 //
-// The marker `[claude_compat] imported = true` in `~/.failure/config.toml` is
+// The marker `[claude_compat] imported = true` in `~/.adevgrok/config.toml` is
 // the signal that runtime fallback paths should stop reading `.claude/`.
 // The reader infrastructure lives here in the base layer so that gates
 // added in subsequent layers (hooks, paths, perms) can all consult the
@@ -517,7 +517,7 @@ static MARKER_CACHE: std::sync::RwLock<Option<bool>> = std::sync::RwLock::new(No
 
 /// Whether the current user has already imported Claude settings.
 ///
-/// Reads `[claude_compat] imported = true` from `~/.failure/config.toml` once
+/// Reads `[claude_compat] imported = true` from `~/.adevgrok/config.toml` once
 /// per process and caches the result. When the marker is set, runtime
 /// fallbacks that read `.claude/` should be skipped — the user has migrated
 /// to native config.
@@ -623,7 +623,7 @@ pub fn is_claude_import_marked_at(config_path: &Path) -> bool {
         .unwrap_or(false)
 }
 
-/// Write `[claude_compat] imported = true` to `~/.failure/config.toml`.
+/// Write `[claude_compat] imported = true` to `~/.adevgrok/config.toml`.
 ///
 /// Uses the same atomic write pattern as `save_mcp_server_config` (write to
 /// `.tmp`, then rename). Creates the file and parent directory if missing.
@@ -717,7 +717,7 @@ pub fn apply_import(plan: &ImportPlan, cwd: &Path) -> anyhow::Result<ImportResul
                 .push(global_path.to_string_lossy().to_string());
         }
 
-        // Hooks are written separately to ~/.failure/hooks/imported-from-claude.json.
+        // Hooks are written separately to ~/.adevgrok/hooks/imported-from-claude.json.
         let hooks_dir = crate::util::grok_home::grok_home().join("hooks");
         let hook_count = apply_hooks_to_dir(&hooks_dir, &plan.global_items)?;
         result.global_count += hook_count;
@@ -817,7 +817,7 @@ fn apply_items_to_config(config_path: &Path, items: &[ImportableItem]) -> anyhow
             ImportableItem::Permission(rule) => permissions.push(rule),
             ImportableItem::EnvVar { key, value } => env_vars.push((key, value)),
             ImportableItem::McpServer { name, config } => mcp_servers.push((name, config)),
-            // Hooks are written to .failure/hooks/ JSON files in apply_hooks_to_dir,
+            // Hooks are written to .adevgrok/hooks/ JSON files in apply_hooks_to_dir,
             // not into config.toml.
             ImportableItem::Hook { .. } => {}
             ImportableItem::PathEntry { kind, path } => match kind {
@@ -1208,7 +1208,7 @@ fn apply_hooks_to_dir(hooks_dir: &Path, items: &[ImportableItem]) -> anyhow::Res
         info!(
             path = %target.display(),
             count,
-            "Wrote imported hooks to .failure/hooks/imported-from-claude.json"
+            "Wrote imported hooks to .adevgrok/hooks/imported-from-claude.json"
         );
     }
 
@@ -1831,7 +1831,7 @@ mod tests {
         .unwrap();
 
         // Identify the probe by its unique raw command so real global hooks on the
-        // test host (from the non-injectable ~/.claude, ~/.failure) don't interfere.
+        // test host (from the non-injectable ~/.claude, ~/.adevgrok) don't interfere.
         let has_probe = |reg: &xai_grok_hooks::discovery::HookRegistry| {
             reg.all_hooks().iter().any(|h| {
                 h.command_raw
@@ -2175,10 +2175,10 @@ extra_rule_dirs = ["/c/rules"]
         .unwrap();
 
         // Note: `resolve_permissions_with_provenance` ALSO reads requirements,
-        // managed settings, and the developer's real `~/.failure/config.toml`.
+        // managed settings, and the developer's real `~/.adevgrok/config.toml`.
         // We can't isolate `grok_home()` because it's `OnceLock`-cached.
         // Instead, assert on rule *provenance*: no rule should originate from
-        // our tempdir's `.claude/settings.json`. The dev's real ~/.failure
+        // our tempdir's `.claude/settings.json`. The dev's real ~/.adevgrok
         // config rules (if any) are out of scope for this test.
         let resolved =
             xai_grok_workspace::permission::resolution::resolve_permissions_with_provenance(
@@ -2225,7 +2225,7 @@ extra_rule_dirs = ["/c/rules"]
         // (a) not panic and (b) populate the cache for subsequent reads.
         //
         // We intentionally **do not** assert a specific cached value — the
-        // dev's real `~/.failure/config.toml` may legitimately have the marker
+        // dev's real `~/.adevgrok/config.toml` may legitimately have the marker
         // set during local testing, and we can't override `grok_home()`
         // (it's `OnceLock`-cached, so any prior test that calls it locks the
         // value in for the entire process). The `MarkerGuard` resets the

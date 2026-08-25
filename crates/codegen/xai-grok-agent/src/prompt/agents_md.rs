@@ -1,6 +1,6 @@
 //! AGENTS.md / Claude.md / rules directory discovery and loading.
 //!
-//! Searches from cwd to repo root, plus `~/.failure/`. Also discovers
+//! Searches from cwd to repo root, plus `~/.adevgrok/`. Also discovers
 //! `*.md` files in `.failure/rules/` and `.claude/rules/` directories.
 
 use std::path::{Path, PathBuf};
@@ -63,7 +63,7 @@ fn find_rules_files(dir: &Path, rules_subdirs: &[&str]) -> Vec<PathBuf> {
     results
 }
 
-/// Read Agents.md from ~/.failure/, git repo root, and session cwd.
+/// Read Agents.md from ~/.adevgrok/, git repo root, and session cwd.
 /// Returns a list of AgentConfigFile with their file names, full paths, and contents.
 ///
 /// `compat` gates which vendor (`.claude`/`.cursor`) surfaces are scanned for
@@ -92,7 +92,7 @@ async fn read_agents_config_with_options(
 
     let gitignore = build_gitignore(git_root.as_deref());
 
-    // Always include grok_home (~/.failure/) first, then ~/.claude/ and ~/.cursor/
+    // Always include grok_home (~/.adevgrok/) first, then ~/.claude/ and ~/.cursor/
     // for compat — each gated by the resolved `agents` compat cell.
     let mut dirs = vec![global_dir];
     if let Some(home) = dirs::home_dir() {
@@ -209,7 +209,7 @@ fn render_agents_md(configs: &[AgentConfigFile]) -> Option<String> {
         section.push_str(&format!("\n## From: {}\n", config.file_path));
 
         // Strip YAML frontmatter from rules files (e.g. .claude/rules/*.md,
-        // .failure/rules/*.md) so globs/paths metadata doesn't leak into the
+        // .adevgrok/rules/*.md) so globs/paths metadata doesn't leak into the
         // system prompt as raw YAML.
         let is_rules_file = config.file_path.contains("/.failure/rules/")
             || config.file_path.contains("/.claude/rules/");

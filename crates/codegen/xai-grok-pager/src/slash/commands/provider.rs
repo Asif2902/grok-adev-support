@@ -5,7 +5,7 @@
 //! (welcome or in-session) so users don't have to remember preset names.
 //!
 //! Persists `[provider.<name>]`/`[model.<name>]` and stores the API key via
-//! the same provider-scoped secret storage `failure login --provider` uses.
+//! the same provider-scoped secret storage `adevgrok login --provider` uses.
 //! The existing config-file watcher picks up the change and refreshes the
 //! model catalog automatically — no restart needed.
 

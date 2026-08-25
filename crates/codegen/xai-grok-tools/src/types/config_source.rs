@@ -8,14 +8,14 @@ use serde::{Deserialize, Serialize};
 pub enum ConfigSource {
     /// Built-in / bundled with the binary.
     Builtin,
-    /// Bundled skill shipped with the binary (extracted to ~/.failure/skills/
+    /// Bundled skill shipped with the binary (extracted to ~/.adevgrok/skills/
     /// or injected via bundled skill dirs).
     Bundled { path: PathBuf },
-    /// Server-synced (e.g. ~/.failure/server-skills from the skill store).
+    /// Server-synced (e.g. ~/.adevgrok/server-skills from the skill store).
     Server { path: PathBuf },
     /// Project-scoped: cwd/.failure/ or cwd/.claude/.
     Project { path: PathBuf },
-    /// User-scoped: ~/.failure/ or ~/.claude/.
+    /// User-scoped: ~/.adevgrok/ or ~/.claude/.
     User { path: PathBuf },
     /// Plugin-provided component.
     Plugin { plugin_name: String, path: PathBuf },

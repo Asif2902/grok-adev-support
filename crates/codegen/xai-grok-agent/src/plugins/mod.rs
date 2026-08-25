@@ -2,7 +2,7 @@
 //!
 //! A plugin is a self-contained directory that bundles skills, agents,
 //! MCP server configs, and hooks into a namespaced unit.  Plugins can
-//! live under `~/.failure/plugins/`, `.failure/plugins/` (project-level),
+//! live under `~/.adevgrok/plugins/`, `.failure/plugins/` (project-level),
 //! or be passed via `--plugin-dir` on the CLI.
 //!
 //! This module handles:

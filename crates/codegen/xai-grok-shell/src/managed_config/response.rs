@@ -58,7 +58,7 @@ pub enum ManagedConfigError {
     )]
     SignatureRejected,
     #[error(
-        "Can't save the configuration to ~/.failure. Make sure the directory exists and is writable.\n  ({0})"
+        "Can't save the configuration to ~/.adevgrok. Make sure the directory exists and is writable.\n  ({0})"
     )]
     DiskWrite(#[from] std::io::Error),
 }

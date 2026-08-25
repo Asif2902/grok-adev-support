@@ -1,7 +1,7 @@
 use std::path::{Path, PathBuf};
 
 // Project-hook trust is no longer stored here: the shell's folder-trust store
-// (`~/.failure/trusted_folders.toml`) is the single authority for whether a repo's
+// (`~/.adevgrok/trusted_folders.toml`) is the single authority for whether a repo's
 // project hooks run (the same gate as repo-local MCP/LSP). The helpers below
 // exist only to migrate prior grants out of the legacy file.
 
@@ -59,7 +59,7 @@ fn is_hook_disabled_with_file(hook_name: &str, file: &Path) -> bool {
 /// Disable a hook by name. Adds to .
 pub fn disable_hook(hook_name: &str) -> Result<(), String> {
     let file = disabled_hooks_file_path()
-        .ok_or_else(|| "no user grok home (set $FAILURE_HOME or $HOME)".to_string())?;
+        .ok_or_else(|| "no user grok home (set $ADEVGROK_HOME or $HOME)".to_string())?;
     disable_hook_with_file(hook_name, &file)
 }
 

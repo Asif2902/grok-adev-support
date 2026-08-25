@@ -1,7 +1,7 @@
 //! Hooks and plugins tracing target and optional file-based logging layer.
 //!
 //! A dedicated tracing target for hooks and plugins subsystems with an optional
-//! file logger that writes to `~/.failure/logs/hooks.log`.
+//! file logger that writes to `~/.adevgrok/logs/hooks.log`.
 //!
 //! ## When to use
 //!
@@ -12,10 +12,10 @@
 //! ## Enabling
 //!
 //! ```bash
-//! FAILURE_HOOKS_LOG=1 grok              # enable, write to ~/.failure/logs/hooks.log
+//! FAILURE_HOOKS_LOG=1 grok              # enable, write to ~/.adevgrok/logs/hooks.log
 //! FAILURE_HOOKS_LOG=/tmp/h.log grok     # write to custom path
 //! FAILURE_HOOKS_LOG=0 grok              # explicitly disable
-//! tail -f ~/.failure/logs/hooks.log     # watch in another terminal
+//! tail -f ~/.adevgrok/logs/hooks.log     # watch in another terminal
 //! ```
 
 use std::fmt;
@@ -59,7 +59,7 @@ impl FormatTime for UptimeTimer {
 
 /// Build the hooks/plugins log layer.
 ///
-/// Writes to `~/.failure/logs/hooks.log` (or custom path via `FAILURE_HOOKS_LOG`).
+/// Writes to `~/.adevgrok/logs/hooks.log` (or custom path via `FAILURE_HOOKS_LOG`).
 /// Filters to hooks (`xai_grok_hooks`) and plugins (`xai_grok_agent::plugins`) targets.
 /// Set `FAILURE_HOOKS_LOG=0` to disable, `FAILURE_HOOKS_LOG=/path` to redirect.
 pub fn layer<S>() -> Option<impl Layer<S>>

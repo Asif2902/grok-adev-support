@@ -660,12 +660,12 @@ impl ModelsManager {
         }
     }
 
-    /// Hot-reload the catalog from `~/.failure/models_cache.json` after an
+    /// Hot-reload the catalog from `~/.adevgrok/models_cache.json` after an
     /// external write (detected by the config file watcher).
     ///
     /// A long-running leader otherwise only refreshes its catalog from its
     /// *own* fetch paths (startup prefetch, auth change, response-header etag).
-    /// When another grok process sharing `~/.failure` (a `--no-leader` run, a
+    /// When another grok process sharing `~/.adevgrok` (a `--no-leader` run, a
     /// newer client, grok-desktop) fetches a fresher `/v1/models` catalog and
     /// persists it, this picks it up without a network round-trip.
     ///

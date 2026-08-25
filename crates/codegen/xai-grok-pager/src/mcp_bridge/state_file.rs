@@ -1,6 +1,6 @@
-//! `~/.failure/mcp.json` — matches the npm bridge's JSON shape exactly
+//! `~/.adevgrok/mcp.json` — matches the npm bridge's JSON shape exactly
 //! (`bin/mcp-server.js`'s `saveState`), so either implementation can write
-//! it and any reader (Claude, `failure mcp-worker status`, etc.) sees the
+//! it and any reader (Claude, `adevgrok mcp-worker status`, etc.) sees the
 //! same shape regardless of which one is running.
 
 use std::path::PathBuf;

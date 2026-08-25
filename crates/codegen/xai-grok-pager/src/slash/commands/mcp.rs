@@ -80,7 +80,7 @@ fn format_status(status: &crate::mcp_bridge::BridgeStatus) -> String {
         // or the npm wrapper's Node bridge) may have left a live one behind.
         if let Some(external) = crate::mcp_bridge::external_state() {
             return format!(
-                "No MCP bridge running in this process, but ~/.failure/mcp.json \
+                "No MCP bridge running in this process, but ~/.adevgrok/mcp.json \
                  reports one from pid {} (started {}).\nLocal:  {}{}",
                 external.pid,
                 external.started_at,

@@ -76,7 +76,7 @@ pub struct BtwEntry {
 
 // Local feedback persistence types
 
-/// A feedback entry persisted to `~/.failure/sessions/.../feedback.jsonl`.
+/// A feedback entry persisted to `~/.adevgrok/sessions/.../feedback.jsonl`.
 ///
 /// Uses a tagged enum so different feedback types are self-describing in the
 /// JSONL file (currently only `UserFeedback`).
@@ -579,11 +579,11 @@ fn find_local_child_for_remote_in_root(
 }
 
 /// Check if a session exists locally by session ID.
-/// Searches across ALL cwd directories under `~/.failure/sessions/`.
+/// Searches across ALL cwd directories under `~/.adevgrok/sessions/`.
 ///
 /// Use `session_exists_for_cwd` instead when the target cwd is known
 /// (e.g., the `-r` resume path) to avoid false-positive matches.
-/// Find a session by ID across **all** CWD directories under `~/.failure/sessions/`.
+/// Find a session by ID across **all** CWD directories under `~/.adevgrok/sessions/`.
 ///
 /// Unlike [`resolve_local_session`] which only checks a single CWD,
 /// this scans every encoded-CWD subdirectory. Returns the decoded CWD path
@@ -1854,7 +1854,7 @@ impl SessionPersistence {
     }
 }
 
-/// Collect MCP server stderr logs from `~/.failure/logs/mcp/` for inclusion in the session archive.
+/// Collect MCP server stderr logs from `~/.adevgrok/logs/mcp/` for inclusion in the session archive.
 fn collect_mcp_stderr_logs(files: &mut Vec<CopiedSessionFile>) {
     let mcp_log_dir = xai_grok_config::grok_home().join("logs").join("mcp");
     let Ok(entries) = std::fs::read_dir(&mcp_log_dir) else {
@@ -2605,7 +2605,7 @@ static CLEANUP_SESSIONS_ONCE: std::sync::Once = std::sync::Once::new();
 /// Default TTL for stale session files (30 days).
 const DEFAULT_CLEANUP_TTL_DAYS: u32 = 30;
 
-/// Walk `~/.failure/sessions/` and delete files with mtime older than `ttl_days`.
+/// Walk `~/.adevgrok/sessions/` and delete files with mtime older than `ttl_days`.
 /// Removes empty session directories after file cleanup.
 /// Skips `skip_session_dir` if provided (current session).
 ///

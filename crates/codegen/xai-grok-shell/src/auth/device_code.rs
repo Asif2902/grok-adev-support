@@ -204,7 +204,7 @@ pub async fn request_device_code(
 
 /// Poll the token endpoint until the user approves (or denies / expires).
 ///
-/// On success, persists credentials to `~/.failure/auth.json` and returns
+/// On success, persists credentials to `~/.adevgrok/auth.json` and returns
 /// the authenticated `GrokAuth`.
 ///
 /// Callers should have already displayed `device_code.verification_uri`

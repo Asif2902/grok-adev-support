@@ -965,7 +965,7 @@ thread_local! {
     /// a hermetic, writable cache dir *without* mutating the process-global
     /// `FAILURE_HOME` (whose `grok_home()` value is cached first-write-wins, an
     /// isolation hazard under the full parallel suite — PNGs could land in the
-    /// real `~/.failure`). Thread-local, so each parallel test is independent; the
+    /// real `~/.adevgrok`). Thread-local, so each parallel test is independent; the
     /// `TempDir` guard lives here so the dir outlives the view. Mirrors the
     /// `subagent::REPLAY_FAILURE_HOME` test seam. Production never sets this.
     static TEST_MERMAID_DIR: std::cell::RefCell<Option<tempfile::TempDir>> =

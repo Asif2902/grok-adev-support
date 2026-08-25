@@ -10,7 +10,7 @@
 //! **Trust key**: canonical absolute path of the plugin root directory,
 //! resolved via `dunce::canonicalize()`.
 //!
-//! **Trust storage**: `~/.failure/trusted-plugins` (one canonical path per line).
+//! **Trust storage**: `~/.adevgrok/trusted-plugins` (one canonical path per line).
 //!
 //! **Behavior for untrusted plugins**:
 //! - Skills and agents are **discovered and listed** (metadata-only).
@@ -20,7 +20,7 @@ use std::collections::HashSet;
 use std::io::{BufRead, Write};
 use std::path::{Path, PathBuf};
 
-/// Name of the trust-store file under `~/.failure/`.
+/// Name of the trust-store file under `~/.adevgrok/`.
 const TRUST_FILE_NAME: &str = "trusted-plugins";
 
 /// Manages the set of trusted plugin root directories.
@@ -35,7 +35,7 @@ pub struct TrustStore {
 impl TrustStore {
     /// Load the trust store from disk.
     ///
-    /// If `~/.failure/trusted-plugins` does not exist, returns an empty store.
+    /// If `~/.adevgrok/trusted-plugins` does not exist, returns an empty store.
     /// If the file cannot be read, logs a warning and returns an empty store.
     pub fn load() -> Self {
         // Gate on user_grok_home() so a project's `.failure/trusted-plugins` is never
@@ -76,7 +76,7 @@ impl TrustStore {
 
     /// Grant trust to a plugin root directory.
     ///
-    /// Canonicalizes the path and appends it to `~/.failure/trusted-plugins`.
+    /// Canonicalizes the path and appends it to `~/.adevgrok/trusted-plugins`.
     /// If the path is already trusted, this is a no-op and returns `Ok(())`.
     pub fn grant_trust(&mut self, plugin_root: &Path) -> Result<(), TrustError> {
         let canonical =
@@ -119,7 +119,7 @@ impl TrustStore {
     /// Revoke trust for a plugin root directory.
     ///
     /// Canonicalizes the path, removes it from the in-memory set, and
-    /// rewrites `~/.failure/trusted-plugins` without the revoked entry.
+    /// rewrites `~/.adevgrok/trusted-plugins` without the revoked entry.
     /// If the path is not currently trusted, this is a no-op.
     pub fn revoke_trust(&mut self, plugin_root: &Path) -> Result<(), TrustError> {
         let canonical =
@@ -165,7 +165,7 @@ impl TrustStore {
     ///
     /// A `[plugins].paths` entry is auto-trusted if its canonicalized path
     /// is under the user's home directory.  Otherwise it requires explicit
-    /// trust via `~/.failure/trusted-plugins`.
+    /// trust via `~/.adevgrok/trusted-plugins`.
     pub fn is_config_path_auto_trusted(plugin_root: &Path) -> bool {
         let Some(home) = dirs::home_dir() else {
             return false;

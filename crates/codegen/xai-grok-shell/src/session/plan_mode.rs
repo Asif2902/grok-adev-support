@@ -75,7 +75,7 @@ pub struct PlanModeTracker {
     pending_activation: Option<PendingActivation>,
     /// Absolute path to the plan file on disk.
     /// Lives inside the session directory:
-    /// `~/.failure/sessions/<cwd>/<session_id>/plan.md`
+    /// `~/.adevgrok/sessions/<cwd>/<session_id>/plan.md`
     plan_file_path: PathBuf,
 }
 /// A buffered mid-turn activation reminder plus the state needed to roll the
@@ -106,7 +106,7 @@ pub struct PlanModeSnapshot {
 }
 impl PlanModeTracker {
     /// Create a new tracker. `session_dir` is the session's storage
-    /// directory (e.g., `~/.failure/sessions/<encoded-cwd>/<session-id>/`).
+    /// directory (e.g., `~/.adevgrok/sessions/<encoded-cwd>/<session-id>/`).
     pub fn new(session_dir: PathBuf) -> Self {
         Self {
             state: PlanModeState::Inactive,

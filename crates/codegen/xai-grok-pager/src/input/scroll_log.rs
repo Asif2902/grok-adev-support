@@ -15,7 +15,7 @@
 //! (see [`super::mouse`]).
 //!
 //! Enablement: `FAILURE_SCROLL_LOG=1` (or set-but-empty) logs to
-//! `~/.failure/logs/scroll-log-<timestamp>.jsonl`; any other non-`0` value is
+//! `~/.adevgrok/logs/scroll-log-<timestamp>.jsonl`; any other non-`0` value is
 //! used as the target path. Unset (or `0`, matching `FAILURE_SCROLL_DEBUG`)
 //! disables: [`super::mouse::MouseScrollState`] then holds `None` and every
 //! emission point costs one branch.
@@ -276,7 +276,7 @@ fn open_writer(path: &Path) -> std::io::Result<BufWriter<File>> {
     Ok(BufWriter::new(File::create(path)?))
 }
 
-/// `~/.failure/logs/scroll-log-<utc-ts>.jsonl` — the input-debug dump's dir
+/// `~/.adevgrok/logs/scroll-log-<utc-ts>.jsonl` — the input-debug dump's dir
 /// and timestamp conventions ([`crate::input_log`]). Also the target of the
 /// `/debug log` runtime toggle ([`super::mouse::MouseScrollState`]).
 pub(crate) fn default_log_path() -> PathBuf {

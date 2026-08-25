@@ -1,6 +1,6 @@
 # Session Management
 
-Failure saves every conversation to disk automatically. Whether you work in the TUI, in headless mode, or over agent stdio, Failure records the exchange as a session. You can resume, rewind, or compact it. This document describes how to manage sessions.
+ADEVGrok saves every conversation to disk automatically. Whether you work in the TUI, in headless mode, or over agent stdio, ADEVGrok records the exchange as a session. You can resume, rewind, or compact it. This document describes how to manage sessions.
 
 ---
 
@@ -15,16 +15,16 @@ A session is a persistent conversation with full history. It includes:
 - Token usage and turn counts
 - Subagent sessions (when enabled)
 
-Sessions are identified by a unique session ID (a UUIDv7 when Failure generates it; a client may supply its own ID with `-s`) and stored on disk under `~/.failure/sessions/`. Set `FAILURE_HOME` to override the base directory; when it is unset, Failure uses `~/.failure`.
+Sessions are identified by a unique session ID (a UUIDv7 when ADEVGrok generates it; a client may supply its own ID with `-s`) and stored on disk under `~/.adevgrok/sessions/`. Set `FAILURE_HOME` to override the base directory; when it is unset, ADEVGrok uses `~/.adevgrok`.
 
 ---
 
 ## Storage Layout
 
-Failure stores each session in its own directory, grouped by working directory. It URL-encodes the working directory to name the group. When the encoded name exceeds 255 bytes, it instead uses a slug plus a hash and records the original path in a `.cwd` file inside the group.
+ADEVGrok stores each session in its own directory, grouped by working directory. It URL-encodes the working directory to name the group. When the encoded name exceeds 255 bytes, it instead uses a slug plus a hash and records the original path in a `.cwd` file inside the group.
 
 ```
-~/.failure/sessions/<encoded-cwd>/<session-id>/
+~/.adevgrok/sessions/<encoded-cwd>/<session-id>/
   summary.json            # metadata: summary/title, timestamps, model ID, message counts
   updates.jsonl           # ACP session update stream (conversation + tool calls)
   chat_history.jsonl      # raw chat messages sent to the model
@@ -54,13 +54,13 @@ This clears the current context and begins a new conversation. Alias: `/clear`.
 
 ### Exit
 
-End the session and quit Failure:
+End the session and quit ADEVGrok:
 
 ```
 /quit
 ```
 
-Alias: `/exit`. To leave the current session but stay in Failure, use `/home` to return to the welcome screen.
+Alias: `/exit`. To leave the current session but stay in ADEVGrok, use `/home` to return to the welcome screen.
 
 ---
 
@@ -85,14 +85,14 @@ To switch between, rename, or close the sessions that are currently active (the 
 Resume a specific session by ID:
 
 ```bash
-failure --resume <session-id>
+adevgrok --resume <session-id>
 ```
 
-Run `failure --resume` without an ID to resume the most recent session for the current directory.
+Run `adevgrok --resume` without an ID to resume the most recent session for the current directory.
 
 ### From the Welcome Screen
 
-When you launch `failure`, the welcome screen lists recent sessions for the current directory. Select one to resume it.
+When you launch `adevgrok`, the welcome screen lists recent sessions for the current directory. Select one to resume it.
 
 ---
 
@@ -128,7 +128,7 @@ Alias: `/title`.
 /rewind
 ```
 
-When you run `/rewind` (or press **Esc Esc** within 800ms while idle with an empty prompt and conversation messages), Failure:
+When you run `/rewind` (or press **Esc Esc** within 800ms while idle with an empty prompt and conversation messages), ADEVGrok:
 
 1. Shows a list of rewind points (one per user prompt)
 2. Lets you select which point to rewind to
@@ -154,7 +154,7 @@ The optional `context` argument lets you provide additional instructions about w
 
 ### Auto-Compact
 
-Failure automatically compacts the conversation when the context window approaches its limit. You will see a notification when auto-compact triggers. The `context_window` setting on your model configuration controls when this threshold is reached.
+ADEVGrok automatically compacts the conversation when the context window approaches its limit. You will see a notification when auto-compact triggers. The `context_window` setting on your model configuration controls when this threshold is reached.
 
 ---
 
@@ -184,13 +184,13 @@ In headless mode, you manage sessions through command-line flags:
 
 ```bash
 # New session each time (default)
-failure -p "Hello"
+adevgrok -p "Hello"
 
 # Resume an existing session by ID (errors if it does not exist)
-failure -p "Continue where we left off" -r <session-id>
+adevgrok -p "Continue where we left off" -r <session-id>
 
 # Continue the most recent session in the current directory
-failure -p "What were we doing?" -c
+adevgrok -p "What were we doing?" -c
 ```
 
 In headless mode, resume an existing session with `-r`/`--resume`, which errors if the session does not exist, or continue the most recent session in the current directory with `-c`/`--continue`. Pass the session ID from JSON output (see below) to `-r`.
@@ -200,7 +200,7 @@ Use `-s`/`--session-id` only to **create** a new session with a **UUID** (errors
 To read the session ID back, request JSON output:
 
 ```bash
-failure -p "Hello" --output-format json | jq -r '.sessionId'
+adevgrok -p "Hello" --output-format json | jq -r '.sessionId'
 ```
 
 ---
@@ -228,28 +228,28 @@ The agent persists all session updates automatically. Clients can reconnect and 
 
 ---
 
-## The failure sessions Subcommand
+## The adevgrok sessions Subcommand
 
-List or search sessions from the command line. `failure sessions` requires a subcommand:
+List or search sessions from the command line. `adevgrok sessions` requires a subcommand:
 
 ```bash
 # List recent sessions for the current directory
-failure sessions list
+adevgrok sessions list
 
 # Limit the number of results (default 20)
-failure sessions list --limit 50
+adevgrok sessions list --limit 50
 
 # Search sessions by keyword (matches titles and prompts)
-failure sessions search "rate limit"
+adevgrok sessions search "rate limit"
 ```
 
-`failure sessions list` shows sessions for the current working directory, grouped by worktree label. Each row lists the session ID, the creation and update dates, the source status, and the summary. `failure sessions search` combines a local SQLite index with remote results.
+`adevgrok sessions list` shows sessions for the current working directory, grouped by worktree label. Each row lists the session ID, the creation and update dates, the source status, and the summary. `adevgrok sessions search` combines a local SQLite index with remote results.
 
 ---
 
 ## Worktree Sessions
 
-When working with subagents or session forks, Failure can create isolated git worktrees per session. Each worktree gets its own copy of the working directory, so file changes in one session do not affect another.
+When working with subagents or session forks, ADEVGrok can create isolated git worktrees per session. Each worktree gets its own copy of the working directory, so file changes in one session do not affect another.
 
 Worktree sessions are managed internally through the `x.ai/git/worktree/*` extension methods. Key operations:
 
@@ -257,7 +257,7 @@ Worktree sessions are managed internally through the `x.ai/git/worktree/*` exten
 - **Apply**: Merge worktree changes back into the main working directory
 - **Remove**: Clean up a worktree when the session is done
 
-Resume a session in a fresh worktree with `failure -w -r <session-id>`.
+Resume a session in a fresh worktree with `adevgrok -w -r <session-id>`.
 
 ---
 
@@ -265,13 +265,13 @@ Resume a session in a fresh worktree with `failure -w -r <session-id>`.
 
 ### Persistence Format
 
-Failure stores the conversation as newline-delimited JSON (JSONL). Each line in `updates.jsonl` is a self-contained ACP session update event. This format supports:
+ADEVGrok stores the conversation as newline-delimited JSON (JSONL). Each line in `updates.jsonl` is a self-contained ACP session update event. This format supports:
 
 - Incremental writes (append-only during a session)
 - Efficient streaming reads (for session restore)
 - Easy debugging (each line is valid JSON)
 
-The smaller state files -- `summary.json`, `plan.json`, and `signals.json` -- are plain JSON rather than JSONL. JSONL is the source of truth for session content; `failure sessions search` additionally maintains a local SQLite FTS5 index over session titles and prompts for fast keyword search.
+The smaller state files -- `summary.json`, `plan.json`, and `signals.json` -- are plain JSON rather than JSONL. JSONL is the source of truth for session content; `adevgrok sessions search` additionally maintains a local SQLite FTS5 index over session titles and prompts for fast keyword search.
 
 ### Session Metadata
 

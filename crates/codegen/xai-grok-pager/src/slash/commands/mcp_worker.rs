@@ -1,10 +1,10 @@
 //! `/mcp-worker configure <token> [worker-name] [account-id]` — save
 //! Cloudflare Worker credentials for the stable remote-MCP URL feature.
 //!
-//! Mirrors `failure mcp-worker configure`/`status`/`disable` (the npm
+//! Mirrors `adevgrok mcp-worker configure`/`status`/`disable` (the npm
 //! package's `bin/cloudflare-worker.js`), but only handles credential
 //! storage: validating the token and writing
-//! `~/.failure/cloudflare-worker.json`. The actual local MCP bridge,
+//! `~/.adevgrok/cloudflare-worker.json`. The actual local MCP bridge,
 //! Cloudflare Quick Tunnel, and Worker deploy are npm-wrapper-only —
 //! launching via the npm package's `failure` command picks up what's
 //! saved here on its next start.

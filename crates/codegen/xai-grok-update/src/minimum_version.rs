@@ -2,7 +2,7 @@
 //!
 //! When `cli.minimum_version` is set in any config layer, Grok refuses to
 //! start below that floor. With auto-update on, we install
-//! `max(latest, minimum)`; otherwise the user is asked to run `grok update`.
+//! `max(latest, minimum)`; otherwise the user is asked to run `adevgrok update`.
 //!
 //! Set `FAILURE_TEST_VERSION` to manually exercise either path without producing
 //! a real out-of-date build.
@@ -46,13 +46,13 @@ pub(crate) enum MinimumVersionError {
     },
     #[error(
         "This version of Grok ({current}) is no longer supported. \
-         Run `grok update` to install version {minimum} or later."
+         Run `adevgrok update` to install version {minimum} or later."
     )]
     AutoUpdateDisabled { current: String, minimum: String },
     /// `npm` / `gh` / `internal` GCS — none detected.
     #[error(
         "This version of Grok ({current}) is no longer supported. \
-         Run `grok update` to install version {minimum} or later."
+         Run `adevgrok update` to install version {minimum} or later."
     )]
     NoInstaller { current: String, minimum: String },
     /// `detail` is telemetry-only; omitted from `Display` to avoid stacking
@@ -60,7 +60,7 @@ pub(crate) enum MinimumVersionError {
     #[error(
         "This version of Grok ({current}) is no longer supported, \
          and the update to version {minimum} didn't complete.\n\n\
-         Run `grok update` to try again."
+         Run `adevgrok update` to try again."
     )]
     UpgradeFailed {
         current: String,
@@ -89,7 +89,7 @@ pub(crate) enum MinimumVersionError {
     /// `grok update --version X` requested a version below the floor.
     #[error(
         "Cannot install Grok {target}: the configured minimum is {minimum}. \
-         Run `grok update` to install the latest allowed version."
+         Run `adevgrok update` to install the latest allowed version."
     )]
     TargetBelowFloor { target: String, minimum: String },
 }
@@ -154,7 +154,7 @@ fn check_install_target_inner(
 }
 
 /// `max(target, configured_floor)`; passthrough when no floor is set.
-/// Used by `grok update` to keep the install target at or above the pin.
+/// Used by `adevgrok update` to keep the install target at or above the pin.
 pub(crate) fn apply_floor(target: &str) -> Result<String, MinimumVersionError> {
     let floor = resolve_floor_or_error()?;
     apply_floor_inner(target, floor.as_deref())

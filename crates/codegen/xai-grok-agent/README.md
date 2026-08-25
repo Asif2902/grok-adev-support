@@ -13,7 +13,7 @@ object that any host can consume — whether that host is
 ### From a definition file
 
 Agent definitions are **Markdown files with YAML frontmatter**, stored
-in `.failure/agents/` (project-level) or `~/.failure/agents/` (user-level).
+in `.failure/agents/` (project-level) or `~/.adevgrok/agents/` (user-level).
 
 ```rust
 use xai_grok_agent::{AgentDefinition, AgentBuilder};
@@ -231,7 +231,7 @@ Agent definitions are discovered from multiple locations with priority:
 1. **Project-level** (highest priority): `.failure/agents/*.md` — walk
    from `cwd` up to the git repository root. Files found closer to
    `cwd` take priority.
-2. **User-level**: `~/.failure/agents/*.md`
+2. **User-level**: `~/.adevgrok/agents/*.md`
 3. **Compat paths** (lowest priority): additional vendor agent
    directories under the user home (when enabled)
 4. **Built-in**: `default_grok_build()`, `browser_use()`

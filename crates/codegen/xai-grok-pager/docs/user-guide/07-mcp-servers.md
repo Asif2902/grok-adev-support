@@ -1,12 +1,12 @@
 # MCP Servers
 
-MCP (Model Context Protocol) servers extend Failure with external tool integrations. They let Failure interact with any service that implements the MCP standard.
+MCP (Model Context Protocol) servers extend ADEVGrok with external tool integrations. They let ADEVGrok interact with any service that implements the MCP standard.
 
 ---
 
 ## What Are MCP Servers?
 
-An MCP server is a process that exposes tools to Failure over a standardized protocol. When you configure an MCP server, its tools become available to the model alongside Failure's built-in tools. The model can discover and call these tools during a session.
+An MCP server is a process that exposes tools to ADEVGrok over a standardized protocol. When you configure an MCP server, its tools become available to the model alongside ADEVGrok's built-in tools. The model can discover and call these tools during a session.
 
 For example, a GitHub MCP server might expose tools like `create_issue`, `list_pull_requests`, and `search_code`. A database server might expose `query`, `list_tables`, and `describe_schema`.
 
@@ -16,11 +16,11 @@ See the [MCP specification](https://modelcontextprotocol.io) for protocol detail
 
 ## Configuration
 
-MCP servers are configured in `~/.failure/config.toml` under `[mcp_servers.<name>]` sections.
+MCP servers are configured in `~/.adevgrok/config.toml` under `[mcp_servers.<name>]` sections.
 
 ### stdio Transport (Local Process)
 
-Failure spawns a local process and communicates over stdin/stdout:
+ADEVGrok spawns a local process and communicates over stdin/stdout:
 
 ```toml
 [mcp_servers.my-server]
@@ -44,10 +44,10 @@ tool_timeouts = { slow_op = 120 }     # Per-tool timeout overrides, seconds
 > inline (full payload spilled under the session `mcp/` folder). Default is
 > **20_000 bytes**. Override via:
 >
-> - env `FAILURE_MAX_MCP_OUTPUT_BYTES` or `MAX_MCP_OUTPUT_BYTES` (bytes; Failure-native
+> - env `FAILURE_MAX_MCP_OUTPUT_BYTES` or `MAX_MCP_OUTPUT_BYTES` (bytes; ADEVGrok-native
 >   wins if both set; Claude-style name, but we bound by **bytes** not tokens)
-> - `config.toml` — user-level (`~/.failure/config.toml`) **or repo-level**
->   (`.failure/config.toml` anywhere on the cwd → git-root chain; the deepest
+> - `config.toml` — user-level (`~/.adevgrok/config.toml`) **or repo-level**
+>   (`.adevgrok/config.toml` anywhere on the cwd → git-root chain; the deepest
 >   file wins, and the repo value applies only once the folder is trusted):
 >
 > ```toml
@@ -55,7 +55,7 @@ tool_timeouts = { slow_op = 120 }     # Per-tool timeout overrides, seconds
 > max_output_bytes = 40000
 > ```
 >
-> Precedence: requirements.toml > env > repo `.failure/config.toml` >
+> Precedence: requirements.toml > env > repo `.adevgrok/config.toml` >
 > user/managed config > default. Repo edits apply to running sessions in that
 > directory via config hot-reload.
 
@@ -85,39 +85,39 @@ Manage MCP servers from the command line without editing config files:
 
 ```bash
 # List configured MCP servers
-failure mcp list
-failure mcp list --json          # Machine-readable output
+adevgrok mcp list
+adevgrok mcp list --json          # Machine-readable output
 
 # Add a stdio server. Everything after -- is the server command, so flags
-# like -y reach the server instead of being parsed by failure.
-failure mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem /path/to/dir
+# like -y reach the server instead of being parsed by adevgrok.
+adevgrok mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem /path/to/dir
 
 # Add a stdio server with environment variables (-e is repeatable)
-failure mcp add postgres -e DATABASE_URL=postgres://localhost/mydb -- npx -y @modelcontextprotocol/server-postgres
+adevgrok mcp add postgres -e DATABASE_URL=postgres://localhost/mydb -- npx -y @modelcontextprotocol/server-postgres
 
 # Add a remote HTTP server
-failure mcp add --transport http sentry https://mcp.sentry.dev/mcp
+adevgrok mcp add --transport http sentry https://mcp.sentry.dev/mcp
 
 # Add a remote server with an authentication header (--header is repeatable)
-failure mcp add --transport http api https://mcp.example.com/mcp --header "Authorization: Bearer YOUR_TOKEN"
+adevgrok mcp add --transport http api https://mcp.example.com/mcp --header "Authorization: Bearer YOUR_TOKEN"
 
 # Add a remote SSE server
-failure mcp add --transport sse linear https://mcp.linear.app/sse
+adevgrok mcp add --transport sse linear https://mcp.linear.app/sse
 
 # Remove a server
-failure mcp remove github
+adevgrok mcp remove github
 
 # Diagnose a server's configuration and connectivity
-failure mcp doctor               # Check every configured server
-failure mcp doctor github        # Check one server
-failure mcp doctor --json        # Machine-readable output
+adevgrok mcp doctor               # Check every configured server
+adevgrok mcp doctor github        # Check one server
+adevgrok mcp doctor --json        # Machine-readable output
 ```
 
 The transport defaults to `stdio`; pass `--transport http` or `--transport sse` for remote servers.
 
-By default `failure mcp add` writes to `~/.failure/config.toml` (`--scope user`). Use `--scope project` to write to `.failure/config.toml` in the current directory instead, which can be committed and shared with your team (see [Project-Scoped MCP Servers](#project-scoped-mcp-servers)). Header and environment variable values are stored verbatim, so reference secrets as `${VAR}` instead of pasting them into a committed project config (see [Example Configurations](#example-configurations)). `failure mcp list` shows servers from both scopes, marking project-scoped ones with `(project)`.
+By default `adevgrok mcp add` writes to `~/.adevgrok/config.toml` (`--scope user`). Use `--scope project` to write to `.adevgrok/config.toml` in the current directory instead, which can be committed and shared with your team (see [Project-Scoped MCP Servers](#project-scoped-mcp-servers)). Header and environment variable values are stored verbatim, so reference secrets as `${VAR}` instead of pasting them into a committed project config (see [Example Configurations](#example-configurations)). `adevgrok mcp list` shows servers from both scopes, marking project-scoped ones with `(project)`.
 
-`failure mcp remove` searches both scopes and exits 0 after removing the server. It exits 1 when the name is not found, or when the name is defined in both user and project scope — pass `--scope` to say which one to remove.
+`adevgrok mcp remove` searches both scopes and exits 0 after removing the server. It exits 1 when the name is not found, or when the name is defined in both user and project scope — pass `--scope` to say which one to remove.
 
 Breaking changes from earlier releases: `--env` now takes one `KEY=value` per flag (use `-e A=1 -e B=2`, not `--env A=1 B=2`), and server names may only contain letters, numbers, hyphens, and underscores.
 
@@ -125,36 +125,36 @@ Breaking changes from earlier releases: `--env` now takes one `KEY=value` per fl
 
 ## Project-Scoped MCP Servers
 
-MCP servers can be configured per-project by placing a `.failure/config.toml` in your repository:
+MCP servers can be configured per-project by placing a `.adevgrok/config.toml` in your repository:
 
 ```
 my-project/
-  .failure/
+  .adevgrok/
     config.toml
   src/
   ...
 ```
 
 ```toml
-# .failure/config.toml
+# .adevgrok/config.toml
 [mcp_servers.linear]
 url = "https://mcp.linear.app/mcp"
 enabled = true
 ```
 
-When a server exposes a native HTTP/SSE endpoint, prefer the `url` form over wrapping it in a stdio proxy such as `npx mcp-remote <url>`. Failure handles HTTP/SSE and OAuth directly, so the native form avoids an extra subprocess per session. It also registers Failure's own OAuth client with the provider.
+When a server exposes a native HTTP/SSE endpoint, prefer the `url` form over wrapping it in a stdio proxy such as `npx mcp-remote <url>`. ADEVGrok handles HTTP/SSE and OAuth directly, so the native form avoids an extra subprocess per session. It also registers ADEVGrok's own OAuth client with the provider.
 
-Failure walks from the current directory up to the git repo root, loading `.failure/config.toml` at each level:
+ADEVGrok walks from the current directory up to the git repo root, loading `.adevgrok/config.toml` at each level:
 
 | Location | Scope | Priority |
 |----------|-------|----------|
-| `~/.failure/config.toml` | All projects | Lowest |
-| `<repo-root>/.failure/config.toml` | This repository | Medium |
-| `<cwd>/.failure/config.toml` | Current directory | Highest |
+| `~/.adevgrok/config.toml` | All projects | Lowest |
+| `<repo-root>/.adevgrok/config.toml` | This repository | Medium |
+| `<cwd>/.adevgrok/config.toml` | Current directory | Highest |
 
 If a project defines a server with the same name as a global one, the project version replaces it entirely (fields are not merged).
 
-Project-scoped files contribute `[mcp_servers]`, `[plugins]`, and `[permission]` entries. Failure reads most other config sections only from `~/.failure/config.toml`.
+Project-scoped files contribute `[mcp_servers]`, `[plugins]`, and `[permission]` entries. ADEVGrok reads most other config sections only from `~/.adevgrok/config.toml`.
 
 ---
 
@@ -169,7 +169,7 @@ MCP tools are namespaced with the server name to avoid collisions:
 
 ## Toggle Servers at Runtime
 
-You can enable or disable MCP servers during a session without restarting Failure.
+You can enable or disable MCP servers during a session without restarting ADEVGrok.
 
 ### The /mcps Modal
 
@@ -198,24 +198,24 @@ The model has access to two built-in tools for working with MCP servers:
 
 ## Compatibility
 
-Failure loads MCP server configurations from multiple sources for compatibility:
+ADEVGrok loads MCP server configurations from multiple sources for compatibility:
 
 | Source | Format | Location | Configurable |
 |--------|--------|----------|-------------|
-| `config.toml` | Native Failure config | `~/.failure/config.toml`, `.failure/config.toml` | Always on |
+| `config.toml` | Native ADEVGrok config | `~/.adevgrok/config.toml`, `.adevgrok/config.toml` | Always on |
 | `.claude.json` | Claude Code format | `~/.claude.json` | `[compat.claude] mcps` |
 | `.cursor/mcp.json` | Cursor format | `~/.cursor/mcp.json`, `<project>/.cursor/mcp.json` | `[compat.cursor] mcps` |
 | `.mcp.json` | MCP standard format | Project root (cwd to git root) | Loaded unless you have imported or dismissed the Claude import prompt (the import marker is set) |
 
 All sources are merged in priority order: config.toml > Claude > Cursor > `.mcp.json`. Servers from higher-priority sources take precedence when names conflict.
 
-The Claude and Cursor MCP sources are scanned by default. To disable scanning for a specific vendor, set `[compat.<vendor>] mcps = false` in `~/.failure/config.toml` or the corresponding environment variable (`FAILURE_CURSOR_MCPS_ENABLED`, `FAILURE_CLAUDE_MCPS_ENABLED`). See [Configuration](05-configuration.md#harness-compatibility) for details. Use `failure inspect` to see which MCP servers were loaded and their vendor origin (`[cursor]`, `[claude]`).
+The Claude and Cursor MCP sources are scanned by default. To disable scanning for a specific vendor, set `[compat.<vendor>] mcps = false` in `~/.adevgrok/config.toml` or the corresponding environment variable (`FAILURE_CURSOR_MCPS_ENABLED`, `FAILURE_CLAUDE_MCPS_ENABLED`). See [Configuration](05-configuration.md#harness-compatibility) for details. Use `adevgrok inspect` to see which MCP servers were loaded and their vendor origin (`[cursor]`, `[claude]`).
 
 ---
 
 ## MCP OAuth
 
-For MCP servers that require OAuth authentication, Failure handles the credential flow automatically. When an MCP server requests OAuth credentials, Failure opens a browser-based authorization flow and stores the resulting tokens for future use.
+For MCP servers that require OAuth authentication, ADEVGrok handles the credential flow automatically. When an MCP server requests OAuth credentials, ADEVGrok opens a browser-based authorization flow and stores the resulting tokens for future use.
 
 ---
 
@@ -225,7 +225,7 @@ Use the `url` form for hosted MCP servers and the `command` / `args` form for lo
 
 ### Native HTTP (hosted services)
 
-You must authenticate OAuth-based MCP servers before you can use them. Failure stores the resulting tokens under `~/.failure/mcp_credentials.json`. After you edit `config.toml`, press `r` in the `/mcps` modal to refresh the server list.
+You must authenticate OAuth-based MCP servers before you can use them. ADEVGrok stores the resulting tokens under `~/.adevgrok/mcp_credentials.json`. After you edit `config.toml`, press `r` in the `/mcps` modal to refresh the server list.
 
 ```toml
 [mcp_servers.linear]
@@ -252,7 +252,7 @@ enabled = true
 Authorization = "Bearer <token>"
 ```
 
-To avoid putting secrets in the config file, reference an environment variable with `${VAR}` (or `${VAR:-default}`). Failure expands string fields in `[mcp_servers.*]` — `url`, `command`, `args`, and the values in `env` and `headers` — at load time:
+To avoid putting secrets in the config file, reference an environment variable with `${VAR}` (or `${VAR:-default}`). ADEVGrok expands string fields in `[mcp_servers.*]` — `url`, `command`, `args`, and the values in `env` and `headers` — at load time:
 
 ```toml
 [mcp_servers.internal-tools]
@@ -285,7 +285,7 @@ tool_timeout_sec = 120
 tool_timeouts = { slow_analysis = 300, quick_lookup = 10 }
 ```
 
-On Windows, npm installs launchers like `npx`, `npm`, `pnpm`, and `yarn` as `.cmd` batch shims (there is no `npx.exe`). Failure resolves a bare `command` such as `npx` to its real launcher path on `PATH` (honoring `PATHEXT`) before spawning, so these work without manually wrapping them in `cmd /c`. A `command` given as an absolute path or one containing a path separator is used as-is.
+On Windows, npm installs launchers like `npx`, `npm`, `pnpm`, and `yarn` as `.cmd` batch shims (there is no `npx.exe`). ADEVGrok resolves a bare `command` such as `npx` to its real launcher path on `PATH` (honoring `PATHEXT`) before spawning, so these work without manually wrapping them in `cmd /c`. A `command` given as an absolute path or one containing a path separator is used as-is.
 
 ---
 
@@ -324,26 +324,26 @@ npx -y @modelcontextprotocol/server-filesystem /path
 startup_timeout_sec = 30
 ```
 
-For stdio servers, Failure captures the process's standard error to `~/.failure/logs/mcp/<server>.stderr.log`, truncated on each launch. Check this file when a server starts but fails to handshake:
+For stdio servers, ADEVGrok captures the process's standard error to `~/.adevgrok/logs/mcp/<server>.stderr.log`, truncated on each launch. Check this file when a server starts but fails to handshake:
 
 ```bash
-tail -f ~/.failure/logs/mcp/filesystem.stderr.log
+tail -f ~/.adevgrok/logs/mcp/filesystem.stderr.log
 ```
 
 ### Viewing Server Status
 
-Use `failure inspect` to see all loaded MCP servers and their sources:
+Use `adevgrok inspect` to see all loaded MCP servers and their sources:
 
 ```bash
-failure inspect          # Human-readable
-failure inspect --json   # Machine-readable
+adevgrok inspect          # Human-readable
+adevgrok inspect --json   # Machine-readable
 ```
 
 ### Debug Logging
 
 ```bash
-RUST_LOG=debug FAILURE_LOG_FILE=/tmp/failure.log failure
-tail -f /tmp/failure.log
+RUST_LOG=debug FAILURE_LOG_FILE=/tmp/adevgrok.log adevgrok
+tail -f /tmp/adevgrok.log
 ```
 
 Look for log entries containing `mcp` to trace server startup, tool discovery, and tool call execution.

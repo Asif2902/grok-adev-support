@@ -1171,7 +1171,7 @@ mod tests {
             std::fs::set_permissions(&script, perms).unwrap();
         }
 
-        // Inject HOME via extra_env so `sh -c "~/.failure-test-hooks-gb856/..."`
+        // Inject HOME via extra_env so `sh -c "~/.adevgrok-test-hooks-gb856/..."`
         // expands `~` to the temp dir. This avoids depending on the system
         // HOME, which is absent in hermetic sandboxed test runners.
         let mut extra_env = std::collections::HashMap::new();
@@ -1188,9 +1188,9 @@ mod tests {
             matcher: None,
             enabled: true,
             command: Some(std::path::PathBuf::from(
-                "~/.failure-test-hooks-gb856/tilde-test.sh",
+                "~/.adevgrok-test-hooks-gb856/tilde-test.sh",
             )),
-            command_raw: Some("~/.failure-test-hooks-gb856/tilde-test.sh".to_string()),
+            command_raw: Some("~/.adevgrok-test-hooks-gb856/tilde-test.sh".to_string()),
             url: None,
             url_raw: None,
             timeout_ms: 5000,

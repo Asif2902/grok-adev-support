@@ -23,7 +23,7 @@ Examples:
   # Add a remote server with an authentication header
   grok mcp add --transport http api https://mcp.example.com/mcp --header \"Authorization: Bearer YOUR_TOKEN\"
 
-  # Add to the project config (./.failure/config.toml) instead of ~/.failure/config.toml
+  # Add to the project config (./.failure/config.toml) instead of ~/.adevgrok/config.toml
   grok mcp add --scope project github -- npx -y @modelcontextprotocol/server-github";
 
 #[derive(Debug, clap::Args, Clone)]
@@ -46,7 +46,7 @@ pub enum McpTransport {
 /// Which config file an MCP server definition is written to.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
 pub enum McpScope {
-    /// `~/.failure/config.toml`, available in all your projects
+    /// `~/.adevgrok/config.toml`, available in all your projects
     User,
     /// `./.failure/config.toml`, shared with everyone working in this directory
     Project,
@@ -111,7 +111,7 @@ pub struct AddArgs {
     #[arg(short = 't', long, value_enum)]
     transport: Option<McpTransport>,
 
-    /// Config to write to: user (~/.failure/config.toml) or project (./.failure/config.toml)
+    /// Config to write to: user (~/.adevgrok/config.toml) or project (./.failure/config.toml)
     #[arg(short = 's', long, value_enum, default_value = "user")]
     scope: McpScope,
 
@@ -567,7 +567,7 @@ async fn run_remove(name: &str, requested_scope: Option<McpScope>) -> Result<()>
     println!("File modified: {}", scope_display(scope, &path));
 
     // A scoped delete can leave the name defined in the other scope or an
-    // ancestor .failure/config.toml, where it still resolves for sessions.
+    // ancestor .adevgrok/config.toml, where it still resolves for sessions.
     let still_user_defined = mcp_server_defined_at(&user_config_path(), name);
     if let Some((survivor_scope, remaining)) =
         surviving_definition(still_user_defined, find_project_site())

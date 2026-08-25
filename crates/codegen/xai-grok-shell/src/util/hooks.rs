@@ -40,7 +40,7 @@ pub fn discover_hook_source_paths(
     // Compat gate: skip .claude hook sources when disabled.
     let skip_claude_compat = !compat.claude.hooks;
     // Phase 2 cutoff: if the user has imported, skip .claude/settings.json
-    // sources. Native .failure/hooks/ directories are still scanned (they hold
+    // sources. Native .adevgrok/hooks/ directories are still scanned (they hold
     // any hooks that were imported by /import-claude).
     let skip_claude = skip_claude_compat
         || crate::claude_import::is_claude_import_marked_with_log("discover_hook_source_paths");

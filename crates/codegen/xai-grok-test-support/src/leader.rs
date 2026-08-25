@@ -149,7 +149,7 @@ impl LeaderStdioClient {
             .env("FAILURE_TRACE_UPLOAD", "false")
             .env("FAILURE_INSTRUMENTATION", "disabled")
             // Inherited by the spawned leader, whose stderr goes to
-            // ~/.failure/leader.log — keep it chatty for diagnosis.
+            // ~/.adevgrok/leader.log — keep it chatty for diagnosis.
             .env("RUST_LOG", "xai_grok_shell=debug");
 
         let (mut child, stderr) = spawn_piped_with_stderr_capture(cmd);

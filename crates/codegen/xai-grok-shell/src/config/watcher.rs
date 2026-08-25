@@ -70,9 +70,9 @@ fn new_filtered_debouncer<F: notify_debouncer_mini::DebounceEventHandler>(
 pub enum ConfigChangeEvent {
     AuthChanged,
     GlobalConfigChanged,
-    /// `~/.failure/models_cache.json` changed — the on-disk `/v1/models`
+    /// `~/.adevgrok/models_cache.json` changed — the on-disk `/v1/models`
     /// catalog cache was rewritten, possibly by **another** grok process
-    /// sharing the same `~/.failure` (the writer may also be this process;
+    /// sharing the same `~/.adevgrok` (the writer may also be this process;
     /// the [`ModelsManager`](crate::agent::models::ModelsManager) dedupes
     /// by content before applying).
     ModelsCacheChanged,
@@ -98,7 +98,7 @@ pub enum ConfigChangeEvent {
     HomeClaudeJsonChanged,
 }
 
-/// Watches `~/.failure/` for `auth.json`, `config.toml`, and `models_cache.json`
+/// Watches `~/.adevgrok/` for `auth.json`, `config.toml`, and `models_cache.json`
 /// changes, plus any extra paths (project `.failure/config.toml`, `.mcp.json`,
 /// etc.) provided at startup.
 ///
@@ -399,7 +399,7 @@ fn log_watch_error(err: &notify::Error, msg: &str) {
     }
 }
 
-/// Watches skill directories (`~/.failure/skills/`, `<repo>/.failure/skills/`, etc.)
+/// Watches skill directories (`~/.adevgrok/skills/`, `<repo>/.failure/skills/`, etc.)
 /// for new, modified, or removed `SKILL.md` files.
 ///
 /// When a change is detected the receiver gets a `()` signal. The caller is
@@ -423,10 +423,10 @@ fn is_skill_change_path(p: &Path) -> bool {
 }
 
 /// True for a global/home-level config dir that must never be watched
-/// recursively: `grok_home` (`~/.failure`, or `$FAILURE_HOME`) or a known vendor dir
+/// recursively: `grok_home` (`~/.adevgrok`, or `$FAILURE_HOME`) or a known vendor dir
 /// directly under `$HOME` ([`HOME_VENDOR_DIRS`]).
 ///
-/// These hold large non-skill trees — `~/.failure` alone has `worktrees/`,
+/// These hold large non-skill trees — `~/.adevgrok` alone has `worktrees/`,
 /// `sessions/`, `logs/`, `upload_queue/` — so recursing them exhausted the
 /// inotify quota (~780k watches on a devbox) and, since each worktree is a full
 /// checkout, fired skill reloads on ordinary repo activity. They get scoped
@@ -463,7 +463,7 @@ fn is_global_config_dir_impl(dir: &Path, grok_home: &Path, home: Option<&Path>) 
 /// Watch only a config dir's skill subtrees — `<dir>/skills` recursively and
 /// `<dir>/commands` flat — never the dir root (see [`is_global_config_dir`]).
 /// Returns the number of watches registered; a missing subdir is skipped (for
-/// `~/.failure` these exist at startup; later creation is caught on restart).
+/// `~/.adevgrok` these exist at startup; later creation is caught on restart).
 fn watch_skill_subdirs(
     debouncer: &mut Debouncer<AccessFilteredWatcher>,
     config_dir: &Path,
@@ -589,8 +589,8 @@ mod tests {
         assert!(!g(&home.join("repo").join(".failure")));
     }
 
-    /// Regression for the ~/.failure inotify-exhaustion / worktree-noise bug: a
-    /// `SKILL.md` under a sibling subtree (e.g. `~/.failure/worktrees/`) must not
+    /// Regression for the ~/.adevgrok inotify-exhaustion / worktree-noise bug: a
+    /// `SKILL.md` under a sibling subtree (e.g. `~/.adevgrok/worktrees/`) must not
     /// drive a reload, while a real `<dir>/skills/**/SKILL.md` change still does.
     #[test]
     #[cfg(target_os = "linux")]

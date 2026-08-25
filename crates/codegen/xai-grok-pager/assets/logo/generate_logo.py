@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Generates the Failure Build braille-art logo (logo07.txt / logo05.txt).
+"""Generates the ADEVGrok braille-art logo (logo07.txt / logo05.txt).
 
-Renders a bold "F" monogram as a boolean pixel grid, then packs it into
+Renders a bold "AG" monogram as a boolean pixel grid, then packs it into
 Unicode Braille Pattern characters (U+2800-U+28FF), where each character
 encodes a 2-wide x 4-tall block of dots:
 
@@ -15,8 +15,11 @@ relative to the script) to regenerate both files after adjusting the shape
 functions below. logo07.txt is the full (7-row) logo used in the hero box
 and tall terminals; logo05.txt is the small (5-row) variant used at medium
 terminal heights (see crates/codegen/xai-grok-pager/src/views/welcome/logo.rs).
+
+Add `--preview` to print the pixel grids as ASCII before writing the files.
 """
 
+import sys
 from pathlib import Path
 
 # Bit offset for each (dx, dy) position within a braille cell's 2x4 dot grid.
@@ -38,6 +41,62 @@ def fill_rect(grid, x0: int, y0: int, x1: int, y1: int) -> None:
             grid[y][x] = True
 
 
+def _stamp(grid, x: int, y: int, r: int) -> None:
+    """Square brush centered on (x, y) — gives diagonal strokes even weight."""
+    height, width = len(grid), len(grid[0])
+    for yy in range(y - r, y + r + 1):
+        for xx in range(x - r, x + r + 1):
+            if 0 <= yy < height and 0 <= xx < width:
+                grid[yy][xx] = True
+
+
+def _thick_line(grid, xa, ya, xb, yb, r) -> None:
+    steps = 2 * max(abs(xb - xa), abs(yb - ya)) + 1
+    for i in range(steps + 1):
+        t = i / steps
+        _stamp(grid, round(xa + (xb - xa) * t), round(ya + (yb - ya) * t), r)
+
+
+def make_ag_monogram(width: int, height: int) -> list[list[bool]]:
+    """A bold geometric "AG" pair, proportioned for a roughly square dot canvas."""
+    grid = new_grid(width, height)
+    margin_x = max(1, round(width * 0.04))
+    margin_y = max(1, round(height * 0.07))
+    y0, y1 = margin_y, height - 1 - margin_y
+    inner_w = width - 2 * margin_x
+    letter_w = max(6, round(inner_w * 0.42))
+
+    ax0 = margin_x
+    ax1 = ax0 + letter_w - 1
+    gx1 = width - 1 - margin_x
+    gx0 = gx1 - letter_w + 1
+
+    s = max(2, round(height * 0.13))  # stroke/stem thickness
+
+    # --- A: peaked cap, two stems, crossbar; hollow counters ---
+    apex_x = (ax0 + ax1) // 2
+    y_cap = y0 + max(3, round((y1 - y0) * 0.22))
+    for yy in range(y0, y_cap + 1):
+        frac = (yy - y0) / max(1, y_cap - y0)
+        half = round((ax1 - ax0) / 2 * frac)
+        fill_rect(grid, apex_x - half, yy, apex_x + half, yy)
+    fill_rect(grid, ax0, y_cap, ax0 + s - 1, y1)           # left stem
+    fill_rect(grid, ax1 - s + 1, y_cap, ax1, y1)           # right stem
+    bar_y = y0 + round((y1 - y0) * 0.62)
+    fill_rect(grid, ax0, bar_y, ax1, bar_y + s - 1)        # crossbar
+
+    # --- G: open-top-right box with an inward spur ---
+    g_s = max(2, round(height * 0.17))
+    fill_rect(grid, gx0, y0, gx1, y0 + g_s - 1)            # top bar
+    fill_rect(grid, gx0, y0, gx0 + g_s - 1, y1)            # left stem
+    fill_rect(grid, gx0, y1 - g_s + 1, gx1, y1)            # bottom bar
+    mid_y = y0 + round((y1 - y0) * 0.46)
+    fill_rect(grid, gx1 - g_s + 1, mid_y, gx1, y1)         # right lower stem
+    spur_x = gx0 + round((gx1 - gx0) * 0.55)
+    fill_rect(grid, spur_x, mid_y, gx1, mid_y + g_s - 1)   # spur into the bowl
+    return grid
+
+
 def to_braille(grid) -> str:
     """Packs a boolean pixel grid into rows of Braille characters."""
     height, width = len(grid), len(grid[0])
@@ -55,34 +114,18 @@ def to_braille(grid) -> str:
     return "\n".join(lines) + "\n"
 
 
-def make_f_monogram(width: int, height: int) -> list[list[bool]]:
-    """A bold geometric "F", proportioned for a roughly square dot canvas."""
-    grid = new_grid(width, height)
-    stem_w = max(2, round(width * 0.18))
-    stroke_h = max(2, round(height * 0.16))
-    margin_x = max(1, round(width * 0.10))
-    margin_y = max(1, round(height * 0.06))
-
-    # Vertical stem, full height.
-    fill_rect(grid, margin_x, margin_y, margin_x + stem_w - 1, height - 1 - margin_y)
-    # Top arm, full width.
-    fill_rect(grid, margin_x, margin_y, width - 1 - margin_x, margin_y + stroke_h - 1)
-    # Middle arm, shorter — stops before the stem's midline overhang.
-    mid_y = margin_y + round(height * 0.42)
-    fill_rect(
-        grid,
-        margin_x,
-        mid_y,
-        width - 1 - margin_x - round(width * 0.18),
-        mid_y + stroke_h - 1,
-    )
-    return grid
+def preview(grid) -> str:
+    return "\n".join("".join("#" if px else "." for px in row) for row in grid)
 
 
 def main() -> None:
+    show_preview = "--preview" in sys.argv[1:]
     here = Path(__file__).parent
-    full = make_f_monogram(28, 28)  # 14 cols x 7 rows of braille cells
-    small = make_f_monogram(20, 20)  # 10 cols x 5 rows of braille cells
+    full = make_ag_monogram(28, 28)  # 14 cols x 7 rows of braille cells
+    small = make_ag_monogram(20, 20)  # 10 cols x 5 rows of braille cells
+    if show_preview:
+        print("full:\n" + preview(full))
+        print("small:\n" + preview(small))
     (here / "logo07.txt").write_text(to_braille(full), encoding="utf-8")
     (here / "logo05.txt").write_text(to_braille(small), encoding="utf-8")
     print("wrote logo07.txt and logo05.txt")

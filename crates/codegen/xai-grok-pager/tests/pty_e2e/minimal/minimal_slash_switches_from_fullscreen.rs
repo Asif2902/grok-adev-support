@@ -88,7 +88,7 @@ async fn minimal_slash_switches_from_fullscreen() {
         "main screen should be cleared on /minimal relaunch; leftover reopen text:\n{screen}"
     );
     assert!(
-        screen.contains("Failure Build") || harness.full_text().contains("Failure Build"),
+        screen.contains("ADEVGrok") || harness.full_text().contains("ADEVGrok"),
         "welcome card should re-anchor at top after /minimal relaunch\nscreen:\n{screen}"
     );
 

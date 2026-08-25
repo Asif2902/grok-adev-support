@@ -2158,7 +2158,7 @@ impl MvpAgent {
     ///    initialize + cached_token + oidc fired in quick succession before
     ///    the first sync's tar extract finished), drop this call to avoid
     ///    racing concurrent extracts that would interleave per-file writes
-    ///    against `~/.failure/bundled/` and the manifest.
+    ///    against `~/.adevgrok/bundled/` and the manifest.
     pub(crate) fn maybe_sync_bundle_in_background(&self, force: bool) {
         use crate::extensions::bundle::{
             BUNDLE_SYNC_TTL, bundle_cache_is_fresh, has_bundle_credentials,

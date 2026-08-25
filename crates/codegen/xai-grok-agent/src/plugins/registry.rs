@@ -78,7 +78,7 @@ pub struct LoadedPlugin {
 }
 
 impl LoadedPlugin {
-    /// Data directory for this plugin: `~/.failure/plugin-data/<plugin_id>/`.
+    /// Data directory for this plugin: `~/.adevgrok/plugin-data/<plugin_id>/`.
     pub fn data_dir(&self) -> PathBuf {
         xai_grok_config::grok_home()
             .join("plugin-data")
@@ -887,7 +887,7 @@ mod tests {
         let reg = PluginRegistry::from_discovered(vec![dp], &[], &[]);
         let plugin = reg.get("my-plugin").unwrap();
         let data_dir = plugin.data_dir();
-        // Should be under ~/.failure/plugin-data/<plugin_id>/
+        // Should be under ~/.adevgrok/plugin-data/<plugin_id>/
         let data_dir_str = data_dir.to_string_lossy();
         assert!(data_dir_str.contains("plugin-data"));
         assert!(data_dir_str.contains("user/"));

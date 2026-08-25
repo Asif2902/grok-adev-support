@@ -5,7 +5,7 @@ use toml::Value as TomlValue;
 use toml::map::Map as TomlMap;
 use xai_grok_agent::prompt::skills::SkillsConfig;
 
-/// Process-wide write lock for `~/.failure/config.toml`.
+/// Process-wide write lock for `~/.adevgrok/config.toml`.
 ///
 /// Serializes the read-modify-write in `save_config` so two rapid
 /// settings toggles can't interleave and clobber each other.
@@ -105,7 +105,7 @@ async fn write_root_atomic(root: &TomlValue, path: &std::path::Path) -> Result<(
 /// Add/update a `[provider.<name>]` `base_url` entry and ensure a
 /// `[model.<name>]` entry selecting that provider exists (`/provider add`
 /// in the TUI), then store `api_key` securely via the same provider-scoped
-/// secret storage `failure login --provider` uses.
+/// secret storage `adevgrok login --provider` uses.
 ///
 /// Deliberately independent of [`save_config`]'s typed-`Config` flow: that
 /// flow only round-trips fixed-shape sections (`cli`/`models`/`ui`/...) via

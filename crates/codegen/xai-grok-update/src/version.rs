@@ -35,7 +35,7 @@ pub(crate) const CLI_BASE_URLS: &[&str] = &[CLI_BASE_URL_PRIMARY];
 pub struct UpdateConfig {
     /// Chat API proxy base URL (versioned `https://cli-chat-proxy.grok.com/v1` endpoint).
     pub proxy_base_url: String,
-    /// Auth scope key for `~/.failure/auth.json`.
+    /// Auth scope key for `~/.adevgrok/auth.json`.
     pub auth_scope: String,
     /// Enterprise deployment key (FAILURE_DEPLOYMENT_KEY).
     pub deployment_key: Option<String>,
@@ -417,7 +417,7 @@ pub async fn is_version_cache_fresh() -> bool {
 pub use xai_grok_version::installed as get_installed_grok_version;
 
 /// Version of the managed grok binary currently on disk, read from the
-/// `~/.failure/bin/grok` symlink target (`../downloads/grok-<version>-<platform>`)
+/// `~/.adevgrok/bin/grok` symlink target (`../downloads/grok-<version>-<platform>`)
 /// without exec'ing anything.
 ///
 /// Concurrent updaters (TUI background download, leader hourly checker,
@@ -427,7 +427,7 @@ pub use xai_grok_version::installed as get_installed_grok_version;
 ///
 /// Returns `None` when there is no parseable managed symlink (Windows
 /// copy-based installs, dev builds) or when the symlink is DANGLING — a
-/// link whose target binary was deleted (e.g. manual `~/.failure/downloads`
+/// link whose target binary was deleted (e.g. manual `~/.adevgrok/downloads`
 /// cleanup) must not report an installed version, or every updater would
 /// claim "already up to date" forever while no runnable binary exists.
 /// NOTE: the symlink existing does not prove the *active installer*
@@ -501,7 +501,7 @@ pub(crate) async fn try_fetch_stable_pointer() -> Option<String> {
     .unwrap_or(None)
 }
 
-/// Read the cached stable version from `~/.failure/version.json` (sync, for display).
+/// Read the cached stable version from `~/.adevgrok/version.json` (sync, for display).
 ///
 /// Returns `None` if the file doesn't exist, can't be parsed, or has no
 /// `stable_version` field (e.g. written by an older binary).
@@ -545,7 +545,7 @@ pub fn channel_name() -> Option<&'static str> {
 /// Channel label derived from the cached stable pointer.
 ///
 /// Compares the compiled-in `VERSION` against the stable pointer stored in
-/// `~/.failure/version.json` (written by the auto-updater):
+/// `~/.adevgrok/version.json` (written by the auto-updater):
 /// - `" [alpha]"` when the current version is ahead of stable,
 /// - `" [stable]"` when at or behind stable,
 /// - `""` when no cached pointer is available (first launch, old cache format).

@@ -403,7 +403,7 @@ pub fn session_token_auth_gate(
 pub const AUTH_ERROR_SESSION_EXPIRED: &str =
     "Session expired. Run `grok login` to re-authenticate.";
 
-pub const AUTH_ERROR_API_KEY: &str = "Authentication failed. Run `grok login`, set XAI_API_KEY, or add api_key to ~/.failure/config.toml.";
+pub const AUTH_ERROR_API_KEY: &str = "Authentication failed. Run `grok login`, set XAI_API_KEY, or add api_key to ~/.adevgrok/config.toml.";
 
 /// Next ACP method id when `cached_token` cannot proceed (missing / expired /
 /// legacy WebLogin), or `None` when fallthrough is forbidden.
@@ -455,7 +455,7 @@ pub fn cached_token_auth_method() -> acp::AuthMethod {
             acp::AuthMethodId::new(CACHED_TOKEN_AUTH_METHOD_ID),
             "cached_token".to_string(),
         )
-        .description(Some("Cached token from ~/.failure/auth.json".to_string())),
+        .description(Some("Cached token from ~/.adevgrok/auth.json".to_string())),
     )
 }
 
@@ -765,7 +765,7 @@ mod tests {
     // ── End-to-end: enterprise TOML -> resolved models -> build_auth_methods ─
 
     /// END-TO-END REGRESSION TEST: parses the literal enterprise-style
-    /// `~/.failure/config.toml` skeleton from the bug report, walks it through
+    /// `~/.adevgrok/config.toml` skeleton from the bug report, walks it through
     /// the same predicate (`should_advertise_xai_api_key`) and the same
     /// list-builder (`build_auth_methods`) that `MvpAgent::initialize()` uses
     /// in production, and asserts that `auth_methods.first()` is `xai.api_key`

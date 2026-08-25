@@ -2,7 +2,7 @@
 #
 # Failure CLI installer — https://raw.githubusercontent.com/Asif2902/grok-adev-support/main/crates/codegen/xai-grok-pager/scripts/install.sh
 #
-# Auth: FAILURE_DEPLOYMENT_KEY (takes precedence) or ~/.failure/auth.json from `failure login`.
+# Auth: FAILURE_DEPLOYMENT_KEY (takes precedence) or ~/.adevgrok/auth.json from `adevgrok login`.
 # Env: FAILURE_CHANNEL (stable|alpha|enterprise, default: stable), FAILURE_BIN_DIR, FAILURE_PROXY_URL
 #
 # Usage:
@@ -107,10 +107,10 @@ json_get() {
         | sed -e 's/\\"/"/g' -e 's/\\n/\'$'\n''/g' -e 's/\\t/\'$'\t''/g' -e 's/\\\\/\\/g'
 }
 
-# Read a token from ~/.failure/auth.json for the given scope key.
+# Read a token from ~/.adevgrok/auth.json for the given scope key.
 # Format: {"scope_url": {"key": "token"}, ...}
 read_failure_token() {
-    local auth_file="$HOME/.failure/auth.json"
+    local auth_file="$HOME/.adevgrok/auth.json"
     local scope="$1"
     [ -f "$auth_file" ] || return 1
     # Flatten to one line then extract: find the scope, then the "key" value after it
@@ -130,10 +130,10 @@ else
     LEGACY_TOKEN=$(read_failure_token "$LEGACY_SCOPE" 2>/dev/null) || true
     if [ -n "$OIDC_TOKEN" ]; then
         AUTH_SOURCE="auth.json (oidc)"
-        echo "Auth: using OIDC token from ~/.failure/auth.json." >&2
+        echo "Auth: using OIDC token from ~/.adevgrok/auth.json." >&2
     elif [ -n "$LEGACY_TOKEN" ]; then
         AUTH_SOURCE="auth.json (legacy)"
-        echo "Auth: using legacy token from ~/.failure/auth.json." >&2
+        echo "Auth: using legacy token from ~/.adevgrok/auth.json." >&2
     fi
 fi
 
@@ -156,8 +156,8 @@ esac
 # "latest", so it works as both the channel-pointer host and the binary host
 # without any release-specific URL here.
 BASE_URL="https://github.com/Asif2902/grok-adev-support/releases/latest/download"
-DOWNLOAD_DIR="$HOME/.failure/downloads"
-BIN_DIR="${FAILURE_BIN_DIR:-$HOME/.failure/bin}"
+DOWNLOAD_DIR="$HOME/.adevgrok/downloads"
+BIN_DIR="${FAILURE_BIN_DIR:-$HOME/.adevgrok/bin}"
 mkdir -p "$DOWNLOAD_DIR" "$BIN_DIR"
 
 platform="${os}-${arch}"
@@ -181,12 +181,12 @@ if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9._]+)?$ ]]; then
 fi
 
 if [ -n "$AUTH_SOURCE" ]; then
-    echo "Installing Failure $version ($platform, $AUTH_SOURCE)..." >&2
+    echo "Installing ADEVGrok $version ($platform, $AUTH_SOURCE)..." >&2
 else
-    echo "Installing Failure $version ($platform)..." >&2
+    echo "Installing ADEVGrok $version ($platform)..." >&2
 fi
 
-binary_path="$DOWNLOAD_DIR/failure-$platform"
+binary_path="$DOWNLOAD_DIR/adevgrok-$platform"
 artifact_base="${BASE_URL}/adevgrok-${version}-${platform}"
 
 if [ "$os" = "windows" ]; then
@@ -196,13 +196,13 @@ fi
 binary_tmp="${binary_path}.tmp.$$"
 rm -f "$binary_tmp" 2>/dev/null || true
 
-echo "  Downloading failure ${version}..." >&2
+echo "  Downloading adevgrok ${version}..." >&2
 if [ "$os" = "windows" ]; then
     if ! download_file_parallel "${artifact_base}.exe" "$binary_tmp"; then
         if ! download_file_parallel "$artifact_base" "$binary_tmp"; then
             rm -f "$binary_tmp"
             if is_not_found "${artifact_base}.exe"; then
-                echo "Error: Failure is not yet available for your system ($platform)." >&2
+                echo "Error: ADEVGrok is not yet available for your system ($platform)." >&2
             else
                 echo "Error: binary download failed (${artifact_base}.exe and ${artifact_base})" >&2
             fi
@@ -212,7 +212,7 @@ if [ "$os" = "windows" ]; then
 elif ! download_file_parallel "$artifact_base" "$binary_tmp"; then
     rm -f "$binary_tmp"
     if is_not_found "$artifact_base"; then
-        echo "Error: Failure is not yet available for your system ($platform)." >&2
+        echo "Error: ADEVGrok is not yet available for your system ($platform)." >&2
     else
         echo "Error: binary download failed from ${artifact_base}" >&2
     fi
@@ -223,7 +223,7 @@ if [ "$os" = "windows" ]; then
     mv -f "$binary_tmp" "$binary_path"
     # Symlinks require Developer Mode on Windows; copy instead.
     # If the exe is locked by a running process, rename it aside then retry.
-    for bin_name in failure.exe agent.exe; do
+    for bin_name in adevgrok.exe agent.exe; do
         rm -f "$BIN_DIR/$bin_name.old" 2>/dev/null || true  # stale backup from prior update
         if ! cp -f "$binary_path" "$BIN_DIR/$bin_name" 2>/dev/null; then
             mv -f "$BIN_DIR/$bin_name" "$BIN_DIR/$bin_name.old" 2>/dev/null || true
@@ -235,39 +235,39 @@ if [ "$os" = "windows" ]; then
             fi
         fi
     done
-    echo "  Binary installed to $BIN_DIR/failure.exe and $BIN_DIR/agent.exe." >&2
+    echo "  Binary installed to $BIN_DIR/adevgrok.exe and $BIN_DIR/agent.exe." >&2
 else
     chmod +x "$binary_tmp"
     if ! "$binary_tmp" --version </dev/null >/dev/null 2>&1; then
-        echo "Error: downloaded failure failed to run; keeping the existing install." >&2
+        echo "Error: downloaded binary failed to run; keeping the existing install." >&2
         rm -f "$binary_tmp"
         exit 1
     fi
     mv -f "$binary_tmp" "$binary_path"
     # Use relative symlinks when BIN_DIR and DOWNLOAD_DIR share a parent
-    # (default layout: ~/.failure/bin and ~/.failure/downloads are siblings).
+    # (default layout: ~/.adevgrok/bin and ~/.adevgrok/downloads are siblings).
     # Relative symlinks survive Docker bind-mounts with a different $HOME.
     if [ "$(dirname "$BIN_DIR")" = "$(dirname "$DOWNLOAD_DIR")" ]; then
         link_target="../$(basename "$DOWNLOAD_DIR")/$(basename "$binary_path")"
     else
         link_target="$binary_path"
     fi
-    ln -sf "$link_target" "$BIN_DIR/failure"
+    ln -sf "$link_target" "$BIN_DIR/adevgrok"
     ln -sf "$link_target" "$BIN_DIR/agent"
-    echo "  Binary linked to $BIN_DIR/failure and $BIN_DIR/agent." >&2
+    echo "  Binary linked to $BIN_DIR/adevgrok and $BIN_DIR/agent." >&2
 fi
 
 # Generate shell completions (best-effort)
-mkdir -p "$HOME/.failure/completions/bash" "$HOME/.failure/completions/zsh"
-"$BIN_DIR/failure" completions bash > "$HOME/.failure/completions/bash/failure.bash" 2>/dev/null || true
-"$BIN_DIR/failure" completions zsh  > "$HOME/.failure/completions/zsh/_failure"  2>/dev/null || true
+mkdir -p "$HOME/.adevgrok/completions/bash" "$HOME/.adevgrok/completions/zsh"
+"$BIN_DIR/adevgrok" completions bash > "$HOME/.adevgrok/completions/bash/adevgrok.bash" 2>/dev/null || true
+"$BIN_DIR/adevgrok" completions zsh  > "$HOME/.adevgrok/completions/zsh/_adevgrok"  2>/dev/null || true
 # Fish: write to the auto-loaded completions dir so it works immediately
 if mkdir -p "$HOME/.config/fish/completions" 2>/dev/null; then
-    "$BIN_DIR/failure" completions fish > "$HOME/.config/fish/completions/failure.fish" 2>/dev/null || true
+    "$BIN_DIR/adevgrok" completions fish > "$HOME/.config/fish/completions/adevgrok.fish" 2>/dev/null || true
 fi
 
 # Persist installer source and channel to config
-CONFIG_FILE="$HOME/.failure/config.toml"
+CONFIG_FILE="$HOME/.adevgrok/config.toml"
 CLI_BLOCK="installer = \"internal\""
 if [ "$CHANNEL" != "stable" ]; then
     CLI_BLOCK="${CLI_BLOCK}\nchannel = \"${CHANNEL}\""
@@ -308,24 +308,24 @@ if [ -n "$FAILURE_DEPLOYMENT_KEY" ]; then
         MANAGED_CONFIG=$(json_get "$DEPLOY_RESPONSE" "managed_config")
         REQUIREMENTS=$(json_get "$DEPLOY_RESPONSE" "requirements")
         if [ -n "$MANAGED_CONFIG" ] && [ "$MANAGED_CONFIG" != "null" ]; then
-            printf '%s\n' "$MANAGED_CONFIG" > "$HOME/.failure/managed_config.toml"
+            printf '%s\n' "$MANAGED_CONFIG" > "$HOME/.adevgrok/managed_config.toml"
             echo "  Managed config applied." >&2
         else
-            rm -f "$HOME/.failure/managed_config.toml"
+            rm -f "$HOME/.adevgrok/managed_config.toml"
         fi
         if [ -n "$REQUIREMENTS" ] && [ "$REQUIREMENTS" != "null" ]; then
-            printf '%s\n' "$REQUIREMENTS" > "$HOME/.failure/requirements.toml"
+            printf '%s\n' "$REQUIREMENTS" > "$HOME/.adevgrok/requirements.toml"
             echo "  Requirements applied." >&2
         else
-            rm -f "$HOME/.failure/requirements.toml"
+            rm -f "$HOME/.adevgrok/requirements.toml"
         fi
     fi
 fi
 
 if [ "$os" = "windows" ]; then
-    echo "Failure $version installed to $BIN_DIR/failure.exe" >&2
+    echo "ADEVGrok $version installed to $BIN_DIR/adevgrok.exe" >&2
 else
-    echo "Failure $version installed to $BIN_DIR/failure" >&2
+    echo "ADEVGrok $version installed to $BIN_DIR/adevgrok" >&2
 fi
 
 # --- Ensure failure is on PATH ---
@@ -340,17 +340,17 @@ SYMLINK_CREATED=""
 if [ "$os" != "windows" ] && ! path_has_dir "$BIN_DIR"; then
     for candidate in "$HOME/.local/bin" "/usr/local/bin"; do
         if path_has_dir "$candidate" && [ -d "$candidate" ] && [ -w "$candidate" ]; then
-            ln -sf "$BIN_DIR/failure" "$candidate/failure"
+            ln -sf "$BIN_DIR/adevgrok" "$candidate/adevgrok"
             ln -sf "$BIN_DIR/agent" "$candidate/agent"
             SYMLINK_CREATED="$candidate"
-            echo "  Symlinked $candidate/failure -> $BIN_DIR/failure" >&2
+            echo "  Symlinked $candidate/adevgrok -> $BIN_DIR/adevgrok" >&2
             echo "  Symlinked $candidate/agent -> $BIN_DIR/agent" >&2
             break
         fi
     done
 fi
 
-# Also update shell config so ~/.failure/bin is on PATH for future sessions
+# Also update shell config so ~/.adevgrok/bin is on PATH for future sessions
 user_shell="$(basename "${SHELL:-}")"
 config_file=""
 
@@ -385,18 +385,18 @@ if [ -n "$config_file" ]; then
     # Build the new installer block
     if [ "$user_shell" = "fish" ]; then
         new_block='# >>> failure installer >>>
-fish_add_path $HOME/.failure/bin
+fish_add_path $HOME/.adevgrok/bin
 # <<< failure installer <<<'
     elif [ "$user_shell" = "zsh" ]; then
         new_block='# >>> failure installer >>>
-export PATH="$HOME/.failure/bin:$PATH"
-fpath=(~/.failure/completions/zsh $fpath)
+export PATH="$HOME/.adevgrok/bin:$PATH"
+fpath=(~/.adevgrok/completions/zsh $fpath)
 autoload -Uz compinit && compinit -C
 # <<< failure installer <<<'
     else
         new_block='# >>> failure installer >>>
-export PATH="$HOME/.failure/bin:$PATH"
-[[ -r "$HOME/.failure/completions/bash/failure.bash" ]] && source "$HOME/.failure/completions/bash/failure.bash"
+export PATH="$HOME/.adevgrok/bin:$PATH"
+[[ -r "$HOME/.adevgrok/completions/bash/adevgrok.bash" ]] && source "$HOME/.adevgrok/completions/bash/adevgrok.bash"
 # <<< failure installer <<<'
     fi
 
@@ -427,10 +427,10 @@ echo "" >&2
 if path_has_dir "$BIN_DIR" || [ -n "$SYMLINK_CREATED" ]; then
     echo "Run 'failure' or 'agent' to get started!" >&2
 elif [ -n "$config_file" ]; then
-    echo "Restart your terminal, then run 'failure' or 'agent' to get started!" >&2
+    echo "Restart your terminal, then run 'adevgrok' or 'agent' to get started!" >&2
 else
-    echo "Add $BIN_DIR to your PATH, then run 'failure' or 'agent' to get started:" >&2
-    echo '  export PATH="$HOME/.failure/bin:$PATH"' >&2
+    echo "Add $BIN_DIR to your PATH, then run 'adevgrok' or 'agent' to get started:" >&2
+    echo '  export PATH="$HOME/.adevgrok/bin:$PATH"' >&2
 fi
 
 if [ "$os" = "windows" ]; then

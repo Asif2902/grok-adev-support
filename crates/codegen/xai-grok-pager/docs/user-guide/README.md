@@ -1,6 +1,6 @@
-# Failure Build User Guide
+# ADEVGrok User Guide
 
-Learn how to install, configure, and extend Failure Build, a terminal-based AI coding assistant that supports x.ai's Grok models and other bring-your-own-provider backends.
+Learn how to install, configure, and extend ADEVGrok, a terminal-based AI coding assistant that supports x.ai's Grok models and other bring-your-own-provider backends.
 
 ---
 
@@ -20,7 +20,7 @@ Start here. These guides cover what you need on your first day.
 
 ## Tier 2: Core Feature Docs
 
-Customize and extend Failure Build.
+Customize and extend ADEVGrok.
 
 | # | Document | Description |
 |---|----------|-------------|
@@ -37,11 +37,11 @@ Customize and extend Failure Build.
 
 ## Tier 3: Advanced Usage Docs
 
-Automate, script, and integrate Failure Build with other systems.
+Automate, script, and integrate ADEVGrok with other systems.
 
 | # | Document | Description |
 |---|----------|-------------|
-| 14 | [Headless Mode and Scripting](14-headless-mode.md) | `failure -p`, output formats, CI/CD integration, and piping |
+| 14 | [Headless Mode and Scripting](14-headless-mode.md) | `adevgrok -p`, output formats, CI/CD integration, and piping |
 | 15 | [Agent Mode and IDE Integration](15-agent-mode.md) | ACP stdio transport, WebSocket relay, and SDK integration |
 | 16 | [Subagents and Personas](16-subagents.md) | Parallel child sessions, agent types, personas, and capability modes |
 | 17 | [Session Management](17-sessions.md) | Save, load, resume, rewind, compact, and the session persistence format |

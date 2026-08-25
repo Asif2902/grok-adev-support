@@ -1,6 +1,6 @@
 # Configuration
 
-Failure reads configuration from local config files, environment variables, and
+ADEVGrok reads configuration from local config files, environment variables, and
 CLI flags. This document covers the common options.
 
 ---
@@ -11,7 +11,7 @@ Configuration is resolved in this order (highest priority first):
 
 1. **CLI flags** (e.g., `--yolo`, `--model`, `--sandbox`)
 2. **Environment variables** (e.g., `XAI_API_KEY`, `FAILURE_MEMORY`)
-3. **config.toml** (`~/.failure/config.toml`)
+3. **config.toml** (`~/.adevgrok/config.toml`)
 4. **Managed / requirements config** (local files your org may deploy, e.g.
    `managed_config.toml` / `requirements.toml`)
 5. **Built-in defaults**
@@ -20,9 +20,9 @@ Configuration is resolved in this order (highest priority first):
 
 ## config.toml (Main Configuration)
 
-Location: `~/.failure/config.toml`
+Location: `~/.adevgrok/config.toml`
 
-If the file does not exist, Failure uses built-in defaults. Specify only the values you want to override.
+If the file does not exist, ADEVGrok uses built-in defaults. Specify only the values you want to override.
 
 ### General Settings
 
@@ -98,7 +98,7 @@ simple_mode = false
 ```
 
 You can also toggle this setting from the settings pane (`/settings` →
-**Disable vim input mode**); Failure writes your choice to `[ui] simple_mode` in
+**Disable vim input mode**); ADEVGrok writes your choice to `[ui] simple_mode` in
 `config.toml`.
 
 `simple_mode` and `vim_mode` are independent: `simple_mode` changes the prompt
@@ -155,8 +155,8 @@ active in the **scrollback** pane. It does not affect the input prompt.
 | `true` | All vim-style scrollback bindings are active, exactly as listed in [Keyboard Shortcuts](03-keyboard-shortcuts.md). |
 
 Toggle `vim_mode` at runtime with `/vim-mode`, or from the settings pane
-(`/settings` → **Vim scrollback navigation**). Failure writes the change to
-`[ui] vim_mode` in `~/.failure/config.toml` immediately and applies it to every
+(`/settings` → **Vim scrollback navigation**). ADEVGrok writes the change to
+`[ui] vim_mode` in `~/.adevgrok/config.toml` immediately and applies it to every
 future pager session — including new agents and subagents started in the same
 process. There is no separate per-session override; whatever is in
 `config.toml` is the source of truth on next launch.
@@ -167,7 +167,7 @@ navigation, while `simple_mode` controls editing in the prompt.
 #### Screen Mode
 
 The `screen_mode` setting under `[ui]` is the **default render mode** for plain
-`failure` launches. Configure it from `/settings` → **Default screen mode**
+`adevgrok` launches. Configure it from `/settings` → **Default screen mode**
 (restart required), or edit `config.toml` by hand. Both choices write
 `config.toml`. CLI flags (`--minimal` / `--fullscreen`) and slash commands
 (`/minimal` / `/fullscreen`) are session-scoped and do **not** write this key —
@@ -278,7 +278,7 @@ Credential resolution: `api_key` > `env_key` > signed-in session token > `XAI_AP
 Override built-in models by using their name as the section key:
 
 ```toml
-[model.failure-build]
+[model.adevgrok-build]
 api_key = "my-api-key"               # only override the fields you need
 ```
 
@@ -305,9 +305,9 @@ url = "https://mcp.example.com/api/mcp"  # HTTP/SSE transport
 headers = { "x-mcp-session-id" = "{{session_id}}" }
 ```
 
-MCP servers can also be configured per-project in `.failure/config.toml`. Project-scoped config contributes `[mcp_servers]`, `[plugins]`, and `[permission]` rules; other sections load only from `~/.failure/config.toml`.
+MCP servers can also be configured per-project in `.adevgrok/config.toml`. Project-scoped config contributes `[mcp_servers]`, `[plugins]`, and `[permission]` rules; other sections load only from `~/.adevgrok/config.toml`.
 
-Priority for `[mcp_servers]` and `[plugins]`: `.failure/config.toml` (current dir) > `<repo-root>/.failure/config.toml` > `~/.failure/config.toml`. `[permission]` rules are not overridden by priority; they merge across all files with `deny` > `ask` > `allow` (see [22-permissions-and-safety.md](22-permissions-and-safety.md)).
+Priority for `[mcp_servers]` and `[plugins]`: `.adevgrok/config.toml` (current dir) > `<repo-root>/.adevgrok/config.toml` > `~/.adevgrok/config.toml`. `[permission]` rules are not overridden by priority; they merge across all files with `deny` > `ask` > `allow` (see [22-permissions-and-safety.md](22-permissions-and-safety.md)).
 
 ### Memory
 
@@ -394,7 +394,7 @@ Each cell can be toggled via environment variable or `config.toml`. See the
 environment-variables reference for the env var names. Resolution order:
 env var > config.toml > default (on).
 
-`failure inspect` reports cells that still need session-start resolution as
+`adevgrok inspect` reports cells that still need session-start resolution as
 `?` until a value is available; cells with an explicit env or TOML value
 use that value. Affected discovery entries report
 `compatibilityStatus: "unresolved"` in JSON and `[compat unresolved]` in
@@ -410,9 +410,9 @@ disabled = ["user/a1b2c3d4/noisy-plugin"]
 
 ### Hints
 
-The `[hints]` table holds small persisted UI preferences — mostly "stop asking me" opt-outs. Failure writes these for you when you pick a "don't ask again" / "reset in config.toml" option in the TUI, but you can edit or remove them by hand. Deleting a key restores the default behavior.
+The `[hints]` table holds small persisted UI preferences — mostly "stop asking me" opt-outs. ADEVGrok writes these for you when you pick a "don't ask again" / "reset in config.toml" option in the TUI, but you can edit or remove them by hand. Deleting a key restores the default behavior.
 
-`[hints]` is read from the **effective config merge** (same precedence as other settings): system managed → user `managed_config.toml` → user `config.toml` → user `requirements.toml` → system `requirements.toml`. Higher-priority layers override lower ones. The TUI only **writes** opt-outs to user `~/.failure/config.toml`.
+`[hints]` is read from the **effective config merge** (same precedence as other settings): system managed → user `managed_config.toml` → user `config.toml` → user `requirements.toml` → system `requirements.toml`. Higher-priority layers override lower ones. The TUI only **writes** opt-outs to user `~/.adevgrok/config.toml`.
 
 ```toml
 [hints]
@@ -424,7 +424,7 @@ fork_worktree_mode = "ask"             # /fork worktree prompt: "ask" | "always"
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `project_picker_disabled` | bool | `false` | When `true`, skips the picker that asks you to choose a project directory on the first prompt when Failure is launched from a non-project directory (home, Desktop, Downloads, `/tmp`). Set automatically when you choose **"Don't ask me again"** in that picker. Teams can pin this in `managed_config.toml` or `requirements.toml` via `[hints] project_picker_disabled = true`. |
+| `project_picker_disabled` | bool | `false` | When `true`, skips the picker that asks you to choose a project directory on the first prompt when ADEVGrok is launched from a non-project directory (home, Desktop, Downloads, `/tmp`). Set automatically when you choose **"Don't ask me again"** in that picker. Teams can pin this in `managed_config.toml` or `requirements.toml` via `[hints] project_picker_disabled = true`. |
 | `memory_modal_fullscreen` | bool | `false` | Remembers whether the memory modal was last opened fullscreen. |
 | `new_session_worktree_mode` | string | `"never"` | Worktree prompt for `/new`: `ask` shows the popup, `always` creates a worktree, `never` skips it. |
 | `fork_worktree_mode` | string | `"ask"` | Worktree prompt for `/fork`: `ask`, `always`, or `never`. |
@@ -447,7 +447,7 @@ progress_bar = true       # show tab progress bar (OSC 9;4)
 
 [ui.notifications.title]
 enabled = true
-items = ["action-required", "spinner", "activity", "session-name", "failure"]
+items = ["action-required", "spinner", "activity", "session-name", "adevgrok"]
 ```
 
 | Option | Type | Default | Description |
@@ -459,7 +459,7 @@ items = ["action-required", "spinner", "activity", "session-name", "failure"]
 | `sleep_prevention` | bool | `true` | Keep the display awake while the agent is working (macOS/Linux). |
 | `progress_bar` | bool | `true` | Show a progress indicator in the terminal tab (OSC 9;4). |
 | `title.enabled` | bool | `true` | Set the terminal title to reflect agent state. |
-| `title.items` | array | (see above) | Items shown in the title bar. Options: `action-required`, `spinner`, `activity`, `session-name`, `cwd`, `model`, `turn-timer`, `failure`. |
+| `title.items` | array | (see above) | Items shown in the title bar. Options: `action-required`, `spinner`, `activity`, `session-name`, `cwd`, `model`, `turn-timer`, `adevgrok`. |
 
 #### Terminal Support Matrix
 
@@ -474,10 +474,10 @@ items = ["action-required", "spinner", "activity", "session-name", "failure"]
 | VS Code | BEL | Yes | No |
 | Apple Terminal | BEL | No | No |
 | VTE (GNOME Terminal) | OSC 777 | Yes | No |
-| Failure Desktop | None (native) | N/A | N/A |
+| ADEVGrok Desktop | None (native) | N/A | N/A |
 | Unknown | BEL | No | No |
 
-When `method = "auto"`, Failure detects the terminal brand and selects the best
+When `method = "auto"`, ADEVGrok detects the terminal brand and selects the best
 protocol automatically. Set `method` explicitly to override auto-detection.
 
 #### Notification Hooks
@@ -488,7 +488,7 @@ Run custom commands when events occur. Hooks receive environment variables
 ```toml
 # macOS native notification
 [[ui.notifications.hooks]]
-command = "terminal-notifier -title 'Failure' -message '$FAILURE_MESSAGE'"
+command = "terminal-notifier -title 'ADEVGrok' -message '$FAILURE_MESSAGE'"
 events = ["turn_complete", "approval_required"]
 only_unfocused = true
 timeout_secs = 10
@@ -530,7 +530,7 @@ Then restart tmux. If passthrough is not available (tmux < 3.3), set
 
 **Focus tracking not working:**
 Some terminals do not report focus events. If `condition = "unfocused"` never
-fires, try `condition = "always"` as a fallback. Failure supports focus tracking
+fires, try `condition = "always"` as a fallback. ADEVGrok supports focus tracking
 in every detected terminal except Apple Terminal and unrecognized terminals.
 
 **Sleep prevention not taking effect:**
@@ -556,7 +556,7 @@ mixpanel_enabled = false                                  # disable Mixpanel pro
 trace_upload = false                                      # disable session/trace uploads (inherits the telemetry toggle when unset)
 ```
 
-Set these only to point telemetry at your own infrastructure or to turn parts of it off. The built-in endpoint and credentials are managed by Failure; leave them unset to use the defaults.
+Set these only to point telemetry at your own infrastructure or to turn parts of it off. The built-in endpoint and credentials are managed by ADEVGrok; leave them unset to use the defaults.
 
 The same `[telemetry]` table also configures the **external OpenTelemetry stream** — an independent opt-in (it does not require the telemetry toggle above) that ships a curated, content-free usage schema to your *own* OTLP collector. Collector auth is supplied via `OTEL_EXPORTER_OTLP_HEADERS` and is never stored on disk. See [Monitoring & Usage](24-monitoring-usage.md) for the full schema, env vars, and privacy model.
 
@@ -585,12 +585,12 @@ auth_provider_label = "Acme Corp"
 auth_token_ttl = 3600
 
 [models]
-default = "company-failure"
+default = "company-adevgrok"
 
-[model.company-failure]
+[model.company-adevgrok]
 model = "grok-build"
 base_url = "https://grok-proxy.acme.com/"
-name = "Failure Build Latest (Proxy)"
+name = "ADEVGrok Latest (Proxy)"
 context_window = 128000
 
 [features]
@@ -601,7 +601,7 @@ telemetry = false
 
 ## pager.toml (Appearance Configuration)
 
-Location: `~/.failure/pager.toml`
+Location: `~/.adevgrok/pager.toml`
 
 Controls the visual appearance and behavior of the TUI. Changes are applied on restart.
 
@@ -765,7 +765,7 @@ Key environment variables. See the README for the complete list.
 
 | Variable | Description |
 |----------|-------------|
-| `FAILURE_HOME` | Override config directory (default: `~/.failure`) |
+| `FAILURE_HOME` | Override config directory (default: `~/.adevgrok`) |
 | `FAILURE_RESPECT_GITIGNORE` | Force gitignore filtering on (`1`) or off (`0`); overrides `[tools] respect_gitignore` |
 
 ### Telemetry
@@ -782,37 +782,37 @@ Key environment variables. See the README for the complete list.
 
 | Path | Description |
 |------|-------------|
-| `~/.failure/config.toml` | Main configuration file |
-| `~/.failure/pager.toml` | TUI appearance configuration |
-| `~/.failure/auth.json` | Authentication credentials (auto-managed) |
-| `~/.failure/sessions/` | Persisted sessions (organized by working directory) |
-| `~/.failure/memory/` | Cross-session memory files and index |
-| `~/.failure/skills/` | User-scoped skill definitions |
-| `~/.failure/plugins/` | User-scoped plugins |
-| `~/.failure/agents/` | User-scoped agent definitions |
-| `~/.failure/lsp.json` | LSP server configuration (user-scoped) |
-| `~/.failure/logs/` | Internal log files (for example `unified.jsonl`, MCP server logs) |
-| `.failure/config.toml` | Project-scoped MCP servers, plugins, and permission rules |
-| `.failure/skills/` | Project-scoped skill definitions |
-| `.failure/plugins/` | Project-scoped plugins |
-| `.failure/agents/` | Project-scoped agent definitions |
-| `.failure/hooks/` | Project-scoped hooks |
-| `.failure/lsp.json` | LSP server configuration |
+| `~/.adevgrok/config.toml` | Main configuration file |
+| `~/.adevgrok/pager.toml` | TUI appearance configuration |
+| `~/.adevgrok/auth.json` | Authentication credentials (auto-managed) |
+| `~/.adevgrok/sessions/` | Persisted sessions (organized by working directory) |
+| `~/.adevgrok/memory/` | Cross-session memory files and index |
+| `~/.adevgrok/skills/` | User-scoped skill definitions |
+| `~/.adevgrok/plugins/` | User-scoped plugins |
+| `~/.adevgrok/agents/` | User-scoped agent definitions |
+| `~/.adevgrok/lsp.json` | LSP server configuration (user-scoped) |
+| `~/.adevgrok/logs/` | Internal log files (for example `unified.jsonl`, MCP server logs) |
+| `.adevgrok/config.toml` | Project-scoped MCP servers, plugins, and permission rules |
+| `.adevgrok/skills/` | Project-scoped skill definitions |
+| `.adevgrok/plugins/` | Project-scoped plugins |
+| `.adevgrok/agents/` | Project-scoped agent definitions |
+| `.adevgrok/hooks/` | Project-scoped hooks |
+| `.adevgrok/lsp.json` | LSP server configuration |
 
 ---
 
 ## Project-Scoped Configuration
 
-Some configuration can be set per-project by placing files in `.failure/` within your repository:
+Some configuration can be set per-project by placing files in `.adevgrok/` within your repository:
 
 | File | What it configures |
 |------|--------------------|
-| `.failure/config.toml` | MCP servers, plugins, permission rules, and the `[mcp] max_output_bytes` tool-result cap (other sections load only from `~/.failure/config.toml`) |
-| `.failure/skills/` | Project-specific skills |
-| `.failure/hooks/` | Project-specific lifecycle hooks |
-| `.failure/agents/` | Project-specific agent definitions |
-| `.failure/lsp.json` | LSP server configuration |
-| `.failure/sandbox.toml` | Custom sandbox profiles |
+| `.adevgrok/config.toml` | MCP servers, plugins, permission rules, and the `[mcp] max_output_bytes` tool-result cap (other sections load only from `~/.adevgrok/config.toml`) |
+| `.adevgrok/skills/` | Project-specific skills |
+| `.adevgrok/hooks/` | Project-specific lifecycle hooks |
+| `.adevgrok/agents/` | Project-specific agent definitions |
+| `.adevgrok/lsp.json` | LSP server configuration |
+| `.adevgrok/sandbox.toml` | Custom sandbox profiles |
 | `AGENTS.md` | Project instructions (system prompt) |
 
 Project-scoped MCP servers override global ones with the same name (full replacement, not merge).
@@ -825,14 +825,14 @@ Language servers power passive diagnostics and the optional `lsp` tool (see the 
 
 | Source | Location | Scope |
 |--------|----------|-------|
-| User | `~/.failure/lsp.json` | All projects |
-| Project | `.failure/lsp.json` | Current repository |
+| User | `~/.adevgrok/lsp.json` | All projects |
+| Project | `.adevgrok/lsp.json` | Current repository |
 | Plugin | A trusted plugin's `.lsp.json` file, or an inline `lspServers` block in its `plugin.json` | Wherever the plugin is enabled |
 
 When the same server name is defined by more than one source, it is resolved in this order (highest priority first):
 
-1. **Project** -- `.failure/lsp.json`
-2. **User** -- `~/.failure/lsp.json`
+1. **Project** -- `.adevgrok/lsp.json`
+2. **User** -- `~/.adevgrok/lsp.json`
 3. **Plugins** -- file-based `.lsp.json`, then inline `lspServers`, in plugin load order
 
 Project and user entries replace lower-priority ones with the same name. Plugin entries only add servers whose names are not already defined by a local file, so a local `lsp.json` always wins over a plugin. Plugin LSP servers load only after the plugin is trusted (see [Plugins](09-plugins.md)).

@@ -1,12 +1,12 @@
 # Cross-Session Memory
 
-Memory lets Failure recall facts, decisions, and patterns from earlier sessions. Failure indexes the information you save and searches it automatically, so a new session can reuse relevant context.
+Memory lets ADEVGrok recall facts, decisions, and patterns from earlier sessions. ADEVGrok indexes the information you save and searches it automatically, so a new session can reuse relevant context.
 
 ---
 
 ## What Is Memory?
 
-Without memory, each Failure session starts fresh: the model knows nothing about previous sessions. When you enable memory, Failure can:
+Without memory, each ADEVGrok session starts fresh: the model knows nothing about previous sessions. When you enable memory, ADEVGrok can:
 
 - Recall project conventions you explained before.
 - Reuse debugging steps that worked.
@@ -22,20 +22,20 @@ Memory is experimental and disabled by default.
 ### Per-Session Flag
 
 ```bash
-failure --experimental-memory
+adevgrok --experimental-memory
 ```
 
 ### Environment Variable
 
 ```bash
 export FAILURE_MEMORY=1
-failure
+adevgrok
 ```
 
 ### Config File (Persistent)
 
 ```toml
-# ~/.failure/config.toml
+# ~/.adevgrok/config.toml
 [memory]
 enabled = true
 ```
@@ -45,7 +45,7 @@ enabled = true
 To disable memory even when other settings enable it:
 
 ```bash
-failure --no-memory
+adevgrok --no-memory
 ```
 
 Or:
@@ -81,15 +81,15 @@ You can also toggle from inside the `/memory` modal by pressing `t`.
 
 ## How Memory Is Stored
 
-Memory is stored as Markdown files under `~/.failure/memory/`:
+Memory is stored as Markdown files under `~/.adevgrok/memory/`:
 
 | Location | Scope | Description |
 |----------|-------|-------------|
-| `~/.failure/memory/MEMORY.md` | Global | Facts that apply across all your projects |
-| `~/.failure/memory/<project-slug>-<hash8>/MEMORY.md` | Workspace | Project-specific conventions and context |
-| `~/.failure/memory/<project-slug>-<hash8>/sessions/` | Sessions | Per-session summaries and logs |
+| `~/.adevgrok/memory/MEMORY.md` | Global | Facts that apply across all your projects |
+| `~/.adevgrok/memory/<project-slug>-<hash8>/MEMORY.md` | Workspace | Project-specific conventions and context |
+| `~/.adevgrok/memory/<project-slug>-<hash8>/sessions/` | Sessions | Per-session summaries and logs |
 
-Failure suffixes each workspace directory with a short hash of the repository's identity. The identity is the `origin` remote in `org/repo` form when the directory is a Git repository with an `origin` remote, or the directory path otherwise. Because clones and worktrees of the same repository share an `origin` remote, they also share one memory directory.
+ADEVGrok suffixes each workspace directory with a short hash of the repository's identity. The identity is the `origin` remote in `org/repo` form when the directory is a Git repository with an `origin` remote, or the directory path otherwise. Because clones and worktrees of the same repository share an `origin` remote, they also share one memory directory.
 
 An SQLite index supports hybrid search across all memory files:
 - **FTS5** provides full-text search for keyword matching.
@@ -99,13 +99,13 @@ An SQLite index supports hybrid search across all memory files:
 
 ## Automatic Saves
 
-When a session ends, Failure saves a structured metadata summary to that session's daily log. The summary contains:
+When a session ends, ADEVGrok saves a structured metadata summary to that session's daily log. The summary contains:
 
 - Message counts (user, assistant, and tool results).
 - Topics: the first few substantive user prompts from the session, up to five.
 - The session date and time (UTC).
 
-Failure builds the summary from conversation metadata without an LLM call, without added latency. Failure skips the save for trivial sessions -- those with fewer than three substantive prompts, or fewer than 50 bytes of user text.
+ADEVGrok builds the summary from conversation metadata without an LLM call, without added latency. ADEVGrok skips the save for trivial sessions -- those with fewer than three substantive prompts, or fewer than 50 bytes of user text.
 
 The summary does not record tool usage, file paths, or shell commands. The session ID forms part of the log filename. To turn automatic saves off, set `session.save_on_end = false`. For richer capture of decisions, patterns, and reasoning, use `/flush`.
 
@@ -132,13 +132,13 @@ Use `/flush` when you want to preserve important context:
 
 ### Remember
 
-Ask Failure to remember something, and it appends the note to a `MEMORY.md` file -- the workspace file for project-specific items, or the global `~/.failure/memory/MEMORY.md` for cross-project preferences:
+Ask ADEVGrok to remember something, and it appends the note to a `MEMORY.md` file -- the workspace file for project-specific items, or the global `~/.adevgrok/memory/MEMORY.md` for cross-project preferences:
 
 ```
 > remember to always open PR links after pushing
 ```
 
-Failure records entries as durable statements under organized headings, such as `## Preferences`, `## Project Context`, or `## Debugging`. The file watcher reindexes the change on the next memory search, so the new entry is searchable within the current session.
+ADEVGrok records entries as durable statements under organized headings, such as `## Preferences`, `## Project Context`, or `## Debugging`. The file watcher reindexes the change on the next memory search, so the new entry is searchable within the current session.
 
 You can also save a note directly with the `/remember` command:
 
@@ -146,31 +146,31 @@ You can also save a note directly with the `/remember` command:
 /remember always open PR links after pushing
 ```
 
-Run `/remember` with no text to enter remember mode, where the next line you type becomes the note. Either way, Failure opens a review panel showing the note (with an optional rewritten version you can toggle with `Tab`); the note is written only after you confirm. On save, Failure shows `Memory saved to ~/.failure/memory/MEMORY.md`.
+Run `/remember` with no text to enter remember mode, where the next line you type becomes the note. Either way, ADEVGrok opens a review panel showing the note (with an optional rewritten version you can toggle with `Tab`); the note is written only after you confirm. On save, ADEVGrok shows `Memory saved to ~/.adevgrok/memory/MEMORY.md`.
 
 ### Forget
 
-Ask Failure to forget something, and it finds and removes the matching entry:
+Ask ADEVGrok to forget something, and it finds and removes the matching entry:
 
 ```
 > forget the snake_case convention
 ```
 
-Forget is best-effort: the model searches memory and removes entries that match. For guaranteed removal, edit the files under `~/.failure/memory/` directly and delete the entry yourself. To locate a file, open the `/memory` browser and press `y` to copy its path.
+Forget is best-effort: the model searches memory and removes entries that match. For guaranteed removal, edit the files under `~/.adevgrok/memory/` directly and delete the entry yourself. To locate a file, open the `/memory` browser and press `y` to copy its path.
 
 ### Recall
 
-Ask what Failure remembers:
+Ask what ADEVGrok remembers:
 
 ```
 > what do you remember?
 ```
 
-Failure searches across all memory files and summarizes what it knows, grouped by source: global preferences, project-specific knowledge, and session history. Use `/memory` to browse the raw files.
+ADEVGrok searches across all memory files and summarizes what it knows, grouped by source: global preferences, project-specific knowledge, and session history. Use `/memory` to browse the raw files.
 
 ### Direct Editing
 
-You can edit memory files directly under `~/.failure/memory/`. The file watcher reindexes your changes on the next memory search. Use `/flush` to save the current session now, and `/dream` to consolidate session logs into organized topics.
+You can edit memory files directly under `~/.adevgrok/memory/`. The file watcher reindexes your changes on the next memory search. Use `/flush` to save the current session now, and `/dream` to consolidate session logs into organized topics.
 
 ---
 
@@ -212,13 +212,13 @@ You can also open `/memory` from the command palette.
 
 ## Memory Notifications
 
-When you save a note with `/remember`, Failure confirms in the scrollback:
+When you save a note with `/remember`, ADEVGrok confirms in the scrollback:
 
 ```
-Memory saved to ~/.failure/memory/MEMORY.md
+Memory saved to ~/.adevgrok/memory/MEMORY.md
 ```
 
-Background saves — flush, dream, and session-end — run silently and do not post a scrollback message. Use `/memory` at any time to browse what Failure has stored.
+Background saves — flush, dream, and session-end — run silently and do not post a scrollback message. Use `/memory` at any time to browse what ADEVGrok has stored.
 
 ---
 
@@ -234,7 +234,7 @@ Dream reorganizes individual session logs and memory entries into a coherent, de
 
 ### Auto-Dream
 
-Dream also runs automatically. By default, Failure checks the consolidation gates when a session ends and runs Dream once enough time has passed and enough sessions have accumulated:
+Dream also runs automatically. By default, ADEVGrok checks the consolidation gates when a session ends and runs Dream once enough time has passed and enough sessions have accumulated:
 
 ```toml
 [memory.dream]
@@ -251,7 +251,7 @@ min_sessions = 3   # Minimum sessions since the last consolidation
 
 ### First-Turn Injection
 
-On the first turn of each session, Failure automatically searches memory for content relevant to the current project and injects it as context. This means Failure starts with knowledge from previous sessions without a reminder.
+On the first turn of each session, ADEVGrok automatically searches memory for content relevant to the current project and injects it as context. This means ADEVGrok starts with knowledge from previous sessions without a reminder.
 
 First-turn injection can be configured:
 
@@ -269,7 +269,7 @@ Memory is also searched after auto-compaction to recover relevant context that m
 
 ## Memory Search
 
-Failure searches memory automatically, but you can also trigger searches manually in the chat:
+ADEVGrok searches memory automatically, but you can also trigger searches manually in the chat:
 
 ```
 Search memory for "auth middleware patterns"
@@ -324,26 +324,26 @@ lambda = 0.7             # 0.0 = max diversity, 1.0 = pure relevance
 
 ## CLI Commands
 
-The `failure memory` command manages memory from the shell. It has one subcommand, `clear`:
+The `adevgrok memory` command manages memory from the shell. It has one subcommand, `clear`:
 
 ```bash
 # Clear workspace memory (MEMORY.md, sessions/, and index.sqlite). This is the default scope.
-failure memory clear
+adevgrok memory clear
 
 # The same scope, stated explicitly
-failure memory clear --workspace
+adevgrok memory clear --workspace
 
 # Clear the global MEMORY.md
-failure memory clear --global
+adevgrok memory clear --global
 
 # Clear both workspace and global memory
-failure memory clear --all
+adevgrok memory clear --all
 
 # Skip the confirmation prompt (-y is the short form)
-failure memory clear --yes
+adevgrok memory clear --yes
 ```
 
-To edit memory from the shell, open the files in your editor directly -- for example, `$EDITOR ~/.failure/memory/MEMORY.md`.
+To edit memory from the shell, open the files in your editor directly -- for example, `$EDITOR ~/.adevgrok/memory/MEMORY.md`.
 
 ---
 
@@ -355,7 +355,7 @@ To edit memory from the shell, open the files in your editor directly -- for exa
 |-----|---------|-------------|
 | `enabled` | `false` | Enable memory |
 | `session.save_on_end` | `true` | Write metadata summary on session end |
-| `watcher.enabled` | `true` | Watch `~/.failure/memory/` for external edits and reindex |
+| `watcher.enabled` | `true` | Watch `~/.adevgrok/memory/` for external edits and reindex |
 
 ### Index Settings (`[memory.index]`)
 
@@ -386,7 +386,7 @@ To edit memory from the shell, open the files in your editor directly -- for exa
 | Key | Default | Description |
 |-----|---------|-------------|
 | `enabled` | `true` | Enable first-turn memory injection |
-| `min_score` | unset | Score threshold for first-turn results. When unset, Failure applies no threshold, which is equivalent to `0.0`. |
+| `min_score` | unset | Score threshold for first-turn results. When unset, ADEVGrok applies no threshold, which is equivalent to `0.0`. |
 
 ### Dream Settings (`[memory.dream]`)
 
@@ -407,7 +407,7 @@ You configure flush under `[compaction]`, not `[memory]`, because it is a compac
 | `enabled` | `true` | Enable the pre-compaction memory flush |
 | `soft_threshold_tokens` | `4000` | Token headroom before the compact threshold that triggers a flush |
 | `max_flush_write_chars` | `8000` | Maximum characters the flush may write to memory |
-| `flush_model` | unset | Model for the flush turn. When unset, Failure uses the session's primary model. |
+| `flush_model` | unset | Model for the flush turn. When unset, ADEVGrok uses the session's primary model. |
 | `idle_timeout_secs` | unset | Idle seconds before a background flush. When unset, flush runs only before compaction. |
 | `semantic_dedup_threshold` | unset | Cosine-similarity threshold for de-duplicating flushed content. When unset, defaults to `0.92`. |
 
@@ -428,13 +428,13 @@ You configure pruning under `[compaction]`, not `[memory]`, because it is a comp
 
 ## Memory Staleness
 
-When a session memory is old, Failure attaches a staleness note to it in search results. Older results get a stronger reminder to verify the current state before you rely on them. These notes help you spot stored facts that might no longer be accurate. Global and workspace memories never receive staleness notes, because they hold curated long-term knowledge.
+When a session memory is old, ADEVGrok attaches a staleness note to it in search results. Older results get a stronger reminder to verify the current state before you rely on them. These notes help you spot stored facts that might no longer be accurate. Global and workspace memories never receive staleness notes, because they hold curated long-term knowledge.
 
 ---
 
 ## File Watcher
 
-By default, Failure watches `~/.failure/memory/` for external file changes. If you edit memory files directly (e.g., in your editor), the changes are picked up automatically on the next memory search:
+By default, ADEVGrok watches `~/.adevgrok/memory/` for external file changes. If you edit memory files directly (e.g., in your editor), the changes are picked up automatically on the next memory search:
 
 - Created or modified files are reindexed.
 - Deleted files have their stale chunks removed from the index.
@@ -450,8 +450,8 @@ enabled = true    # default
 
 ### Memory Not Working
 
-1. Verify memory is enabled: check `failure inspect` output.
-2. Check the flag: `failure --experimental-memory` or `FAILURE_MEMORY=1`.
+1. Verify memory is enabled: check `adevgrok inspect` output.
+2. Check the flag: `adevgrok --experimental-memory` or `FAILURE_MEMORY=1`.
 3. Check for `--no-memory` or `FAILURE_MEMORY=0` overriding your config.
 
 ### Memory Not Appearing in Sessions
@@ -463,14 +463,14 @@ Memory is injected on the first turn. If you started a session before enabling m
 Use `/memory` in the TUI to browse all memory files with a preview. You can also access them directly:
 
 ```bash
-ls ~/.failure/memory/
-cat ~/.failure/memory/MEMORY.md
-$EDITOR ~/.failure/memory/MEMORY.md
+ls ~/.adevgrok/memory/
+cat ~/.adevgrok/memory/MEMORY.md
+$EDITOR ~/.adevgrok/memory/MEMORY.md
 ```
 
 ### Debug Logging
 
 ```bash
-RUST_LOG=debug FAILURE_LOG_FILE=/tmp/failure.log failure
-grep "memory" /tmp/failure.log
+RUST_LOG=debug FAILURE_LOG_FILE=/tmp/adevgrok.log adevgrok
+grep "memory" /tmp/adevgrok.log
 ```

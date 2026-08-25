@@ -124,7 +124,7 @@ pub enum AgentsModalOutcome {
         tab: AgentsTab,
     },
 }
-/// User-level vs project-level config files (`~/.failure` vs `{cwd}/.failure`).
+/// User-level vs project-level config files (`~/.adevgrok` vs `{cwd}/.failure`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum ConfigFileScope {
     #[default]
@@ -374,7 +374,7 @@ fn personas_from_bundle(bundle: &BundleState) -> Vec<PersonaDetail> {
             .collect()
     }
 }
-/// Union bundled personas with local `~/.failure/personas` and `{cwd}/.failure/personas`.
+/// Union bundled personas with local `~/.adevgrok/personas` and `{cwd}/.failure/personas`.
 ///
 /// Bundled names take precedence; local-only names are appended with scope tags.
 pub fn merge_persona_lists(bundle: &BundleState, cwd: &Path) -> Vec<PersonaDetail> {
@@ -552,7 +552,7 @@ pub fn create_persona_template(
 pub fn persona_path_is_deletable(path: &Path) -> bool {
     config_path_is_user_or_project(path, "personas")
 }
-/// Shared guard: canonical path under `~/.failure/{subdir}` or `{cwd}/.failure/{subdir}`, not bundled.
+/// Shared guard: canonical path under `~/.adevgrok/{subdir}` or `{cwd}/.failure/{subdir}`, not bundled.
 fn config_path_is_user_or_project(path: &Path, subdir: &str) -> bool {
     let Ok(canonical) = dunce::canonicalize(path) else {
         return false;

@@ -1246,7 +1246,7 @@ pub struct StorageConfig {
 /// `[paths]` configuration: extra directories to scan for skills, rules, etc.
 ///
 /// These supplement the built-in scan locations (`.failure/skills/`,
-/// `.agents/skills/`, `~/.failure/skills/`). They're written by `/import-claude`
+/// `.agents/skills/`, `~/.adevgrok/skills/`). They're written by `/import-claude`
 /// to preserve previously-discovered Claude directories after the runtime
 /// `.claude/` cutoff (see `[claude_compat] imported`).
 ///
@@ -1632,7 +1632,7 @@ pub use xai_grok_shared::ui_config::{ContextualHints, UiConfig};
 ///
 /// ```toml
 /// [agent]
-/// # Use a named agent (looked up via discovery: .failure/agents/, ~/.failure/agents/, built-ins)
+/// # Use a named agent (looked up via discovery: .adevgrok/agents/, ~/.adevgrok/agents/, built-ins)
 /// name = "my-custom-agent"
 ///
 /// # OR: path to an agent definition file (.md with YAML frontmatter)
@@ -3075,7 +3075,7 @@ fn error_reporting_enabled_from_toml(root: &toml::Value) -> Option<bool> {
 fn grok_telemetry_env_enabled() -> Option<bool> {
     env_telemetry_mode("FAILURE_TELEMETRY_ENABLED").map(|m| !m.is_disabled())
 }
-/// Load `~/.failure/requirements.toml` standalone so the admin pin can beat
+/// Load `~/.adevgrok/requirements.toml` standalone so the admin pin can beat
 /// env vars. The merged config layer can't express that — last-merge-wins
 /// loses provenance.
 pub(crate) fn read_requirements_toml() -> Option<toml::Value> {
@@ -4576,7 +4576,7 @@ pub struct Features {
     ///
     /// Practical consequence: setting
     /// `[features] mcp_push_server_status = false` in
-    /// `~/.failure/config.toml` will NOT disable the pager's
+    /// `~/.adevgrok/config.toml` will NOT disable the pager's
     /// subscription on a freshly-launched process. To disable the
     /// pager subscription, set `FAILURE_MCP_PUSH_SERVER_STATUS=0` in
     /// the env before launch.

@@ -1,7 +1,7 @@
 //! Cloudflare Worker credential storage for the "stable remote-MCP URL"
 //! feature — currently deployed/run only by the npm package's Node
 //! scripts (`bin/cloudflare-worker.js`), but the credential file itself
-//! (`~/.failure/cloudflare-worker.json`) is a plain JSON format shared
+//! (`~/.adevgrok/cloudflare-worker.json`) is a plain JSON format shared
 //! between them and this Rust side, so `/mcp-worker configure` in the TUI
 //! can save credentials the npm wrapper picks up on its next launch.
 //!
@@ -193,7 +193,7 @@ impl ConfigureOutcome {
 
 /// Validate `api_token`, resolve the account (explicit `account_id`, the
 /// sole account the token can see, or an error listing the choices when
-/// there's more than one), then persist `~/.failure/cloudflare-worker.json`
+/// there's more than one), then persist `~/.adevgrok/cloudflare-worker.json`
 /// — the same format `cloudflare-worker.js` reads, so the npm wrapper picks
 /// it up on its next launch and does the actual bridge/tunnel/deploy.
 pub async fn configure(
@@ -273,7 +273,7 @@ mod tests {
         // No config file at the default path in a typical test sandbox home;
         // this just exercises the None branch without touching real state.
         // (Doesn't assert on read_config() directly since that depends on
-        // the environment's actual ~/.failure — covered by integration
+        // the environment's actual ~/.adevgrok — covered by integration
         // testing instead.)
         let cfg = CloudflareWorkerConfig {
             api_token: "abcd1234wxyz9999".to_owned(),

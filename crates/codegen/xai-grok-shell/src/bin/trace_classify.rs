@@ -75,7 +75,7 @@ struct Cli {
 
     /// Override the directory containing `auth.json` for the
     /// third-tier API-key fallback. Defaults to the same path the
-    /// shell uses (`$FAILURE_HOME` or `~/.failure`). Exposed primarily for
+    /// shell uses (`$FAILURE_HOME` or `~/.adevgrok`). Exposed primarily for
     /// tests / sandboxed invocations.
     #[arg(long)]
     grok_home: Option<PathBuf>,

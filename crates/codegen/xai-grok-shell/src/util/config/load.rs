@@ -111,7 +111,7 @@ pub fn load_config_from_toml(root: &TomlValue) -> Config {
 ///
 /// Priority (per approved plan):
 /// 1. Nearest project `.failure/config.toml` with `[permission]` section (from cwd upward)
-/// 2. Global `~/.failure/config.toml` `[permission]` section
+/// 2. Global `~/.adevgrok/config.toml` `[permission]` section
 ///
 /// Project `[permission]` overrides global wholesale (no deep merge).
 ///

@@ -1,20 +1,20 @@
 # Project Rules (AGENTS.md)
 
-Project rules let you configure Failure per project or directory. By placing an AGENTS.md file in your repository, you can set coding conventions, build instructions, style guides, and any other instructions that Failure should follow when working in that codebase.
+Project rules let you configure ADEVGrok per project or directory. By placing an AGENTS.md file in your repository, you can set coding conventions, build instructions, style guides, and any other instructions that ADEVGrok should follow when working in that codebase.
 
 ---
 
 ## What Are Project Rules?
 
-Project rules are Markdown files that Failure reads and adds to its context. Failure follows their content for every interaction in that tree.
+Project rules are Markdown files that ADEVGrok reads and adds to its context. ADEVGrok follows their content for every interaction in that tree.
 
-This is the primary mechanism for teaching Failure about your project's conventions, so you need not restate them each session.
+This is the primary mechanism for teaching ADEVGrok about your project's conventions, so you need not restate them each session.
 
 ---
 
 ## Supported File Names
 
-Failure checks for these filenames (in this order) within each directory:
+ADEVGrok checks for these filenames (in this order) within each directory:
 
 - `Agents.md`
 - `Claude.md`
@@ -23,27 +23,27 @@ Failure checks for these filenames (in this order) within each directory:
 - `AGENT.md`
 - `AGENTS.md`
 
-Failure loads every matching file in a directory, so a folder that contains both `AGENTS.md` and `CLAUDE.md` contributes both. On case-insensitive filesystems, names that resolve to the same file (such as `Agents.md` and `AGENTS.md`) are deduplicated and counted once. `Claude.md`, `CLAUDE.md`, and `CLAUDE.local.md` are supported for compatibility with Claude Code workflows. When Claude compatibility is enabled (the default), Failure also scans your home-level `~/.claude/` directory for these filenames and, at each directory level, checks `.claude/CLAUDE.md` and `.claude/CLAUDE.local.md` -- the locations Claude Code uses for project memory. With Cursor compatibility enabled, the home-level `~/.cursor/` directory is scanned the same way.
+ADEVGrok loads every matching file in a directory, so a folder that contains both `AGENTS.md` and `CLAUDE.md` contributes both. On case-insensitive filesystems, names that resolve to the same file (such as `Agents.md` and `AGENTS.md`) are deduplicated and counted once. `Claude.md`, `CLAUDE.md`, and `CLAUDE.local.md` are supported for compatibility with Claude Code workflows. When Claude compatibility is enabled (the default), ADEVGrok also scans your home-level `~/.claude/` directory for these filenames and, at each directory level, checks `.claude/CLAUDE.md` and `.claude/CLAUDE.local.md` -- the locations Claude Code uses for project memory. With Cursor compatibility enabled, the home-level `~/.cursor/` directory is scanned the same way.
 
 ### Rules Directories
 
-In addition to AGENTS.md files, Failure scans for `*.md` files in rules directories at each level (`<dir>`) from the repo root to the current working directory:
+In addition to AGENTS.md files, ADEVGrok scans for `*.md` files in rules directories at each level (`<dir>`) from the repo root to the current working directory:
 
 | Location | Notes |
 |----------|-------|
-| `<dir>/.failure/rules/` | Always scanned |
+| `<dir>/.adevgrok/rules/` | Always scanned |
 | `<dir>/.claude/rules/` | Claude compatibility (configurable) |
 | `<dir>/.cursor/rules/` | Cursor compatibility (configurable) |
 
-Failure scans the Claude and Cursor rules directories by default. To disable scanning for a specific vendor, set its cell in the `[compat]` config section or the corresponding environment variable. See [Configuration](05-configuration.md#harness-compatibility) for details.
+ADEVGrok scans the Claude and Cursor rules directories by default. To disable scanning for a specific vendor, set its cell in the `[compat]` config section or the corresponding environment variable. See [Configuration](05-configuration.md#harness-compatibility) for details.
 
 ---
 
 ## How Discovery Works
 
-Failure scans for project rules in this order:
+ADEVGrok scans for project rules in this order:
 
-1. **Global rules**: `~/.failure/` (applies to all projects)
+1. **Global rules**: `~/.adevgrok/` (applies to all projects)
 2. **Repo rules**: If inside a git repo, every directory from the repo root down to the current working directory (inclusive)
 3. **CWD-only**: If not inside a git repo, only the current working directory
 
@@ -60,16 +60,16 @@ Given this project structure:
       AGENTS.md          # "Use CSS modules for styling."
 ```
 
-When Failure runs in `~/projects/my-app/src/components/`, it loads all three files. The instructions accumulate, so Failure sees all of them.
+When ADEVGrok runs in `~/projects/my-app/src/components/`, it loads all three files. The instructions accumulate, so ADEVGrok sees all of them.
 
 ### Deeper Files Take Precedence
 
-Failure orders the files from the repo root to the current working directory, so files in deeper directories appear later in its context and take precedence when instructions conflict. In the example above, if the root says "Use styled-components" but `components/AGENTS.md` says "Use CSS modules", the CSS modules instruction wins because it appears later.
+ADEVGrok orders the files from the repo root to the current working directory, so files in deeper directories appear later in its context and take precedence when instructions conflict. In the example above, if the root says "Use styled-components" but `components/AGENTS.md` says "Use CSS modules", the CSS modules instruction wins because it appears later.
 
 ### Auto-Loading Behavior
 
-- Failure loads the files from the repo root to the current working directory automatically at session start.
-- When Failure reads, lists, or edits files in directories outside that initial set, it detects any project instruction files there, notes their paths, and reads them when they apply to the task.
+- ADEVGrok loads the files from the repo root to the current working directory automatically at session start.
+- When ADEVGrok reads, lists, or edits files in directories outside that initial set, it detects any project instruction files there, notes their paths, and reads them when they apply to the task.
 
 ---
 
@@ -155,18 +155,18 @@ my-monorepo/
 To add rules for a single session without editing files, pass `--rules` (alias `--append-system-prompt`):
 
 ```bash
-failure --rules "Always use TypeScript. Prefer functional components."
+adevgrok --rules "Always use TypeScript. Prefer functional components."
 ```
 
-Failure appends this text to the session's system prompt. Use it for session-specific customization.
+ADEVGrok appends this text to the session's system prompt. Use it for session-specific customization.
 
-To replace the system prompt entirely, pass `--system-prompt-override` (alias `--system-prompt`). Failure uses the text verbatim and skips both the default system prompt and `--rules`. (Text passed with `--rules`, by contrast, is wrapped in a `<human_rules>` block and appended to the default prompt.)
+To replace the system prompt entirely, pass `--system-prompt-override` (alias `--system-prompt`). ADEVGrok uses the text verbatim and skips both the default system prompt and `--rules`. (Text passed with `--rules`, by contrast, is wrapped in a `<human_rules>` block and appended to the default prompt.)
 
 ---
 
 ## File Size
 
-Failure loads each project instruction file in full; there is no character cap and no truncation. Even so, keep instructions concise and focused. Shorter, specific rules are easier for Failure to follow than long ones, and every file you load consumes context.
+ADEVGrok loads each project instruction file in full; there is no character cap and no truncation. Even so, keep instructions concise and focused. Shorter, specific rules are easier for ADEVGrok to follow than long ones, and every file you load consumes context.
 
 ---
 
@@ -179,22 +179,22 @@ Files ignored by `.gitignore` are skipped during discovery. To keep personal ove
 CLAUDE.local.md
 ```
 
-As top-level instruction files, Failure discovers only the recognized filenames listed under [Supported File Names](#supported-file-names) — not custom names such as `AGENTS.local.md` or `notes.md`. (Inside a rules directory such as `.failure/rules/`, every `*.md` file is loaded regardless of name.)
+As top-level instruction files, ADEVGrok discovers only the recognized filenames listed under [Supported File Names](#supported-file-names) — not custom names such as `AGENTS.local.md` or `notes.md`. (Inside a rules directory such as `.adevgrok/rules/`, every `*.md` file is loaded regardless of name.)
 
 ---
 
-## The .failure/ Project Directory
+## The .adevgrok/ Project Directory
 
-Beyond AGENTS.md files, the `.failure/` directory in your project root can contain additional project-level configuration:
+Beyond AGENTS.md files, the `.adevgrok/` directory in your project root can contain additional project-level configuration:
 
 | Path | Purpose |
 |------|---------|
-| `.failure/config.toml` | Project-scoped MCP servers, plugins, and permission rules (other settings load only from `~/.failure/config.toml`) |
-| `.failure/skills/` | Project-scoped skill definitions |
-| `.failure/plugins/` | Project-scoped plugins |
-| `.failure/agents/` | Project-scoped agent definitions |
-| `.failure/hooks/` | Project-scoped lifecycle hooks |
-| `.failure/lsp.json` | LSP server configuration |
+| `.adevgrok/config.toml` | Project-scoped MCP servers, plugins, and permission rules (other settings load only from `~/.adevgrok/config.toml`) |
+| `.adevgrok/skills/` | Project-scoped skill definitions |
+| `.adevgrok/plugins/` | Project-scoped plugins |
+| `.adevgrok/agents/` | Project-scoped agent definitions |
+| `.adevgrok/hooks/` | Project-scoped lifecycle hooks |
+| `.adevgrok/lsp.json` | LSP server configuration |
 
 These are all optional. See the respective guides for details on each.
 
@@ -202,13 +202,13 @@ These are all optional. See the respective guides for details on each.
 
 ## Inspecting Loaded Rules
 
-Use `failure inspect` to see all loaded project instructions:
+Use `adevgrok inspect` to see all loaded project instructions:
 
 ```bash
-failure inspect
+adevgrok inspect
 ```
 
-This shows each project instruction file it finds, with its path and approximate token count. Use it to confirm Failure picks up your rules.
+This shows each project instruction file it finds, with its path and approximate token count. Use it to confirm ADEVGrok picks up your rules.
 
 ---
 
@@ -222,7 +222,7 @@ This shows each project instruction file it finds, with its path and approximate
 
 4. **Use subdirectory scoping for large repos.** Different parts of a monorepo may have different conventions. Use per-directory AGENTS.md to scope rules appropriately.
 
-5. **Version control your rules.** Commit AGENTS.md to the repository so the whole team benefits. User-specific overrides belong in `~/.failure/` (global rules).
+5. **Version control your rules.** Commit AGENTS.md to the repository so the whole team benefits. User-specific overrides belong in `~/.adevgrok/` (global rules).
 
 6. **Do not duplicate documentation.** AGENTS.md should contain actionable instructions, not a copy of your project's README. Link to external docs if needed.
 

@@ -122,7 +122,7 @@ pub fn status() -> BridgeStatus {
     }
 }
 
-/// `~/.failure/mcp.json` written by a bridge in a *different* process (this
+/// `~/.adevgrok/mcp.json` written by a bridge in a *different* process (this
 /// one, an earlier run, or the npm wrapper's Node bridge). Returns `None`
 /// when the file is missing/unreadable or was written by this process (the
 /// in-process [`status`] already covers that case authoritatively).

@@ -1,19 +1,19 @@
 //! End-to-end tests for the `--debug` firehose file logging.
 //!
 //! Runs the built grok binary against the mock inference server with a
-//! caller-owned `$FAILURE_HOME`, then inspects `~/.failure/debug/`:
+//! caller-owned `$FAILURE_HOME`, then inspects `~/.adevgrok/debug/`:
 //! - the `--debug` FLAG drives the firehose end to end through the master switch:
 //!   a live `agent` session launched with `--debug` writes a non-empty per-session
-//!   `~/.failure/debug/<sessionId>.txt` with first-party content, and does NOT enable
+//!   `~/.adevgrok/debug/<sessionId>.txt` with first-party content, and does NOT enable
 //!   sampling/instrumentation. Regression for the master switch having bundled
 //!   `FAILURE_LOG_SAMPLING`/`FAILURE_INSTRUMENTATION`, whose global `TargetFilterLayer`
 //!   suppressed every other target and starved the firehose.
 //! - `--debug` (headless) runs cleanly without crashing arg-parsing (smoke).
 //! - no `--debug` writes no firehose files.
 //! - a live `agent` session (explicit `FAILURE_DEBUG_LOG=1`) writes a per-session
-//!   `~/.failure/debug/<sessionId>.txt` with real first-party content + `latest.txt`.
+//!   `~/.adevgrok/debug/<sessionId>.txt` with real first-party content + `latest.txt`.
 //! - `--debug-file <path>` writes one explicit file and bypasses per-session
-//!   routing entirely (no `~/.failure/debug/` files).
+//!   routing entirely (no `~/.adevgrok/debug/` files).
 //! - `FAILURE_LOG_FILE=<path>` writes that explicit file (back-compat single file).
 //!
 //! Per-session content is asserted via the live `agent`, not the headless run:
@@ -51,7 +51,7 @@ fn debug_dir(home: &Path) -> PathBuf {
     home.join(".failure").join("debug")
 }
 
-/// List firehose `*.txt` files under `~/.failure/debug` (excluding the `latest.txt`
+/// List firehose `*.txt` files under `~/.adevgrok/debug` (excluding the `latest.txt`
 /// symlink). Empty if the dir is missing.
 fn firehose_txt_files(home: &Path) -> Vec<PathBuf> {
     let Ok(entries) = std::fs::read_dir(debug_dir(home)) else {
@@ -170,7 +170,7 @@ async fn no_debug_flag_writes_no_debug_dir() {
     );
 }
 
-/// A live `agent` session writes `~/.failure/debug/<sessionId>.txt` with real
+/// A live `agent` session writes `~/.adevgrok/debug/<sessionId>.txt` with real
 /// first-party content, and points `latest.txt` at it. This is the same
 /// `init_tracing_simple("agent")` path the spawned leader uses, so it covers
 /// leader capture deterministically without a flaky detached process.
@@ -204,7 +204,7 @@ async fn agent_session_writes_named_session_file() {
         read_session_firehose_when_ready(&session_file, &client).await;
 
         // `latest.txt` is a sibling symlink pointing at the just-opened session
-        // file, so `tail -f ~/.failure/debug/latest.txt` follows the live session.
+        // file, so `tail -f ~/.adevgrok/debug/latest.txt` follows the live session.
         #[cfg(unix)]
         {
             let link = grok_home.join("debug").join("latest.txt");
@@ -257,7 +257,7 @@ async fn debug_flag_master_switch_enables_firehose() {
 
         // Slimming guard: `--debug` must NOT enable sampling. The agent spawn
         // clears FAILURE_LOG_SAMPLING (hermetic), so the sampling layer stays off and
-        // `~/.failure/logs/sampling.jsonl` is never written — the `--debug`
+        // `~/.adevgrok/logs/sampling.jsonl` is never written — the `--debug`
         // set-if-unset must not flip it on (the pre-fix code did, starving the
         // firehose). Instrumentation isn't checked: the harness pins
         // FAILURE_INSTRUMENTATION=disabled, so that assertion would be vacuous.
@@ -272,7 +272,7 @@ async fn debug_flag_master_switch_enables_firehose() {
 }
 
 /// `--debug-file <path>` writes one explicit file and bypasses per-session
-/// routing entirely (no `~/.failure/debug/` files created).
+/// routing entirely (no `~/.adevgrok/debug/` files created).
 #[tokio::test]
 #[ignore] // requires pre-built binary; run with --ignored
 async fn debug_file_flag_writes_single_file_and_bypasses_routing() {

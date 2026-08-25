@@ -1,17 +1,17 @@
 # Theming and Appearance Customization
 
-Failure Build draws all TUI colors from a central theme. You can switch themes while Failure is running, follow your operating system's light or dark appearance, and adjust scrollback layout, animations, and block styling through configuration files.
+ADEVGrok draws all TUI colors from a central theme. You can switch themes while ADEVGrok is running, follow your operating system's light or dark appearance, and adjust scrollback layout, animations, and block styling through configuration files.
 
 ---
 
 ## Available Themes
 
-Failure includes seven built-in themes, plus an `auto` option that follows your system appearance:
+ADEVGrok includes seven built-in themes, plus an `auto` option that follows your system appearance:
 
 | Theme | Config Names | Description | Truecolor Required |
 |-------|-------------|-------------|--------------------|
-| **FailureNight** | `failurenight`, `failure-night`, `dark` | Neutral dark base with a magenta accent. Default theme. Survives quantization cleanly on 256-color and 16-color terminals. | No |
-| **FailureDay** | `failureday`, `failure-day`, `light`, `day` | Light theme for bright terminal backgrounds. | No |
+| **FailureNight** | `failurenight`, `adevgrok-night`, `dark` | Neutral dark base with a magenta accent. Default theme. Survives quantization cleanly on 256-color and 16-color terminals. | No |
+| **FailureDay** | `failureday`, `adevgrok-day`, `light`, `day` | Light theme for bright terminal backgrounds. | No |
 | **TokyoNight** | `tokyonight`, `tokyo-night`, `tokyo` | Dark, blue-tinted backgrounds from the Tokyo Night palette. Loses its character when quantized. | Yes |
 | **RosePineMoon** | `rosepine`, `rose-pine`, `rosepine-moon`, `rose-pine-moon` | Muted dark palette with mauve accents, from the Rosé Pine family. | Yes |
 | **OscuraMidnight** | `oscura`, `oscura-midnight` | Deep dark base with purple accents. | Yes |
@@ -30,7 +30,7 @@ Theme names are case-insensitive. The `auto` option (alias `system`) is document
 
 ### In the TUI
 
-Run the `/theme` slash command (alias `/t`) to open the theme picker. As you move through the list with the arrow keys, Failure previews each theme in real time. Press Enter to apply and save your choice, or press Escape to revert.
+Run the `/theme` slash command (alias `/t`) to open the theme picker. As you move through the list with the arrow keys, ADEVGrok previews each theme in real time. Press Enter to apply and save your choice, or press Escape to revert.
 
 To switch without the picker, pass a name directly:
 
@@ -42,7 +42,7 @@ Submitting `/theme` on its own -- without choosing from the picker -- cycles to 
 
 ### Via Config File
 
-Set the theme in `~/.failure/config.toml`:
+Set the theme in `~/.adevgrok/config.toml`:
 
 ```toml
 [ui]
@@ -53,7 +53,7 @@ theme = "tokyonight"
 
 ## Auto Theme (System Appearance)
 
-Set `theme = "auto"` to have Failure follow your operating system's light/dark appearance and switch themes automatically:
+Set `theme = "auto"` to have ADEVGrok follow your operating system's light/dark appearance and switch themes automatically:
 
 ```toml
 [ui]
@@ -80,7 +80,7 @@ auto_light_theme = "failureday"
 | **Windows** | Reads the system personalization registry |
 | **SSH / headless** | Falls back to an OSC 11 terminal background query at startup |
 
-Once running, Failure polls for appearance changes every 5 seconds. Toggling your OS between light and dark mode takes effect within seconds without restarting.
+Once running, ADEVGrok polls for appearance changes every 5 seconds. Toggling your OS between light and dark mode takes effect within seconds without restarting.
 
 ### Via the Settings Pane
 
@@ -90,7 +90,7 @@ Run `/settings` (alias `/config`) and open the **Appearance** category to set th
 
 ## Color Support Detection
 
-On startup, Failure detects your terminal's color capability level:
+On startup, ADEVGrok detects your terminal's color capability level:
 
 | Level | Description | Detection |
 |-------|-------------|-----------|
@@ -98,13 +98,13 @@ On startup, Failure detects your terminal's color capability level:
 | **256-color** | Indexed palette. RGB values are mapped to the nearest palette entry. | Standard xterm-256color |
 | **16-color** | ANSI names only. Colors are mapped to the closest ANSI color. | Basic terminal support |
 
-When you set `NO_COLOR`, Failure emits no color and renders in monochrome.
+When you set `NO_COLOR`, ADEVGrok emits no color and renders in monochrome.
 
 Run `/terminal-setup` to see the detected level (`color` row) and which themes the picker offers on this terminal (`themes` row). When truecolor is missing, the issues section explains how to enable it (or that Terminal.app cannot).
 
 ### Automatic Quantization
 
-Every theme is defined using full RGB values. At startup, Failure quantizes all colors to match the detected capability level. This means:
+Every theme is defined using full RGB values. At startup, ADEVGrok quantizes all colors to match the detected capability level. This means:
 
 - On **truecolor** terminals, colors pass through unchanged.
 - On **256-color** terminals, each RGB value is mapped to the nearest indexed palette entry.
@@ -120,7 +120,7 @@ Colors generated at runtime (syntax highlighting, background blending) are also 
 
 ## Cursor Color
 
-Failure sets your terminal cursor to the current theme's `accent_user` color using the OSC 12 escape sequence, to indicate an active Failure session. The cursor color is:
+ADEVGrok sets your terminal cursor to the current theme's `accent_user` color using the OSC 12 escape sequence, to indicate an active ADEVGrok session. The cursor color is:
 
 - Applied on startup and on theme switch.
 - Reset to the terminal's default on exit via OSC 112.
@@ -137,7 +137,7 @@ Toggle compact mode with the `/compact-mode` slash command. Compact mode:
 - Reduces horizontal padding to the minimum (1 column).
 - Reduces top padding in the prompt area and info blocks.
 
-The setting is persisted in `~/.failure/config.toml` under `[ui].compact_mode` and survives restarts.
+The setting is persisted in `~/.adevgrok/config.toml` under `[ui].compact_mode` and survives restarts.
 
 Use compact mode on small screens to maximize content area.
 
@@ -145,19 +145,19 @@ Use compact mode on small screens to maximize content area.
 
 ## Syntax Highlighting
 
-Failure bundles three `.tmTheme` files for code-block syntax highlighting and selects one based on the active theme:
+ADEVGrok bundles three `.tmTheme` files for code-block syntax highlighting and selects one based on the active theme:
 
-- `failure-night.tmTheme` -- FailureNight, RosePineMoon, and OscuraMidnight
-- `failure-day.tmTheme` -- FailureDay
+- `adevgrok-night.tmTheme` -- FailureNight, RosePineMoon, and OscuraMidnight
+- `adevgrok-day.tmTheme` -- FailureDay
 - `tokyo-night.tmTheme` -- TokyoNight
 
-Failure selects the matching file automatically when you switch themes. The `.tmTheme` files are built into the binary, so you cannot replace them with your own.
+ADEVGrok selects the matching file automatically when you switch themes. The `.tmTheme` files are built into the binary, so you cannot replace them with your own.
 
 ---
 
 ## Deep Customization with pager.toml
 
-For fine-grained control over the TUI appearance, create `~/.failure/pager.toml`. This file controls scrollback layout, block styling, animations, and more. All settings have defaults; specify only the values you override. (Dev builds generate this file as a template with every default commented out — uncomment a line to override it; commented values keep tracking future defaults.)
+For fine-grained control over the TUI appearance, create `~/.adevgrok/pager.toml`. This file controls scrollback layout, block styling, animations, and more. All settings have defaults; specify only the values you override. (Dev builds generate this file as a template with every default commented out — uncomment a line to override it; commented values keep tracking future defaults.)
 
 ### Layout
 

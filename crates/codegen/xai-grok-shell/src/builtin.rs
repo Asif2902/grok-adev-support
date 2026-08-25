@@ -1,4 +1,4 @@
-//! Built-in files extracted to `~/.failure/` on startup.
+//! Built-in files extracted to `~/.adevgrok/` on startup.
 
 const BUNDLED_FILES: &[(&str, &str)] = &[("README.md", include_str!("../README.md"))];
 
@@ -14,7 +14,7 @@ pub const BEST_OF_N_SKILL_MD: &str = include_str!("../skills/best-of-n/SKILL.md"
 
 /// Legacy bundled skill names (renamed or removed).
 ///
-/// These directories under `~/.failure/skills/` will be deleted on startup
+/// These directories under `~/.adevgrok/skills/` will be deleted on startup
 /// (during bundled file extraction). This ensures that when a bundled
 /// skill is renamed (e.g. `check` → `check-work`), the old slash command
 /// does not linger on users' machines after an upgrade.
@@ -81,13 +81,14 @@ fn resolve_skill_content(name: &str, raw: &str, grok_home: &std::path::Path) -> 
         // Help skill needs path substitution so absolute paths work.
         "help" => {
             let grok_home_str = format!("{}/", grok_home.to_string_lossy());
-            raw.replace("~/.failure/", &grok_home_str)
+            raw.replace("~/.adevgrok/", &grok_home_str)
+                .replace("~/.failure/", &grok_home_str)
         }
         _ => raw.to_string(),
     }
 }
 
-/// Extract bundled files to `~/.failure/` on startup.
+/// Extract bundled files to `~/.adevgrok/` on startup.
 ///
 /// Full extraction runs on every version bump. On same-version startups,
 /// a lightweight check ensures all expected skill files exist on disk —

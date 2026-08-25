@@ -201,7 +201,7 @@ impl WorktreeDb {
         })
     }
 
-    /// Open the default DB at `~/.failure/worktrees.db`.
+    /// Open the default DB at `~/.adevgrok/worktrees.db`.
     ///
     /// Discovers grok home via `$FAILURE_HOME`, falling back to the canonicalized
     /// `$HOME/.failure` (matching `xai_grok_config::grok_home`).
@@ -338,15 +338,16 @@ pub fn now_epoch_secs() -> i64 {
 }
 
 pub fn resolve_grok_home() -> Result<PathBuf> {
-    if let Ok(v) = std::env::var("FAILURE_HOME") {
+    if let Ok(v) = std::env::var("ADEVGROK_HOME").or_else(|_| std::env::var("FAILURE_HOME")) {
         return Ok(PathBuf::from(v));
     }
-    let home = PathBuf::from(std::env::var("HOME").context("neither $FAILURE_HOME nor $HOME is set")?);
-    // Canonicalize the home dir so worktree paths share the same physical .failure
-    // tree as trust/hooks even when it is symlinked. The dunce canonicalization
-    // must stay in sync with xai_grok_config::default_grok_home();
+    let home =
+        PathBuf::from(std::env::var("HOME").context("neither $ADEVGROK_HOME nor $HOME is set")?);
+    // Canonicalize the home dir so worktree paths share the same physical
+    // .adevgrok tree as trust/hooks even when it is symlinked. The dunce
+    // canonicalization must stay in sync with xai_grok_config::default_grok_home();
     // home resolution deliberately differs ($HOME here vs std::env::home_dir()).
-    Ok(dunce::canonicalize(&home).unwrap_or(home).join(".failure"))
+    Ok(dunce::canonicalize(&home).unwrap_or(home).join(".adevgrok"))
 }
 
 /// Serializes tests that mutate the process-global `FAILURE_HOME` env var so they

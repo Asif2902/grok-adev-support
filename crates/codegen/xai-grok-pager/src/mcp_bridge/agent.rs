@@ -50,7 +50,7 @@ impl BridgeAgent {
             crate::acp::ConnectFlags {
                 // The bridge has no human to answer permission prompts —
                 // every session it opens must run always-approve, matching
-                // the npm bridge's `failure agent --always-approve stdio`.
+                // the npm bridge's `adevgrok agent --always-approve stdio`.
                 default_yolo_mode: true,
                 ..Default::default()
             },

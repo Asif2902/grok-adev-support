@@ -62,7 +62,7 @@ pub enum Command {
     /// Fetch and install managed configuration
     Setup {
         /// Print the fetched configuration as JSON instead of installing it;
-        /// writes nothing to ~/.failure.
+        /// writes nothing to ~/.adevgrok.
         #[arg(long)]
         json: bool,
     },
@@ -83,10 +83,10 @@ clipboard (containers, SSH) and your terminal does not handle OSC 52 itself
 sync with your window size.
 
 Examples:
-  failure wrap docker exec -it my-container bash
-  failure wrap kubectl exec -it my-pod -- bash
+  adevgrok wrap docker exec -it my-container bash
+  adevgrok wrap kubectl exec -it my-pod -- bash
 
-See ~/.failure/README.md for more information.
+See ~/.adevgrok/README.md for more information.
 ")]
     Wrap(WrapArgs),
     /// Export a session transcript as Markdown
@@ -142,7 +142,7 @@ See ~/.failure/README.md for more information.
     ///
     /// Centralised, agent-native overview of every session (top-level and
     /// subagents). Disabled when `[dashboard].enabled = false` in
-    /// `~/.failure/config.toml` or when the `FAILURE_AGENT_DASHBOARD=0` env
+    /// `~/.adevgrok/config.toml` or when the `FAILURE_AGENT_DASHBOARD=0` env
     /// var is set.
     Dashboard,
 }
@@ -160,10 +160,10 @@ pub struct WrapArgs {
     )]
     pub command: Vec<String>,
 }
-/// Targets a running leader process by PID (used by `failure leader` / `failure workspace`).
+/// Targets a running leader process by PID (used by `adevgrok leader` / `adevgrok workspace`).
 #[derive(Debug, clap::Args, Clone, Default)]
 pub struct LeaderTargetArgs {
-    /// Leader process ID from `failure leader list`.
+    /// Leader process ID from `adevgrok leader list`.
     #[arg(long)]
     pub pid: Option<u32>,
 }
@@ -308,7 +308,7 @@ pub struct AgentArgs {
     #[arg(long = "provider", value_name = "NAME")]
     pub provider: Option<String>,
     /// API key for `--provider` (or `--model`), for this invocation only —
-    /// not persisted. Use `failure login --provider <name> --api-key <key>`
+    /// not persisted. Use `adevgrok login --provider <name> --api-key <key>`
     /// to store one instead.
     #[arg(long = "api-key", value_name = "KEY")]
     pub api_key: Option<String>,
@@ -427,9 +427,9 @@ fn version_with_channel() -> &'static str {
 }
 #[derive(Debug, Clone, Parser)]
 #[command(
-    name = "failure",
+    name = "adevgrok",
     version = version_with_channel(),
-    about = "Failure Build TUI",
+    about = "ADEVGrok TUI",
     disable_version_flag = true,
     next_display_order = None,
     help_template = "\
@@ -453,7 +453,7 @@ pub struct PagerArgs {
     /// Working directory.
     #[arg(long)]
     pub cwd: Option<PathBuf>,
-    /// Use a custom leader socket path instead of the default `~/.failure/leader.sock`.
+    /// Use a custom leader socket path instead of the default `~/.adevgrok/leader.sock`.
     #[arg(
         long = "leader-socket",
         value_name = "PATH",
@@ -665,7 +665,7 @@ pub struct PagerArgs {
     pub self_verify: bool,
     /// Exit as soon as the first agent turn ends, without waiting for pending
     /// background bash/monitor tasks or background subagents (headless only).
-    /// Default for all `failure -p` runs is to wait (up to `--background-wait-timeout`)
+    /// Default for all `adevgrok -p` runs is to wait (up to `--background-wait-timeout`)
     /// so eval harnesses see full task completion. Use this for fast scripts that
     /// only need the first turn's text. Does not wait for server-side auto-wake
     /// output or persistent monitors (those hit the timeout).
@@ -731,7 +731,7 @@ pub struct PagerArgs {
     /// into the terminal's native scrollback (use the terminal's own scroll /
     /// selection); a small pinned region holds the prompt + running turn.
     /// Session-scoped only — does not write config. To default plain `failure` to
-    /// minimal, set `[ui] screen_mode = "minimal"` in ~/.failure/config.toml.
+    /// minimal, set `[ui] screen_mode = "minimal"` in ~/.adevgrok/config.toml.
     #[arg(long = "minimal")]
     pub minimal: bool,
     /// Open in the standard fullscreen TUI for this session, overriding a
@@ -740,7 +740,7 @@ pub struct PagerArgs {
     /// policy (--no-alt-screen, [terminal] alt_screen, terminal auto-detection).
     #[arg(long = "fullscreen", conflicts_with = "minimal")]
     pub fullscreen: bool,
-    /// Write sampling events to ~/.failure/logs/sampling.jsonl.
+    /// Write sampling events to ~/.adevgrok/logs/sampling.jsonl.
     #[arg(long = "log-sampling", env = "FAILURE_LOG_SAMPLING", hide = true)]
     pub log_sampling: bool,
     /// Show the login screen even when credentials are already available.
@@ -755,7 +755,7 @@ pub struct PagerArgs {
     /// Run standalone even when leader mode is configured.
     #[arg(long, conflicts_with = "leader", hide = true)]
     pub no_leader: bool,
-    /// Initial prompt for the interactive session, e.g. `failure "fix the bug"` or `failure --worktree=feat "create this feature"`.
+    /// Initial prompt for the interactive session, e.g. `adevgrok "fix the bug"` or `adevgrok --worktree=feat "create this feature"`.
     #[arg(
         value_name = "PROMPT",
         conflicts_with_all = &["single",
@@ -911,7 +911,7 @@ impl PagerArgs {
     /// The initial interactive prompt from the positional argument, trimmed.
     ///
     /// Returns `None` when no positional prompt was given or it is only
-    /// whitespace. This is the `failure "<prompt>"` launch form; the headless
+    /// whitespace. This is the `adevgrok "<prompt>"` launch form; the headless
     /// `-p`/`--single` path is handled separately.
     pub fn initial_prompt(&self) -> Option<&str> {
         self.prompt
@@ -1109,7 +1109,7 @@ mod tests {
     #[test]
     fn leader_mgmt_list_info_kill_parse() {
         let list = PagerArgs::try_parse_from(["failure", "leader", "list", "--json"])
-            .expect("failure leader list --json");
+            .expect("adevgrok leader list --json");
         assert!(matches!(
             list.command,
             Some(Command::Leader(LeaderMgmtArgs {
@@ -1117,7 +1117,7 @@ mod tests {
             }))
         ));
         let info = PagerArgs::try_parse_from(["failure", "leader", "info", "--pid", "42"])
-            .expect("failure leader info --pid");
+            .expect("adevgrok leader info --pid");
         assert!(matches!(
             info.command,
             Some(Command::Leader(LeaderMgmtArgs {
@@ -1127,7 +1127,7 @@ mod tests {
                 },
             }))
         ));
-        let kill = PagerArgs::try_parse_from(["failure", "leader", "kill"]).expect("failure leader kill");
+        let kill = PagerArgs::try_parse_from(["failure", "leader", "kill"]).expect("adevgrok leader kill");
         assert!(matches!(
             kill.command,
             Some(Command::Leader(LeaderMgmtArgs {

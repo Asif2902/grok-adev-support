@@ -1,6 +1,6 @@
 # Hook Examples
 
-Sample hooks for Grok. Copy to `~/.failure/hooks/` to enable globally, or to `<project>/.failure/hooks/` for project-scoped hooks (requires `/hooks-trust`).
+Sample hooks for Grok. Copy to `~/.adevgrok/hooks/` to enable globally, or to `<project>/.adevgrok/hooks/` for project-scoped hooks (requires `/hooks-trust`).
 
 ## Available Examples
 
@@ -13,10 +13,10 @@ Denies obviously destructive shell commands before they execute:
 
 **Install:**
 ```sh
-mkdir -p ~/.failure/hooks/bin
-cp examples/hooks/safe-shell.json ~/.failure/hooks/
-cp examples/hooks/bin/safe-shell-guard.sh ~/.failure/hooks/bin/
-chmod +x ~/.failure/hooks/bin/safe-shell-guard.sh
+mkdir -p ~/.adevgrok/hooks/bin
+cp examples/hooks/safe-shell.json ~/.adevgrok/hooks/
+cp examples/hooks/bin/safe-shell-guard.sh ~/.adevgrok/hooks/bin/
+chmod +x ~/.adevgrok/hooks/bin/safe-shell-guard.sh
 ```
 
 ### 2. No Recursive Grep (`no-recursive-grep.json`)
@@ -38,10 +38,10 @@ allowed.
 
 **Install:**
 ```sh
-mkdir -p ~/.failure/hooks/bin
-cp examples/hooks/no-recursive-grep.json ~/.failure/hooks/
-cp examples/hooks/bin/no-recursive-grep-guard.py ~/.failure/hooks/bin/
-chmod +x ~/.failure/hooks/bin/no-recursive-grep-guard.py
+mkdir -p ~/.adevgrok/hooks/bin
+cp examples/hooks/no-recursive-grep.json ~/.adevgrok/hooks/
+cp examples/hooks/bin/no-recursive-grep-guard.py ~/.adevgrok/hooks/bin/
+chmod +x ~/.adevgrok/hooks/bin/no-recursive-grep-guard.py
 ```
 (Requires `python3` on `PATH`.)
 
@@ -49,28 +49,28 @@ chmod +x ~/.failure/hooks/bin/no-recursive-grep-guard.py
 
 **Type:** passive (`SessionStart` + `SessionEnd`)
 
-Appends session metadata to `~/.failure/session-audit.log` — event, session ID, cwd, timestamp.
+Appends session metadata to `~/.adevgrok/session-audit.log` — event, session ID, cwd, timestamp.
 
 **Install:**
 ```sh
-mkdir -p ~/.failure/hooks/bin
-cp examples/hooks/session-log.json ~/.failure/hooks/
-cp examples/hooks/bin/session-log.sh ~/.failure/hooks/bin/
-chmod +x ~/.failure/hooks/bin/session-log.sh
+mkdir -p ~/.adevgrok/hooks/bin
+cp examples/hooks/session-log.json ~/.adevgrok/hooks/
+cp examples/hooks/bin/session-log.sh ~/.adevgrok/hooks/bin/
+chmod +x ~/.adevgrok/hooks/bin/session-log.sh
 ```
 
 ### 4. Tool Activity Logger (`tool-logger.json`)
 
 **Type:** passive (`PreToolUse` + `PostToolUse`)
 
-Logs all tool calls to `~/.failure/tool-activity.log` — tool name, event type, effective tool name, backgrounded status.
+Logs all tool calls to `~/.adevgrok/tool-activity.log` — tool name, event type, effective tool name, backgrounded status.
 
 **Install:**
 ```sh
-mkdir -p ~/.failure/hooks/bin
-cp examples/hooks/tool-logger.json ~/.failure/hooks/
-cp examples/hooks/bin/tool-logger.sh ~/.failure/hooks/bin/
-chmod +x ~/.failure/hooks/bin/tool-logger.sh
+mkdir -p ~/.adevgrok/hooks/bin
+cp examples/hooks/tool-logger.json ~/.adevgrok/hooks/
+cp examples/hooks/bin/tool-logger.sh ~/.adevgrok/hooks/bin/
+chmod +x ~/.adevgrok/hooks/bin/tool-logger.sh
 ```
 
 ## Format
@@ -116,4 +116,4 @@ or
 
 ## Uninstall
 
-Remove the JSON file from `~/.failure/hooks/`. The hook stops running on the next session.
+Remove the JSON file from `~/.adevgrok/hooks/`. The hook stops running on the next session.

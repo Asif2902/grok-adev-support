@@ -166,9 +166,9 @@ class IsolatedEnv:
     """Creates a fully isolated grok environment with custom $HOME.
 
     The agent subprocess gets a fake $HOME with:
-      ~/.failure/auth.json   (copied from real home)
-      ~/.failure/memory/     (pre-populated by tests)
-      ~/.failure/logs/       (memory.log appears here)
+      ~/.adevgrok/auth.json   (copied from real home)
+      ~/.adevgrok/memory/     (pre-populated by tests)
+      ~/.adevgrok/logs/       (memory.log appears here)
 
     And a workspace directory used as cwd when spawning the agent.
     """
@@ -180,20 +180,20 @@ class IsolatedEnv:
         os.makedirs(self.fake_home)
         os.makedirs(self.workspace)
 
-        # Create .failure dirs in fake home
-        self.grok_home = os.path.join(self.fake_home, ".failure")
+        # Create .adevgrok dirs in fake home
+        self.grok_home = os.path.join(self.fake_home, ".adevgrok")
         self.memory_dir = os.path.join(self.grok_home, "memory")
         self.logs_dir = os.path.join(self.grok_home, "logs")
         os.makedirs(self.memory_dir)
         os.makedirs(self.logs_dir)
 
         # Copy auth from real home
-        real_auth = os.path.expanduser("~/.failure/auth.json")
+        real_auth = os.path.expanduser("~/.adevgrok/auth.json")
         if os.path.isfile(real_auth):
             shutil.copy2(real_auth, os.path.join(self.grok_home, "auth.json"))
 
     def write_config(self, toml_str):
-        """Write global ~/.failure/config.toml (where the agent reads config)."""
+        """Write global ~/.adevgrok/config.toml (where the agent reads config)."""
         with open(os.path.join(self.grok_home, "config.toml"), "w") as f:
             f.write(toml_str)
 
@@ -1344,7 +1344,7 @@ def test_multiple_workspace_isolation():
         beta_workspace = os.path.join(env1.root, "workspace", "project-beta")
         os.makedirs(beta_workspace, exist_ok=True)
 
-        # Config is already in global ~/.failure/config.toml from env1.write_config
+        # Config is already in global ~/.adevgrok/config.toml from env1.write_config
 
         # Start agent in workspace beta (reuse env1's fake home)
         binary = os.environ.get("FAILURE_BINARY", "grok")

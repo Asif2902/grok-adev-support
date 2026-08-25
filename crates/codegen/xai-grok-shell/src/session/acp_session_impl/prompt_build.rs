@@ -5,8 +5,8 @@
 use super::*;
 /// Partition the AGENTS.md / Claude.md / `.failure/rules/*.md` files returned
 /// by `read_agents_config_with_paths` into "workspace" (cwd / repo root /
-/// extra workspace user dir) and "user" (`~/.failure/`, `~/.claude/`,
-/// `~/.failure/bundled/`) buckets, mirroring the split between
+/// extra workspace user dir) and "user" (`~/.adevgrok/`, `~/.claude/`,
+/// `~/.adevgrok/bundled/`) buckets, mirroring the split between
 /// `<always_applied_workspace_rules>` and `<user_rules>`.
 /// Normalize a free-form name (e.g. an MCP server identifier) into a
 /// single safe filesystem segment.

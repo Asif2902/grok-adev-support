@@ -459,7 +459,7 @@ async fn handle_reload_all_mcp_servers(agent: &MvpAgent) -> ExtResult {
 /// the whole point of [`crate::config::reloader::ConfigUpdate::
 /// ProjectMcpServersChanged`] being a per-cwd variant. The legacy
 /// [`handle_reload_all_mcp_servers`] is still the fan-out for global
-/// `~/.failure/config.toml` edits.
+/// `~/.adevgrok/config.toml` edits.
 async fn handle_reload_project_mcp_servers(agent: &MvpAgent, args: &acp::ExtRequest) -> ExtResult {
     #[derive(Deserialize)]
     struct Params {
@@ -624,7 +624,7 @@ async fn handle_refresh_models_live(agent: &MvpAgent) -> ExtResult {
 
 // internal/reload_models_cache
 
-/// Hot-reload the model catalog from `~/.failure/models_cache.json` after an
+/// Hot-reload the model catalog from `~/.adevgrok/models_cache.json` after an
 /// external write detected by the config watcher.
 ///
 /// Routed through the agent's ACP stream (injected by the
@@ -719,7 +719,7 @@ async fn handle_commands_list(agent: &MvpAgent, args: &acp::ExtRequest) -> ExtRe
         // fan-out so the menu agrees with each session's registry for this cwd.
         let disk_cfg = crate::config::resolve_effective_plugins_config(cwd).to_discovery_config();
 
-        // Fresh discovery for *this* cwd (includes .failure/plugins under it, plus
+        // Fresh discovery for *this* cwd (includes .adevgrok/plugins under it, plus
         // the cli --plugin-dir dirs). Does not mutate the shared snapshot.
         agent
             .plugin_registry_handle()

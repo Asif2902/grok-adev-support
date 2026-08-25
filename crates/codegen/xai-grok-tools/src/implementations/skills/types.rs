@@ -22,9 +22,9 @@ pub enum SkillScope {
     Local = 0,
     /// repo_root/.failure/skills
     Repo = 1,
-    /// ~/.failure/skills
+    /// ~/.adevgrok/skills
     User = 2,
-    /// ~/.failure/server-skills (synced from the skill store)
+    /// ~/.adevgrok/server-skills (synced from the skill store)
     Server = 3,
     /// platform built-in skills (lowest precedence)
     Bundled = 4,

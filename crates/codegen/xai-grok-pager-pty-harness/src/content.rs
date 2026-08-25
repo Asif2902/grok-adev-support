@@ -66,7 +66,7 @@ impl ContentController {
         self.server.url()
     }
 
-    /// Isolated `$HOME` directory that the pager should use (keeps its ~/.failure
+    /// Isolated `$HOME` directory that the pager should use (keeps its ~/.adevgrok
     /// cache/state out of the real home during tests).
     pub fn home(&self) -> &Path {
         self.home.path()

@@ -15,7 +15,7 @@ A plugin is a directory that holds any combination of these components:
 - **MCP servers** -- a `.mcp.json` file of server configurations
 - **LSP servers** -- a `.lsp.json` file of language server configurations
 
-If a plugin includes a `plugin.json` manifest, the manifest can override paths or add metadata; otherwise components load from the convention directories. The manifest is optional: without one, Failure discovers the components above from their standard directories.
+If a plugin includes a `plugin.json` manifest, the manifest can override paths or add metadata; otherwise components load from the convention directories. The manifest is optional: without one, ADEVGrok discovers the components above from their standard directories.
 
 For example, a `team-tools` plugin might include a deploy skill, a code-review agent, pre-commit hooks, and a Linear MCP server. Install them together in one step.
 
@@ -28,25 +28,25 @@ Plugin hooks receive two environment variables beyond the standard ones set for 
 | `FAILURE_PLUGIN_ROOT`   | Absolute path to the plugin's installed directory. |
 | `FAILURE_PLUGIN_DATA`   | Absolute path to the plugin's writable data directory, for plugin state, caches, and logs. |
 
-Failure sets these values and overrides any value you declare for the same key in the hook JSON's `env` map. (Failure also sets the `CLAUDE_PLUGIN_ROOT` and `CLAUDE_PLUGIN_DATA` aliases for compatibility.) See the [Hooks guide](10-hooks.md) for every environment variable passed to hooks.
+ADEVGrok sets these values and overrides any value you declare for the same key in the hook JSON's `env` map. (ADEVGrok also sets the `CLAUDE_PLUGIN_ROOT` and `CLAUDE_PLUGIN_DATA` aliases for compatibility.) See the [Hooks guide](10-hooks.md) for every environment variable passed to hooks.
 
 ---
 
 ## Plugin locations
 
-Failure discovers plugins from these locations, in priority order:
+ADEVGrok discovers plugins from these locations, in priority order:
 
 | Location | Scope | Trust |
 |----------|-------|-------|
 | `_meta.pluginDirs` (`session/new` / `session/load`) | Session -- loaded for that session only | Trusted automatically |
-| `--plugin-dir` (CLI flag, `failure agent`) | Process -- loaded for that agent process only | Trusted automatically |
-| `.failure/plugins/` | Project -- shared with the team through version control | Requires trust |
-| `~/.failure/plugins/` | User -- personal plugins for every project | Trusted automatically |
+| `--plugin-dir` (CLI flag, `adevgrok agent`) | Process -- loaded for that agent process only | Trusted automatically |
+| `.adevgrok/plugins/` | Project -- shared with the team through version control | Requires trust |
+| `~/.adevgrok/plugins/` | User -- personal plugins for every project | Trusted automatically |
 | `[plugins].paths` (config) | Custom directories you add in `config.toml` | Depends on location |
 
-Failure also reads the `.claude/plugins/` equivalents for compatibility. When two plugins share a name, the higher-priority location wins.
+ADEVGrok also reads the `.claude/plugins/` equivalents for compatibility. When two plugins share a name, the higher-priority location wins.
 
-The Agent SDKs load per-session plugins through `GrokOptions.plugins`, which arrives as `_meta.pluginDirs` on `session/new` and `session/load`; because the caller controls the directory, these plugins are always trusted -- their hooks and MCP servers activate without a prompt, and they never persist beyond the session. The `--plugin-dir` flag is the process-wide equivalent for direct CLI use (repeatable: `failure agent --no-leader --plugin-dir A --plugin-dir B stdio`); it applies to dedicated agent processes only and is ignored in leader mode (the shared leader discovers its own plugins).
+The Agent SDKs load per-session plugins through `GrokOptions.plugins`, which arrives as `_meta.pluginDirs` on `session/new` and `session/load`; because the caller controls the directory, these plugins are always trusted -- their hooks and MCP servers activate without a prompt, and they never persist beyond the session. The `--plugin-dir` flag is the process-wide equivalent for direct CLI use (repeatable: `adevgrok agent --no-leader --plugin-dir A --plugin-dir B stdio`); it applies to dedicated agent processes only and is ignored in leader mode (the shared leader discovers its own plugins).
 
 ---
 
@@ -115,18 +115,18 @@ Manage plugins without starting an interactive session.
 ### Plugin commands
 
 ```bash
-failure plugin list [--json] [--available]   # List installed plugins (--available requires --json)
-failure plugin install <source> --trust      # Git URL, GitHub shorthand (user/repo), or local path
-failure plugin uninstall <name> [--confirm] [--keep-data]   # Aliases: rm, remove
-failure plugin update [<name>]               # Omit the name to update all plugins
-failure plugin enable <name>
-failure plugin disable <name>
-failure plugin details <name>                # Show the plugin's component inventory
-failure plugin validate [<path>]             # Validate plugin.json (default: current directory)
-failure plugin tag [<path>] [--push] [--force] [--dry-run]   # Tag a release from the manifest version
+adevgrok plugin list [--json] [--available]   # List installed plugins (--available requires --json)
+adevgrok plugin install <source> --trust      # Git URL, GitHub shorthand (user/repo), or local path
+adevgrok plugin uninstall <name> [--confirm] [--keep-data]   # Aliases: rm, remove
+adevgrok plugin update [<name>]               # Omit the name to update all plugins
+adevgrok plugin enable <name>
+adevgrok plugin disable <name>
+adevgrok plugin details <name>                # Show the plugin's component inventory
+adevgrok plugin validate [<path>]             # Validate plugin.json (default: current directory)
+adevgrok plugin tag [<path>] [--push] [--force] [--dry-run]   # Tag a release from the manifest version
 ```
 
-Run `failure plugin install <source>` without `--trust` and Failure prints the source and warns that installing will activate the plugin's hooks, MCP servers, and skills, then stops without installing. Add `--trust` to install it.
+Run `adevgrok plugin install <source>` without `--trust` and ADEVGrok prints the source and warns that installing will activate the plugin's hooks, MCP servers, and skills, then stops without installing. Add `--trust` to install it.
 
 The `<source>` argument accepts:
 
@@ -140,27 +140,27 @@ The `<source>` argument accepts:
 ### Marketplace commands
 
 ```bash
-failure plugin marketplace list [--json]
-failure plugin marketplace add <url>         # Git URL, GitHub shorthand (user/repo), or local path
-failure plugin marketplace remove <url>      # Git URL or local path of a configured source
-failure plugin marketplace update [<name>]   # Omit the name to refresh all sources
+adevgrok plugin marketplace list [--json]
+adevgrok plugin marketplace add <url>         # Git URL, GitHub shorthand (user/repo), or local path
+adevgrok plugin marketplace remove <url>      # Git URL or local path of a configured source
+adevgrok plugin marketplace update [<name>]   # Omit the name to refresh all sources
 ```
 
 ### Example: set up a team marketplace
 
 ```bash
-failure plugin marketplace add my-org/team-plugins
-failure plugin marketplace list
-failure plugin install my-org/team-plugins --trust
-failure plugin list
-failure plugin update
+adevgrok plugin marketplace add my-org/team-plugins
+adevgrok plugin marketplace list
+adevgrok plugin install my-org/team-plugins --trust
+adevgrok plugin list
+adevgrok plugin update
 ```
 
 ---
 
 ## Slash commands
 
-In an interactive session, these commands open the modal on a specific tab. They take no arguments — manage plugins from the modal or with the `failure plugin` CLI.
+In an interactive session, these commands open the modal on a specific tab. They take no arguments — manage plugins from the modal or with the `adevgrok plugin` CLI.
 
 | Command | Opens |
 |---------|-------|
@@ -174,7 +174,7 @@ In an interactive session, these commands open the modal on a specific tab. They
 
 ## Configuration
 
-Configure plugin directories and per-plugin state in `~/.failure/config.toml`:
+Configure plugin directories and per-plugin state in `~/.adevgrok/config.toml`:
 
 ```toml
 [plugins]
@@ -183,11 +183,11 @@ disabled = ["user/a1b2c3d4/noisy-plugin"]    # Plugin IDs or names to skip
 enabled = ["project/9f8e7d6c/team-tools"]    # Plugin IDs or names to force on
 ```
 
-List a plugin in `disabled` to discover it but skip loading its components. List a plugin in `enabled` to activate it — plugins are disabled by default unless a CLI override or an explicit config path enables them, so add them here to turn them on. Each entry is either a plain plugin name (as shown by `failure plugin list`) or a full plugin ID in the form `<scope>/<hash>/<name>`.
+List a plugin in `disabled` to discover it but skip loading its components. List a plugin in `enabled` to activate it — plugins are disabled by default unless a CLI override or an explicit config path enables them, so add them here to turn them on. Each entry is either a plain plugin name (as shown by `adevgrok plugin list`) or a full plugin ID in the form `<scope>/<hash>/<name>`.
 
 ### Hide the plugins UI
 
-To hide the hooks and plugins UI — the `/hooks` and `/plugins` commands and the scrollback annotations — set this in `~/.failure/pager.toml`:
+To hide the hooks and plugins UI — the `/hooks` and `/plugins` commands and the scrollback annotations — set this in `~/.adevgrok/pager.toml`:
 
 ```toml
 disable_plugins = true
@@ -227,7 +227,7 @@ Add sources under `extraKnownMarketplaces`, keyed by name. Each entry's `source`
 }
 ```
 
-Place this file at `~/.failure/settings.json` or `~/.claude/settings.json`.
+Place this file at `~/.adevgrok/settings.json` or `~/.claude/settings.json`.
 
 ---
 
@@ -235,21 +235,21 @@ Place this file at `~/.failure/settings.json` or `~/.claude/settings.json`.
 
 Enabling a plugin loads its skills, slash commands, and agents. Trust is separate and controls whether a plugin's code runs: even for an enabled plugin, its hooks, MCP servers, and LSP servers stay inactive until you trust it. This prevents an untrusted repository from running code on your machine.
 
-Failure trusts plugins from `~/.failure/plugins/` automatically. Project plugins in `.failure/plugins/` require explicit trust. To trust a plugin, install it with `--trust`:
+ADEVGrok trusts plugins from `~/.adevgrok/plugins/` automatically. Project plugins in `.adevgrok/plugins/` require explicit trust. To trust a plugin, install it with `--trust`:
 
 ```bash
-failure plugin install <source> --trust
+adevgrok plugin install <source> --trust
 ```
 
 ---
 
 ## Inspect plugins
 
-Run `failure inspect` to see every discovered plugin and what it provides:
+Run `adevgrok inspect` to see every discovered plugin and what it provides:
 
 ```bash
-failure inspect          # Show plugins with their skills, agents, hooks, and MCP servers
-failure inspect --json   # Emit machine-readable JSON
+adevgrok inspect          # Show plugins with their skills, agents, hooks, and MCP servers
+adevgrok inspect --json   # Emit machine-readable JSON
 ```
 
 Plugin-provided components appear in their sections (Skills, Agents, MCP Servers, and so on) with a `plugin: <name>` label, so you can see where each component originates.

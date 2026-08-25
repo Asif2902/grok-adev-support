@@ -421,7 +421,7 @@ pub enum ToolFilter {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RequirementSource {
     Unknown,
-    /// User-writable `~/.failure/requirements.toml` — untrusted for keeping a
+    /// User-writable `~/.adevgrok/requirements.toml` — untrusted for keeping a
     /// catch-all allow under the pin (a restricted user can edit it).
     Requirements {
         path: std::path::PathBuf,

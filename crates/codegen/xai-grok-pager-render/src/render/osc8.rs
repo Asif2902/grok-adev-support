@@ -165,7 +165,7 @@ fn link_finder() -> &'static LinkFinder {
 
 /// One path segment without spaces (`main.rs`, `.failure`, `@scope`). Leading `.`
 /// matches dot-directories and `%` matches percent-encoded segments — grok
-/// session media lives under `~/.failure/sessions/%2F…/images/1.jpg`.
+/// session media lives under `~/.adevgrok/sessions/%2F…/images/1.jpg`.
 const PATH_SEGMENT: &str = r"[a-zA-Z0-9_@.%][a-zA-Z0-9._+@%\-]*";
 
 /// Final path segment may contain *internal* spaces for macOS app bundles and
@@ -378,7 +378,7 @@ struct RowSegment {
 /// break, `Some("")` = mid-word wrap, `Some(" ")` = word wrap. Consecutive
 /// rows connected by `Some(..)` joiners are re-joined into one logical line
 /// before matching, so a long path or URL soft-wrapped across rows (imagine
-/// media lives at `~/.failure/sessions/%2F…/images/1.jpg`, which wraps in
+/// media lives at `~/.adevgrok/sessions/%2F…/images/1.jpg`, which wraps in
 /// narrow panes) is detected whole and each row's fragment gets its own
 /// clickable overlay region. Spans within a row are likewise concatenated so
 /// styling boundaries never truncate a match.

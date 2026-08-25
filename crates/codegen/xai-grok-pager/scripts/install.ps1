@@ -1,7 +1,7 @@
 #
-# Failure CLI installer for PowerShell — https://raw.githubusercontent.com/Asif2902/grok-adev-support/main/crates/codegen/xai-grok-pager/scripts/install.ps1
+# ADEVGrok CLI installer for PowerShell — https://raw.githubusercontent.com/Asif2902/grok-adev-support/main/crates/codegen/xai-grok-pager/scripts/install.ps1
 #
-# Auth: FAILURE_DEPLOYMENT_KEY env var (takes precedence) or ~/.failure/auth.json from `failure login`.
+# Auth: FAILURE_DEPLOYMENT_KEY env var (takes precedence) or ~/.adevgrok/auth.json from `adevgrok login`.
 # Env: FAILURE_CHANNEL (stable|alpha|enterprise, default: stable), FAILURE_BIN_DIR, FAILURE_PROXY_URL
 #
 # Usage:
@@ -35,7 +35,7 @@ if ($PSVersionTable.Platform -and $PSVersionTable.Platform -ne 'Win32NT') {
     exit 1
 }
 
-$GrokDir = Join-Path $env:USERPROFILE '.failure'
+$GrokDir = Join-Path $env:USERPROFILE '.adevgrok'
 
 # --- Helpers ---
 
@@ -122,10 +122,10 @@ if ($env:FAILURE_DEPLOYMENT_KEY) {
     $legacyToken = Read-GrokToken $LegacyScope
     if ($oidcToken) {
         $AuthSource = 'auth.json (oidc)'
-        Write-Host 'Auth: using OIDC token from ~/.failure/auth.json.' -ForegroundColor DarkGray
+        Write-Host 'Auth: using OIDC token from ~/.adevgrok/auth.json.' -ForegroundColor DarkGray
     } elseif ($legacyToken) {
         $AuthSource = 'auth.json (legacy)'
-        Write-Host 'Auth: using legacy token from ~/.failure/auth.json.' -ForegroundColor DarkGray
+        Write-Host 'Auth: using legacy token from ~/.adevgrok/auth.json.' -ForegroundColor DarkGray
     }
 }
 
@@ -203,7 +203,7 @@ if (-not $downloaded) {
 
 # --- Install binary (locked-file safe) ---
 
-foreach ($binName in @('grok.exe', 'agent.exe')) {
+foreach ($binName in @('adevgrok.exe', 'agent.exe')) {
     $dest = Join-Path $BinDir $binName
     $old = "$dest.old"
 
@@ -223,15 +223,15 @@ foreach ($binName in @('grok.exe', 'agent.exe')) {
     }
 }
 
-Write-Host "  Installed to $BinDir\grok.exe and $BinDir\agent.exe." -ForegroundColor DarkGray
+Write-Host "  Installed to $BinDir\adevgrok.exe and $BinDir\agent.exe." -ForegroundColor DarkGray
 
 # --- Generate completions (best-effort) ---
 
 $completionsDir = Join-Path (Join-Path $GrokDir 'completions') 'powershell'
 try {
     New-Item -ItemType Directory -Path $completionsDir -Force | Out-Null
-    & (Join-Path $BinDir 'grok.exe') completions powershell 2>$null |
-        Set-Content (Join-Path $completionsDir 'grok.ps1') -ErrorAction SilentlyContinue
+    & (Join-Path $BinDir 'adevgrok.exe') completions powershell 2>$null |
+        Set-Content (Join-Path $completionsDir 'adevgrok.ps1') -ErrorAction SilentlyContinue
 } catch {}
 
 # --- Persist installer config ---
@@ -308,7 +308,7 @@ if ($env:FAILURE_DEPLOYMENT_KEY) {
     }
 }
 
-Write-Host "Grok $resolvedVersion installed to $BinDir\grok.exe" -ForegroundColor Green
+Write-Host "ADEVGrok $resolvedVersion installed to $BinDir\adevgrok.exe" -ForegroundColor Green
 
 # --- Ensure grok is on PATH ---
 
@@ -325,4 +325,4 @@ if ($pathEntries -notcontains $BinDir) {
 }
 
 Write-Host ''
-Write-Host "Run 'grok' or 'agent' to get started!" -ForegroundColor Cyan
+Write-Host "Run 'adevgrok' or 'agent' to get started!" -ForegroundColor Cyan

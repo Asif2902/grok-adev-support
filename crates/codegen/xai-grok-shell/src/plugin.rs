@@ -119,7 +119,7 @@ impl std::fmt::Display for UninstallError {
 }
 
 /// Find, remove, clean up, and deregister a plugin.
-/// When `keep_data` is true, `~/.failure/plugin-data/<id>/` is preserved.
+/// When `keep_data` is true, `~/.adevgrok/plugin-data/<id>/` is preserved.
 pub fn uninstall_plugin(
     name: &str,
     confirm: bool,
@@ -1174,7 +1174,7 @@ pub fn remove_toml_marketplace_block(content: &str, source_identity: &str) -> Op
 }
 
 /// Try removing a source from `settings.json` / `known_marketplaces.json` under
-/// `~/.failure/` and `~/.claude/`. Returns `true` if removed from at least one file.
+/// `~/.adevgrok/` and `~/.claude/`. Returns `true` if removed from at least one file.
 pub fn try_remove_source_from_json_files(source_url_or_path: &str) -> bool {
     // Resolve user grok via user_grok_home() (None when no home resolves) and
     // home separately, so removal still runs from $FAILURE_HOME when no home dir

@@ -1,4 +1,4 @@
-//! Hub [`AuthProvider`] from `~/.failure/auth.json` for the standalone
+//! Hub [`AuthProvider`] from `~/.adevgrok/auth.json` for the standalone
 //! `workspace_server` binary: loopback `ws://` uses a plain bearer, otherwise
 //! an auto-refreshing OIDC provider that persists rotated tokens to disk.
 //!
@@ -74,7 +74,7 @@ struct AuthEntry {
 
 fn default_auth_path() -> anyhow::Result<PathBuf> {
     let grok = xai_grok_config::user_grok_home()
-        .ok_or_else(|| anyhow::anyhow!("no user grok home (set $FAILURE_HOME or $HOME)"))?;
+        .ok_or_else(|| anyhow::anyhow!("no user grok home (set $ADEVGROK_HOME or $HOME)"))?;
     Ok(grok.join("auth.json"))
 }
 
@@ -207,7 +207,7 @@ fn write_json_atomic(path: &Path, value: &serde_json::Value) -> anyhow::Result<(
 }
 
 /// Build a hub auth provider for `hub_url`. `auth_config` overrides
-/// the default credential path (`~/.failure/auth.json`).
+/// the default credential path (`~/.adevgrok/auth.json`).
 pub fn provider(
     hub_url: &Url,
     auth_config: Option<&Path>,

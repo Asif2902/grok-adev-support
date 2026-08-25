@@ -977,7 +977,7 @@ pub(crate) async fn run(
         );
     }
 
-    // Apply initial config (may come from existing ~/.failure/pager.toml).
+    // Apply initial config (may come from existing ~/.adevgrok/pager.toml).
     let mut initial_config = config_watcher.current().clone();
     // The cache holds the USER compact value; the render value is derived
     // (auto-compact while the startup terminal is short).
@@ -2020,8 +2020,8 @@ pub(crate) async fn run(
             // Hot-reload: config file changed (dev mode) or initial load.
             Ok(()) = config_watcher.changed() => {
                 let mut config = config_watcher.current().clone();
-                // Preserve fields persisted via `~/.failure/config.toml [ui]`
-                // rather than `~/.failure/pager.toml`. The watcher only knows
+                // Preserve fields persisted via `~/.adevgrok/config.toml [ui]`
+                // rather than `~/.adevgrok/pager.toml`. The watcher only knows
                 // about pager.toml, so a hot-reload would otherwise revert
                 // these to their hardcoded defaults. Compact carries the
                 // PRE-reload render value; the canonical re-derive below owns

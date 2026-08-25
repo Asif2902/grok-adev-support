@@ -34,7 +34,7 @@ ${%- for skill in skills %}
   </skill>
 ${%- endfor %}
 ${%- else %}
-(No skills available. Skills can be added in ~/.failure/skills/ or .failure/skills/)
+(No skills available. Skills can be added in ~/.adevgrok/skills/ or .adevgrok/skills/)
 ${%- endif %}
 </available_skills>"#;
 

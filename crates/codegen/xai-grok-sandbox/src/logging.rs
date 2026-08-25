@@ -2,7 +2,7 @@
 //!
 //! Records sandbox events (profile applied, violations, bypasses) for
 //! telemetry and debugging. Events are kept in memory and can be flushed
-//! to a JSONL file at `~/.failure/sandbox-events.jsonl`.
+//! to a JSONL file at `~/.adevgrok/sandbox-events.jsonl`.
 
 use std::path::PathBuf;
 use std::sync::Mutex;

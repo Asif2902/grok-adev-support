@@ -10,7 +10,7 @@ use std::path::PathBuf;
 
 // ── Grok state directory ────────────────────────────────────────────────────
 
-/// Grok state directory — always writable (`$FAILURE_HOME` or `~/.failure`).
+/// Grok state directory — always writable (`$FAILURE_HOME` or `~/.adevgrok`).
 pub(crate) fn grok_home() -> PathBuf {
     xai_grok_config::grok_home()
 }
@@ -88,7 +88,7 @@ pub(crate) fn essential_writable_paths(workspace: &Path) -> Vec<PathBuf> {
     paths
 }
 
-/// Writable directory paths for the read-only profile (minimal: just ~/.failure + temp).
+/// Writable directory paths for the read-only profile (minimal: just ~/.adevgrok + temp).
 /// Device files are handled separately via `allow_file` in `to_capability_set_with_config`.
 #[cfg(all(feature = "enforce", unix, not(target_os = "android")))]
 pub(crate) fn essential_writable_paths_minimal() -> Vec<PathBuf> {

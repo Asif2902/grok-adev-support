@@ -1,6 +1,6 @@
 //! File watcher for appearance configuration.
 //!
-//! In dev mode, watches ~/.failure/pager.toml for changes and hot-reloads.
+//! In dev mode, watches ~/.adevgrok/pager.toml for changes and hot-reloads.
 //! In prod mode, returns static defaults (no file operations).
 use super::config::AppearanceConfig;
 use std::io;
@@ -8,7 +8,7 @@ use std::path::PathBuf;
 use tokio::sync::watch;
 /// Watches for appearance config changes.
 ///
-/// In dev mode: reads from ~/.failure/pager.toml, watches for changes.
+/// In dev mode: reads from ~/.adevgrok/pager.toml, watches for changes.
 /// In prod mode: returns static defaults, `.changed()` never fires.
 pub struct ConfigWatcher {
     rx: watch::Receiver<AppearanceConfig>,
@@ -25,7 +25,7 @@ enum WatcherState {
 impl ConfigWatcher {
     /// Start the config watcher.
     ///
-    /// - In dev mode: reads/creates ~/.failure/pager.toml, watches for changes
+    /// - In dev mode: reads/creates ~/.adevgrok/pager.toml, watches for changes
     /// - In prod mode: returns default config, no file operations
     pub async fn start() -> io::Result<Self> {
         Self::start_static()

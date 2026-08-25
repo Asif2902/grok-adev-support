@@ -14,7 +14,7 @@ Agents and personas both customize behavior, but they operate at different level
 |---|---|---|
 | **What they configure** | The whole session: model, tools, prompt mode, system prompt | A behavioral overlay added to a subagent's prompt |
 | **Scope** | Primary session or subagent | Subagents only |
-| **How you set them** | At startup, or with agent definitions (`.md` files in `.failure/agents/` or `~/.failure/agents/`) | In `config.toml` (`[subagents.personas]`) or `.toml` files under `.failure/personas/`; applied during subagent resolution |
+| **How you set them** | At startup, or with agent definitions (`.md` files in `.adevgrok/agents/` or `~/.adevgrok/agents/`) | In `config.toml` (`[subagents.personas]`) or `.toml` files under `.adevgrok/personas/`; applied during subagent resolution |
 | **What they control** | Model, tool availability, prompt body, skills | Tone, output format, task focus, and input/output contracts |
 | **Who edits them** | You -- create, delete, or toggle them in the agents modal or by editing files | You -- define custom personas in config or files; bundled personas are read-only |
 | **Examples** | `grok-build`, `explore`, `plan` | `researcher`, `concise` |
@@ -34,7 +34,7 @@ export FAILURE_SUBAGENTS=0              # Environment variable
 ```
 
 ```toml
-# ~/.failure/config.toml
+# ~/.adevgrok/config.toml
 [subagents]
 enabled = false
 ```
@@ -79,17 +79,17 @@ instructions = "You are a thorough researcher. Always cite specific file paths."
 description = "Deep investigator."
 ```
 
-Failure Build discovers file-based personas from these locations, in priority order:
+ADEVGrok discovers file-based personas from these locations, in priority order:
 
-- `.failure/personas/*.toml` (project)
-- `~/.failure/personas/*.toml` (user)
+- `.adevgrok/personas/*.toml` (project)
+- `~/.adevgrok/personas/*.toml` (user)
 - The bundled personas directory (lowest priority)
 
 Each file defines one persona, and the file name (without the extension) becomes the persona name. Inline `config.toml` personas take precedence over files. Only `.toml` files are discovered.
 
 Manage personas in the Personas tab of the agents modal (`/personas`). Bundled personas are read-only; personas you define are editable.
 
-> **Note:** Failure Build applies personas through subagent resolution and roles, not through a `spawn_subagent` parameter. The main agent does not pass a persona name when it spawns a child.
+> **Note:** ADEVGrok applies personas through subagent resolution and roles, not through a `spawn_subagent` parameter. The main agent does not pass a persona name when it spawns a child.
 
 ### Persona Fields
 
@@ -125,7 +125,7 @@ Each field has a `name`, an `io_type` (defaults to `file`), a `required` flag, a
 
 ### Persona Resolution
 
-When a persona applies, Failure Build resolves the effective model and reasoning effort in this order, highest priority first:
+When a persona applies, ADEVGrok resolves the effective model and reasoning effort in this order, highest priority first:
 
 1. Explicit spawn-time override
 2. Role default
@@ -193,7 +193,7 @@ For tasks that modify files, run a subagent in an isolated git worktree with `is
 - Its changes stay isolated from the parent until you merge them.
 - The subagent's result includes the worktree path.
 
-Failure Build manages worktrees through the `x.ai/git/worktree/*` extension methods, including an apply operation that merges changes back into the main working directory.
+ADEVGrok manages worktrees through the `x.ai/git/worktree/*` extension methods, including an apply operation that merges changes back into the main working directory.
 
 ---
 
@@ -223,7 +223,7 @@ Define custom roles with their own capability and model defaults:
 description = "Deep research agent"
 default_capability_mode = "read-only"
 model = "grok-build"
-prompt_file = ".failure/prompts/researcher.md"
+prompt_file = ".adevgrok/prompts/researcher.md"
 ```
 
 Define custom personas with behavioral instructions:
@@ -231,16 +231,16 @@ Define custom personas with behavioral instructions:
 ```toml
 [subagents.personas.concise]
 instructions = "Be concise. No filler words."
-# instructions_file = ".failure/personas/concise.md"  # or load from a file
+# instructions_file = ".adevgrok/personas/concise.md"  # or load from a file
 ```
 
-Failure Build also discovers roles from `.failure/roles/*.toml` and personas from `.failure/personas/*.toml`. Inline `config.toml` definitions take precedence over files.
+ADEVGrok also discovers roles from `.adevgrok/roles/*.toml` and personas from `.adevgrok/personas/*.toml`. Inline `config.toml` definitions take precedence over files.
 
 ---
 
 ## The Tasks Pane (TUI)
 
-Failure Build shows running and finished work in side panes on the agent screen:
+ADEVGrok shows running and finished work in side panes on the agent screen:
 
 - Press `Ctrl+B` to toggle the tasks pane, which lists active and completed subagents and background commands with their status.
 - Press `Ctrl+T` to toggle the separate todo pane.

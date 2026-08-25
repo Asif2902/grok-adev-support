@@ -44,9 +44,9 @@ pub enum SkillScope {
     Local,
     /// repo_root/.failure/skills
     Repo,
-    /// ~/.failure/skills
+    /// ~/.adevgrok/skills
     User,
-    /// ~/.failure/server-skills (synced from the skill store)
+    /// ~/.adevgrok/server-skills (synced from the skill store)
     Server,
     /// platform built-in skills
     Bundled,

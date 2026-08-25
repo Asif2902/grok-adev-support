@@ -96,7 +96,7 @@ impl xai_tool_runtime::Tool for LspTool {
                 .ok_or_else(|| {
                     xai_tool_runtime::ToolError::custom(
                         "process_manager",
-                        "LSP tool is unavailable. Configure ~/.failure/lsp.json or <cwd>/.failure/lsp.json and ensure the language server can start.",
+                        "LSP tool is unavailable. Configure ~/.adevgrok/lsp.json or <cwd>/.failure/lsp.json and ensure the language server can start.",
                     )
                 })?
                 .clone();

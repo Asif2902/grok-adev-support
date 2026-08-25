@@ -406,7 +406,7 @@ pub(crate) const MOUSE_OFF_STICKY: &str =
 pub(crate) const MOUSE_OFF_HINT_PROMPT: &str =
     "/toggle-mouse-reporting to enable mouse reporting and restore TUI features";
 
-/// Seed `~/.failure/config.toml` with a `[ui]` section body (e.g.
+/// Seed `~/.adevgrok/config.toml` with a `[ui]` section body (e.g.
 /// `"vim_mode = true"`). Same `{FAILURE_HOME|HOME}/.failure/config.toml` location
 /// `seed_mouse_reporting_toggle_config` uses; call before spawning the pager.
 pub(crate) fn seed_ui_config(content: &ContentController, ui_body: &str) {

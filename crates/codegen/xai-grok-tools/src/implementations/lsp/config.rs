@@ -131,7 +131,7 @@ pub fn filter_project_lsp_when_untrusted(
         .collect()
 }
 
-/// Load LSP server configs from `~/.failure/lsp.json` and `<cwd>/.failure/lsp.json`.
+/// Load LSP server configs from `~/.adevgrok/lsp.json` and `<cwd>/.failure/lsp.json`.
 /// Project config overrides user config for the same server name.
 pub fn load_servers(cwd: &Path) -> BTreeMap<String, LspServerConfig> {
     let user_path = crate::util::grok_home::grok_home().join("lsp.json");

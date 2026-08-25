@@ -135,7 +135,7 @@ chmod +x adevgrok
 
 (Replace `<version>` with the version from the
 [latest release](https://github.com/Asif2902/grok-adev-support/releases/latest),
-e.g. `adevgrok-0.1.220-alpha.6-android-aarch64`.)
+e.g. `adevgrok-0.1.220-alpha.7-android-aarch64`.)
 
 After this first run, launch it again anytime with:
 
@@ -173,8 +173,8 @@ If you want to point ADEVGrok at a custom OpenAI-compatible endpoint
 x.ai/OpenAI/Anthropic/Ollama:
 
 ```sh
-mkdir -p ~/.failure
-cat >> ~/.failure/config.toml <<'EOF'
+mkdir -p ~/.adevgrok
+cat >> ~/.adevgrok/config.toml <<'EOF'
 [provider.custom]
 base_url = "https://your-endpoint.example.com/v1"
 
@@ -192,8 +192,8 @@ address as the `base_url` (usually with a `/v1` suffix), and pass any
 placeholder string as the API key if the local server doesn't check one:
 
 ```sh
-mkdir -p ~/.failure
-cat >> ~/.failure/config.toml <<'EOF'
+mkdir -p ~/.adevgrok
+cat >> ~/.adevgrok/config.toml <<'EOF'
 [provider.local]
 base_url = "http://192.168.1.50:8080/v1"
 

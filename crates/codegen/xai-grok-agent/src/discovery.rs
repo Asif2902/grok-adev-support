@@ -1,7 +1,7 @@
 //! Agent definition file discovery.
 //!
 //! Searches `.failure/agents/` and `.claude/agents/` from cwd to repo root,
-//! then `~/.failure/agents/`, then `~/.claude/agents/`. Name-based dedup keeps
+//! then `~/.adevgrok/agents/`, then `~/.claude/agents/`. Name-based dedup keeps
 //! highest priority.
 
 use std::collections::HashMap;
@@ -123,7 +123,7 @@ fn merge_subagents(
     // the runtime spawn precedence in by_name_in_cwd():
     //   project > built-in > user > bundled
     //
-    // A user-level ~/.failure/agents/explore.md does NOT shadow built-in explore
+    // A user-level ~/.adevgrok/agents/explore.md does NOT shadow built-in explore
     // at spawn time, so it must not shadow it in the visible list either.
     // Otherwise: visible != callable (the guarantee would be broken).
     for def in discovered {
@@ -184,20 +184,20 @@ fn merge_subagents(
 ///
 /// Search order (highest priority first):
 /// 1. `.failure/agents/` walking from `cwd` up to repo root
-/// 2. `~/.failure/agents/` (user-level)
+/// 2. `~/.adevgrok/agents/` (user-level)
 /// 3. `~/.claude/agents/` (compat user-level)
-/// 4. `~/.failure/bundled/agents/` (bundled, lowest priority)
+/// 4. `~/.adevgrok/bundled/agents/` (bundled, lowest priority)
 ///
 /// Deduplicates by name — higher-priority definitions win.
 /// User-level agent directories in priority order: user grok agents, `.claude`
 /// compat agents, then bundled. `.failure` dirs resolve from `grok_home`
-/// (FAILURE_HOME-aware) plus the legacy literal `~/.failure` when FAILURE_HOME points
+/// (FAILURE_HOME-aware) plus the legacy literal `~/.adevgrok` when FAILURE_HOME points
 /// elsewhere; `.claude` resolves from `home`.
 pub(crate) fn user_agent_dirs(
     home: Option<&Path>,
     grok_home: Option<&Path>,
 ) -> Vec<(std::path::PathBuf, AgentScope)> {
-    // Legacy literal ~/.failure, included only when it differs from grok_home
+    // Legacy literal ~/.adevgrok, included only when it differs from grok_home
     // (i.e. FAILURE_HOME points elsewhere) so agents left in the old location are
     // still discovered and stay consistent with scope_from_path classification.
     let legacy_grok = home
@@ -787,7 +787,7 @@ mod tests {
             .count();
         assert_eq!(
             count, 1,
-            "no duplicate ~/.failure/agents when grok_home == ~/.failure"
+            "no duplicate ~/.adevgrok/agents when grok_home == ~/.adevgrok"
         );
     }
 
@@ -1022,7 +1022,7 @@ mod tests {
     #[test]
     fn test_by_name_in_cwd_falls_back_to_builtin() {
         let tmp = tempfile::tempdir().unwrap();
-        // No .failure/agents/ directory — should fall back to built-in
+        // No .adevgrok/agents/ directory — should fall back to built-in
 
         let def = by_name_in_cwd("grok-build", tmp.path());
         assert!(def.is_some());
@@ -1173,7 +1173,7 @@ mod tests {
 
     #[test]
     fn test_merge_user_level_builtin_name_is_skipped() {
-        // A user-level (~/.failure/agents/) agent named "explore" should NOT shadow
+        // A user-level (~/.adevgrok/agents/) agent named "explore" should NOT shadow
         // the built-in — only project-level can do that.
         let discovered = vec![synthetic_agent(
             "explore",

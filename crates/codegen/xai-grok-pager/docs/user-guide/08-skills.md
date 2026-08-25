@@ -1,42 +1,42 @@
 # Skills
 
-Skills are reusable prompt packages that extend Failure with task-specific instructions. They let you capture a repeatable procedure once, instead of re-explaining it each session.
+Skills are reusable prompt packages that extend ADEVGrok with task-specific instructions. They let you capture a repeatable procedure once, instead of re-explaining it each session.
 
 ---
 
 ## What Are Skills?
 
-A skill is a directory that contains a `SKILL.md` file. Its markdown body tells Failure how to handle a specific type of task: step-by-step instructions, conventions, and tool-usage patterns.
+A skill is a directory that contains a `SKILL.md` file. Its markdown body tells ADEVGrok how to handle a specific type of task: step-by-step instructions, conventions, and tool-usage patterns.
 
-Use a skill for a repeatable procedure that's too specific for AGENTS.md but too long to retype. Failure activates a skill only when it applies to your current task.
+Use a skill for a repeatable procedure that's too specific for AGENTS.md but too long to retype. ADEVGrok activates a skill only when it applies to your current task.
 
 ---
 
 ## Skill Locations
 
-Failure discovers skills from these directories, in priority order:
+ADEVGrok discovers skills from these directories, in priority order:
 
 | Location | Scope | Priority | Notes |
 |----------|-------|----------|-------|
-| `./.failure/skills/`, `./.failure/commands/` | Local (CWD) | Highest | Current directory skills / legacy command markdown |
-| `<repo_root>/.failure/skills/`, `…/commands/` | Repo | Medium | Shared across the repo |
-| `~/.failure/skills/`, `~/.failure/commands/` | User | Lowest | Personal skills for all projects |
+| `./.adevgrok/skills/`, `./.adevgrok/commands/` | Local (CWD) | Highest | Current directory skills / legacy command markdown |
+| `<repo_root>/.adevgrok/skills/`, `…/commands/` | Repo | Medium | Shared across the repo |
+| `~/.adevgrok/skills/`, `~/.adevgrok/commands/` | User | Lowest | Personal skills for all projects |
 | `~/.claude/skills/`, `~/.claude/commands/` | User | Lowest | Claude Code compatibility (configurable) |
 | `./.claude/skills/`, `./.claude/commands/` | Local / Repo | High | Project Claude skills and legacy custom slash commands |
 | `~/.cursor/skills/` | User | Lowest | Cursor compatibility (configurable) |
 | `./.cursor/skills/` | Local / Repo | High | Project Cursor skills (when cursor compat skills are enabled) |
 
-Failure deduplicates skills by name -- a higher-priority location overrides a lower one. Failure also scans `.agents/skills/` (and `commands/`) at each tier (alongside `.failure/`) and walks every directory between your working directory and the repo root.
+ADEVGrok deduplicates skills by name -- a higher-priority location overrides a lower one. ADEVGrok also scans `.agents/skills/` (and `commands/`) at each tier (alongside `.adevgrok/`) and walks every directory between your working directory and the repo root.
 
 Flat `*.md` files under a `commands/` directory become user-invocable slash commands (filename stem = command name), matching Claude Code's legacy custom-command layout.
 
-Skill and command discovery does **not** use `.gitignore`. Paths under known skill roots (`.failure/`, `.agents/`, `.claude/`, `.cursor/`) always load when present on disk — teams often ignore `.claude/**` as local-only config while still expecting `/frontend`-style project commands to work. To hide a skill, use `[skills] ignore` in config (not repo ignore rules).
+Skill and command discovery does **not** use `.gitignore`. Paths under known skill roots (`.adevgrok/`, `.agents/`, `.claude/`, `.cursor/`) always load when present on disk — teams often ignore `.claude/**` as local-only config while still expecting `/frontend`-style project commands to work. To hide a skill, use `[skills] ignore` in config (not repo ignore rules).
 
-Failure scans the Claude and Cursor skill directories by default. To stop scanning a vendor, set its `skills` cell to `false` under `[compat.cursor]` or `[compat.claude]` in `~/.failure/config.toml`, or set the `FAILURE_CURSOR_SKILLS_ENABLED` or `FAILURE_CLAUDE_SKILLS_ENABLED` environment variable to `false`. See [Configuration](05-configuration.md#harness-compatibility) for details. Failure always filters out known vendor-shipped default skills (such as Cursor's `shell`, `canvas`, and `statusline`), regardless of these settings.
+ADEVGrok scans the Claude and Cursor skill directories by default. To stop scanning a vendor, set its `skills` cell to `false` under `[compat.cursor]` or `[compat.claude]` in `~/.adevgrok/config.toml`, or set the `FAILURE_CURSOR_SKILLS_ENABLED` or `FAILURE_CLAUDE_SKILLS_ENABLED` environment variable to `false`. See [Configuration](05-configuration.md#harness-compatibility) for details. ADEVGrok always filters out known vendor-shipped default skills (such as Cursor's `shell`, `canvas`, and `statusline`), regardless of these settings.
 
 ### Additional Skill Directories
 
-Add directories, exclude paths, or disable individual skills via `[skills]` in `~/.failure/config.toml`:
+Add directories, exclude paths, or disable individual skills via `[skills]` in `~/.adevgrok/config.toml`:
 
 ```toml
 [skills]
@@ -45,7 +45,7 @@ ignore = ["~/my-team-skills/wip"]     # Paths to exclude (hidden entirely)
 disabled = ["wip-skill"]              # Skill names to keep listed but inactive
 ```
 
-Each entry in `paths` is a `SKILL.md` file or a directory that Failure walks recursively. `ignore` hides a skill completely; `disabled` keeps it in the list but excludes it from the system prompt and from invocation. `paths` and `ignore` take filesystem paths and support `~` expansion; `disabled` takes skill names.
+Each entry in `paths` is a `SKILL.md` file or a directory that ADEVGrok walks recursively. `ignore` hides a skill completely; `disabled` keeps it in the list but excludes it from the system prompt and from invocation. `paths` and `ignore` take filesystem paths and support `~` expansion; `disabled` takes skill names.
 
 ---
 
@@ -56,7 +56,7 @@ Each entry in `paths` is a `SKILL.md` file or a directory that Failure walks rec
 Each skill lives in its own directory with a `SKILL.md` file:
 
 ```
-~/.failure/skills/
+~/.adevgrok/skills/
   commit/
     SKILL.md
   review-pr/
@@ -91,10 +91,10 @@ Review staged changes and create a commit with a clear, conventional message.
 
 | Field | Description |
 |-------|-------------|
-| `name` | Skill identifier. Use lowercase letters, digits, and hyphens, up to 64 characters. Failure normalizes spaces and underscores to hyphens. If you omit `name`, Failure uses the skill's directory name. |
-| `description` | What the skill does and when to use it. Failure reads this to decide whether to invoke the skill. If you omit it, Failure uses the first paragraph of the body. |
+| `name` | Skill identifier. Use lowercase letters, digits, and hyphens, up to 64 characters. ADEVGrok normalizes spaces and underscores to hyphens. If you omit `name`, ADEVGrok uses the skill's directory name. |
+| `description` | What the skill does and when to use it. ADEVGrok reads this to decide whether to invoke the skill. If you omit it, ADEVGrok uses the first paragraph of the body. |
 
-Write a specific `description`. It determines when Failure invokes the skill automatically. Name the trigger phrases and use cases.
+Write a specific `description`. It determines when ADEVGrok invokes the skill automatically. Name the trigger phrases and use cases.
 
 ### Optional Frontmatter Fields
 
@@ -111,36 +111,36 @@ Multi-word frontmatter keys use kebab-case (single-word keys like `model` are wr
 | `effort` | Reasoning-effort override. |
 | `license` | License identifier (for example, `Apache-2.0`). |
 | `compatibility` | Environment requirements (for example, `Requires git, docker, jq`). |
-| `metadata` | Arbitrary string key-value pairs. Failure promotes `metadata.author` and `metadata.short-description` for display. |
+| `metadata` | Arbitrary string key-value pairs. ADEVGrok promotes `metadata.author` and `metadata.short-description` for display. |
 
 ---
 
 ## Creating Skills with /create-skill
 
-The `/create-skill` command walks you through building a new skill interactively. Failure asks what you want, drafts the files, and writes them to disk.
+The `/create-skill` command walks you through building a new skill interactively. ADEVGrok asks what you want, drafts the files, and writes them to disk.
 
 ### How It Works
 
-When you run `/create-skill`, Failure:
+When you run `/create-skill`, ADEVGrok:
 
-1. **Gathers requirements.** Failure asks for the skill name, the scope to save it under, and a description of the workflow you want to capture. Use a name with lowercase letters, digits, and hyphens (2–64 characters, starting and ending with a letter or digit).
+1. **Gathers requirements.** ADEVGrok asks for the skill name, the scope to save it under, and a description of the workflow you want to capture. Use a name with lowercase letters, digits, and hyphens (2–64 characters, starting and ending with a letter or digit).
 
-2. **Drafts the description.** Failure writes a `description` that states what the skill does, the phrases that trigger it, and the slash command name. You approve or edit the draft before continuing.
+2. **Drafts the description.** ADEVGrok writes a `description` that states what the skill does, the phrases that trigger it, and the slash command name. You approve or edit the draft before continuing.
 
-3. **Creates the skill directory.** Failure creates the `<scope>/.failure/skills/<name>/` directory, plus `scripts/` or `references/` subdirectories when the skill needs them.
+3. **Creates the skill directory.** ADEVGrok creates the `<scope>/.adevgrok/skills/<name>/` directory, plus `scripts/` or `references/` subdirectories when the skill needs them.
 
-4. **Writes SKILL.md.** Failure writes the frontmatter (`name` and `description`) and a markdown body of instructions, along with any supporting files.
+4. **Writes SKILL.md.** ADEVGrok writes the frontmatter (`name` and `description`) and a markdown body of instructions, along with any supporting files.
 
-5. **Verifies and confirms.** Failure reads the file back, confirms it wrote correctly, and tells you how to run the skill.
+5. **Verifies and confirms.** ADEVGrok reads the file back, confirms it wrote correctly, and tells you how to run the skill.
 
 ### Choosing a Scope
 
-Failure asks where to save the skill:
+ADEVGrok asks where to save the skill:
 
-- **Project** (`<repo_root>/.failure/skills/<name>/`) -- available only in this repository and shareable with teammates through version control. Failure recommends this scope inside a git repository.
-- **User** (`~/.failure/skills/<name>/`) -- available across all your projects.
+- **Project** (`<repo_root>/.adevgrok/skills/<name>/`) -- available only in this repository and shareable with teammates through version control. ADEVGrok recommends this scope inside a git repository.
+- **User** (`~/.adevgrok/skills/<name>/`) -- available across all your projects.
 
-The new skill appears in the slash menu within a few seconds, because Failure reloads skills when files change on disk.
+The new skill appears in the slash menu within a few seconds, because ADEVGrok reloads skills when files change on disk.
 
 ---
 
@@ -161,20 +161,20 @@ Running a skill loads its instructions into the conversation and directs the mod
 /commit fix the build
 ```
 
-To browse your skills, type `/` to open the slash-command menu. Failure lists every built-in command and skill and filters them as you type. To list skills from the command line instead, run `failure inspect` (see [Viewing Skill Details](#viewing-skill-details)).
+To browse your skills, type `/` to open the slash-command menu. ADEVGrok lists every built-in command and skill and filters them as you type. To list skills from the command line instead, run `adevgrok inspect` (see [Viewing Skill Details](#viewing-skill-details)).
 
 ### Qualified Names
 
-When a skill's name collides with another skill or a built-in command, Failure advertises a qualified name prefixed by the skill's scope -- `local:`, `repo:`, `user:`, or the plugin name. Use the qualified form to choose a specific skill:
+When a skill's name collides with another skill or a built-in command, ADEVGrok advertises a qualified name prefixed by the skill's scope -- `local:`, `repo:`, `user:`, or the plugin name. Use the qualified form to choose a specific skill:
 
 ```
-/local:commit        # The "commit" skill from ./.failure/skills/
-/user:commit         # The "commit" skill from ~/.failure/skills/
+/local:commit        # The "commit" skill from ./.adevgrok/skills/
+/user:commit         # The "commit" skill from ~/.adevgrok/skills/
 ```
 
 ### Automatic Invocation
 
-Failure can invoke a skill on its own when it recognizes a relevant task. Failure matches your prompt against the skill's `description` and `when-to-use` fields, so write both to describe the triggering situation.
+ADEVGrok can invoke a skill on its own when it recognizes a relevant task. ADEVGrok matches your prompt against the skill's `description` and `when-to-use` fields, so write both to describe the triggering situation.
 
 For example, if a skill's description says "Use when the user wants to commit changes," then saying "commit my changes" can trigger that skill automatically. To require an explicit slash command and prevent automatic invocation, set `disable-model-invocation: true` in the frontmatter.
 
@@ -182,14 +182,14 @@ For example, if a skill's description says "Use when the user wants to commit ch
 
 ## Viewing Skill Details
 
-Run `failure inspect` to see every skill Failure discovers, along with the rest of your configuration:
+Run `adevgrok inspect` to see every skill ADEVGrok discovers, along with the rest of your configuration:
 
 ```bash
-failure inspect          # Human-readable summary
-failure inspect --json   # Machine-readable report
+adevgrok inspect          # Human-readable summary
+adevgrok inspect --json   # Machine-readable report
 ```
 
-In the human-readable output, the Skills section lists each skill's name and its source -- `project`, `user`, `bundled`, `config` (a `[skills].paths` entry), `server` (skills synced from the skill store in managed workspaces), or `plugin: <name>`. Failure tags any skill disabled via `[skills].disabled` or from a disabled vendor surface with `[disabled]`.
+In the human-readable output, the Skills section lists each skill's name and its source -- `project`, `user`, `bundled`, `config` (a `[skills].paths` entry), `server` (skills synced from the skill store in managed workspaces), or `plugin: <name>`. ADEVGrok tags any skill disabled via `[skills].disabled` or from a disabled vendor surface with `[disabled]`.
 
 The report honors your `[skills]` config the same way a live session does: skills from `paths` are listed, skills under an `ignore` prefix are hidden, and skills named in `disabled` stay listed but tagged `[disabled]`.
 
@@ -199,9 +199,9 @@ The `--json` report includes the full detail for each skill: its `name`, `descri
 
 ## Bundled and Plugin Skills
 
-Failure ships with built-in skills and extracts them to `~/.failure/skills/` on startup -- among them `/create-skill`, `/help`, and `/check-work`. Bundled skills behave like user skills, and a same-named skill in a higher-priority location (local or repo) overrides the bundled copy; `failure inspect` labels the extracted copies `bundled` so they stay distinguishable from skills you authored yourself. (A plugin skill of the same name does not override it; it stays available under its qualified `plugin:name` form.)
+ADEVGrok ships with built-in skills and extracts them to `~/.adevgrok/skills/` on startup -- among them `/create-skill`, `/help`, and `/check-work`. Bundled skills behave like user skills, and a same-named skill in a higher-priority location (local or repo) overrides the bundled copy; `adevgrok inspect` labels the extracted copies `bundled` so they stay distinguishable from skills you authored yourself. (A plugin skill of the same name does not override it; it stays available under its qualified `plugin:name` form.)
 
-Skills can also come from plugins. When you install a plugin that includes skills, they appear alongside your user and project skills. `failure inspect` labels each plugin-provided skill with its source as `plugin: <name>`.
+Skills can also come from plugins. When you install a plugin that includes skills, they appear alongside your user and project skills. `adevgrok inspect` labels each plugin-provided skill with its source as `plugin: <name>`.
 
 See the [Plugins guide](09-plugins.md) for more on installing plugins that provide skills.
 
@@ -211,12 +211,12 @@ See the [Plugins guide](09-plugins.md) for more on installing plugins that provi
 
 1. **Write specific descriptions.** The description drives automatic invocation. "Create git commits" is too vague; "Create well-formatted git commits following conventional commit standards. Use when the user wants to commit changes or asks for /commit." works better.
 
-2. **Include concrete steps.** Skills work best when they give Failure a clear, ordered procedure to follow.
+2. **Include concrete steps.** Skills work best when they give ADEVGrok a clear, ordered procedure to follow.
 
 3. **Reference tools by name.** When a skill relies on specific tools (such as `run_terminal_command` or `search_replace`), name them so the model knows what to use.
 
 4. **Keep skills focused.** Write one skill per workflow. A "deploy" skill and a "rollback" skill work better than a single "deploy-and-rollback" skill.
 
-5. **Version-control project skills.** Commit `.failure/skills/` to your repository so the whole team benefits. User skills in `~/.failure/skills/` stay personal and unshared.
+5. **Version-control project skills.** Commit `.adevgrok/skills/` to your repository so the whole team benefits. User skills in `~/.adevgrok/skills/` stay personal and unshared.
 
 6. **Test by running it.** Invoke `/name` and confirm the skill works before you rely on automatic invocation.

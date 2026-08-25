@@ -1,4 +1,4 @@
-//! Tracing layer for `target: "sampling_log"` → `~/.failure/logs/sampling.jsonl`.
+//! Tracing layer for `target: "sampling_log"` → `~/.adevgrok/logs/sampling.jsonl`.
 //! Enable with `--log-sampling` or `FAILURE_LOG_SAMPLING=1`.
 
 use std::sync::Mutex;

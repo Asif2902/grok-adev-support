@@ -1399,7 +1399,7 @@ pub async fn run_leader(
                 watch_paths.push(home.join(".claude.json"));
             }
             let auth_scope = agent_config.grok_com_config.auth_scope();
-            // Gated on user_grok_home() so a cwd-relative .failure/auth.json is never
+            // Gated on user_grok_home() so a cwd-relative .adevgrok/auth.json is never
             // read as the user auth store when no home resolves.
             let initial_auth_key_hash = xai_grok_config::user_grok_home()
                 .map(|g| g.join("auth.json"))
@@ -1581,7 +1581,7 @@ pub async fn run_leader(
                             }
                         }
                         ConfigUpdate::ModelsCacheChanged => {
-                            // External write to ~/.failure/models_cache.json
+                            // External write to ~/.adevgrok/models_cache.json
                             // (another grok process fetched a fresher /v1/models
                             // catalog). Injected into the agent's ACP stream —
                             // NOT applied directly on the manager — so it is

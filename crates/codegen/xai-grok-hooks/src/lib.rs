@@ -6,7 +6,7 @@
 //! ## Overview
 //!
 //! This crate provides a minimal hooks system for Grok. Hooks are discovered
-//! from dedicated directories (`~/.failure/hooks/` and `<git-worktree-root>/.failure/hooks/`),
+//! from dedicated directories (`~/.adevgrok/hooks/` and `<git-worktree-root>/.failure/hooks/`),
 //! defined in JSON files (compatible settings format), and executed as child processes.
 //!
 //! ## v0 scope

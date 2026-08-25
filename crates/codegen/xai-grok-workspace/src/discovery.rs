@@ -258,7 +258,7 @@ mod tests {
     // ---- Skill discovery tests ----
 
     // Note: `list_skills` also discovers user-scoped skills from
-    // `~/.failure/skills/`, so on a developer machine the result may be
+    // `~/.adevgrok/skills/`, so on a developer machine the result may be
     // non-empty even for an empty workspace. Tests below check for
     // specific skills rather than asserting emptiness.
 
@@ -360,7 +360,7 @@ mod tests {
         );
     }
 
-    // Discovery also scans the real `~/.failure`, so fixtures use test-unique names.
+    // Discovery also scans the real `~/.adevgrok`, so fixtures use test-unique names.
     #[tokio::test]
     async fn discover_agents_md_strips_rules_frontmatter() {
         let tmp = tempfile::tempdir().unwrap();
@@ -420,7 +420,7 @@ mod tests {
     // ---- Plugin discovery tests ----
 
     // Note: `discover_plugins` also discovers user-scoped plugins
-    // from `~/.failure/plugins/`, so tests check for specific plugins.
+    // from `~/.adevgrok/plugins/`, so tests check for specific plugins.
 
     #[test]
     fn discover_plugins_finds_manifest_plugin() {

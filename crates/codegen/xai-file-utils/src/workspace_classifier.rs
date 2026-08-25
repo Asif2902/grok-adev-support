@@ -1,8 +1,18 @@
 use std::path::{Path, PathBuf};
 
 const EXCLUDED_DIR_NAMES: &[&str] = &[
-    ".failure", ".cache", ".daemon", ".config", ".npm", ".cargo", ".rustup", ".vscode", ".gemini",
-    ".hermes", ".claude",
+    ".adevgrok",
+    ".failure",
+    ".cache",
+    ".daemon",
+    ".config",
+    ".npm",
+    ".cargo",
+    ".rustup",
+    ".vscode",
+    ".gemini",
+    ".hermes",
+    ".claude",
 ];
 
 fn known_os_dirs() -> Vec<PathBuf> {
@@ -159,7 +169,7 @@ fn has_excluded_component(path: &Path) -> bool {
                 return true;
             }
 
-            if name_lower.starts_with(".failure-") {
+            if name_lower.starts_with(".adevgrok-") || name_lower.starts_with(".failure-") {
                 return true;
             }
         }
